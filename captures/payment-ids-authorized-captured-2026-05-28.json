@@ -1,0 +1,27 @@
+{
+  "generated_at": "2026-05-28T10:21:15.708Z",
+  "mode": "execute",
+  "summary": {
+    "captured": 2,
+    "already": 0,
+    "skipped": 0,
+    "errors": 0,
+    "dryListed": 0
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SukVCYArDQuHh3",
+      "amount_paise": 50000,
+      "created_at": 1779963636,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_SukUNNFSkLNti8",
+      "amount_paise": 54900,
+      "created_at": 1779963589,
+      "action": "captured",
+      "status": "captured"
+    }
+  ]
+}

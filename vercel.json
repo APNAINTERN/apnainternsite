@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "api/send-bulk-mail.ts": {
+      "maxDuration": 60
+    },
+    "api/send-mail.ts": {
+      "maxDuration": 60
+    },
+    "api/gemini-generate.ts": {
+      "maxDuration": 60
+    },
+    "api/razorpay-recovery.ts": {
+      "maxDuration": 30
+    }
+  },
+  "redirects": [
+    {
+      "source": "/cyber-cafe/login",
+      "destination": "/cybercafe/login",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

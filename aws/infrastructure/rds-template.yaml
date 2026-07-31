@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EzyIntern staging RDS PostgreSQL (aws-work only — production Supabase unchanged)
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: ezyintern
+  StageName:
+    Type: String
+    Default: staging
+  DBInstanceClass:
+    Type: String
+    Default: db.t3.micro
+  DBName:
+    Type: String
+    Default: ezyintern
+  MasterUsername:
+    Type: String
+    Default: ezyintern
+  MasterUserPassword:
+    Type: String
+    NoEcho: true
+    MinLength: 12
+  AllocatedStorage:
+    Type: Number
+    Default: 20
+  AllowedCidr:
+    Type: String
+    Default: 0.0.0.0/0
+    Description: Restrict to your IP/32 for staging (e.g. 203.0.113.10/32)
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: At least 2 subnets in default VPC (provision script auto-detects)
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: VPC for RDS security group
+
+Resources:
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub ${ProjectName}-${StageName} RDS PostgreSQL
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: !Ref AllowedCidr
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+          Description: Allow all outbound
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Sub ${ProjectName}-${StageName} RDS subnets
+      SubnetIds: !Ref SubnetIds
+
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    DependsOn:
+      - DBSecurityGroup
+      - DBSubnetGroup
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: !Sub ${ProjectName}-${StageName}-db
+      DBName: !Ref DBName
+      Engine: postgres
+      EngineVersion: "15"
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref AllocatedStorage
+      StorageType: gp3
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      VPCSecurityGroups:
+        - !GetAtt DBSecurityGroup.GroupId
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      PubliclyAccessible: true
+      BackupRetentionPeriod: 1
+      MultiAZ: false
+      StorageEncrypted: true
+      AutoMinorVersionUpgrade: true
+      DeletionProtection: false
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Stage
+          Value: !Ref StageName
+
+Outputs:
+  DBEndpoint:
+    Description: RDS hostname
+    Value: !GetAtt DBInstance.Endpoint.Address
+  DBPort:
+    Value: !GetAtt DBInstance.Endpoint.Port
+  DBName:
+    Value: !Ref DBName
+  DatabaseUrlHint:
+    Description: Build DATABASE_URL (password not echoed in console after deploy)
+    Value: !Sub postgresql://${MasterUsername}:PASSWORD@${DBInstance.Endpoint.Address}:${DBInstance.Endpoint.Port}/${DBName}?sslmode=require

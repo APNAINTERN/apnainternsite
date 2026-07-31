@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-06-03T02:22:53.606Z",
+  "mode": "execute",
+  "filter": "status=authorized only",
+  "summary": {
+    "captured": 1,
+    "failed": 0,
+    "total_listed": 1
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SwzWlY7whcomLd",
+      "amount_paise": 40000,
+      "created_at": 1780453229,
+      "status": "captured"
+    }
+  ]
+}

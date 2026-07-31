@@ -1,0 +1,17 @@
+-- NOT executable SQL — Supabase Dashboard settings for 5–6 day student sessions.
+--
+-- Lovable / hosted project: Authentication → Sessions (or Auth → Settings)
+--
+-- 1. Time-box user sessions (max lifetime)
+--    Set to 518400 seconds (6 days) or 604800 (7 days).
+--    Default on some projects is much shorter and forces re-login + new OTP.
+--
+-- 2. Inactivity timeout
+--    Set to 518400 or 604800 to match, OR disable if available.
+--    If inactivity is 1 hour while time-box is 7 days, idle users still get signed out.
+--
+-- 3. JWT expiry (access token)
+--    Keep 3600 (1 hour) — the app auto-refreshes via refresh token (see StudentSessionRefresh).
+--
+-- Frontend (this repo): persistSession + localStorage + 6-day touch on login.
+-- Deploy the app after pulling studentAuthSession.ts changes.

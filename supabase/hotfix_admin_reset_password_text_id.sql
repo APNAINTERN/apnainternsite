@@ -1,0 +1,141 @@
+-- Fix password RPCs for RDS where students.id (and often metadata) are text.
+-- Error seen on referral portal create: operator does not exist: text = uuid
+
+CREATE OR REPLACE FUNCTION public.admin_reset_user_password(target_user_id UUID, new_pass TEXT)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = extensions, public, auth
+AS $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM public.user_roles
+    WHERE user_id = auth.uid()
+      AND role IN ('super_admin'::public.app_role, 'admin'::public.app_role, 'staff'::public.app_role)
+  ) THEN
+    RAISE EXCEPTION 'Access denied';
+  END IF;
+
+  UPDATE auth.users
+  SET
+    encrypted_password = extensions.crypt(new_pass::text, extensions.gen_salt('bf'::text)),
+    updated_at = now()
+  WHERE id = target_user_id;
+
+  -- students.id may be uuid (Supabase) or text (RDS CSV import)
+  UPDATE public.students
+  SET metadata = (
+    COALESCE(
+      CASE
+        WHEN metadata IS NULL THEN '{}'::jsonb
+        WHEN btrim(metadata::text) = '' THEN '{}'::jsonb
+        ELSE metadata::jsonb
+      END,
+      '{}'::jsonb
+    ) || jsonb_build_object('password', new_pass::text)
+  )
+  WHERE id::text = target_user_id::text;
+
+  RETURN TRUE;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.admin_reset_user_password(UUID, TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.admin_reset_user_password(UUID, TEXT) TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.sync_student_directory_password(p_plain TEXT)
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_plain TEXT := trim(p_plain);
+BEGIN
+  IF auth.uid() IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+  IF v_plain IS NULL OR length(v_plain) < 6 THEN
+    RAISE EXCEPTION 'Password must be at least 6 characters';
+  END IF;
+
+  UPDATE public.students
+  SET metadata = (
+    COALESCE(
+      CASE
+        WHEN metadata IS NULL THEN '{}'::jsonb
+        WHEN btrim(metadata::text) = '' THEN '{}'::jsonb
+        ELSE metadata::jsonb
+      END,
+      '{}'::jsonb
+    ) || jsonb_build_object('password', v_plain)
+  )
+  WHERE id::text = auth.uid()::text;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.sync_student_directory_password(TEXT) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.sync_student_directory_password(TEXT) TO authenticated;
+
+CREATE OR REPLACE FUNCTION public.reset_user_password(p_identifier text, p_otp text, p_new_password text)
+RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = extensions, public, auth
+AS $$
+DECLARE
+  v_user_id UUID;
+  v_email text;
+  v_otp text := trim(p_otp);
+  v_pass text := trim(p_new_password);
+BEGIN
+  v_email := public.resolve_login_email(p_identifier);
+  IF v_email IS NULL OR v_otp = '' OR v_pass IS NULL OR length(v_pass) < 6 THEN
+    RETURN FALSE;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public.password_resets
+    WHERE lower(trim(email)) = v_email
+      AND trim(otp) = v_otp
+      AND expires_at > now()
+  ) THEN
+    RETURN FALSE;
+  END IF;
+
+  SELECT id INTO v_user_id
+  FROM auth.users
+  WHERE lower(trim(email)) = v_email
+  LIMIT 1;
+
+  IF v_user_id IS NULL THEN
+    RETURN FALSE;
+  END IF;
+
+  UPDATE auth.users
+  SET
+    encrypted_password = extensions.crypt(v_pass::text, extensions.gen_salt('bf'::text)),
+    updated_at = now()
+  WHERE id = v_user_id;
+
+  UPDATE public.students
+  SET metadata = (
+    COALESCE(
+      CASE
+        WHEN metadata IS NULL THEN '{}'::jsonb
+        WHEN btrim(metadata::text) = '' THEN '{}'::jsonb
+        ELSE metadata::jsonb
+      END,
+      '{}'::jsonb
+    ) || jsonb_build_object('password', v_pass)
+  )
+  WHERE id::text = v_user_id::text;
+
+  DELETE FROM public.password_resets WHERE lower(trim(email)) = v_email;
+
+  RETURN TRUE;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.reset_user_password(text, text, text) TO anon, authenticated;

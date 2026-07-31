@@ -1,0 +1,41 @@
+# Local test stack for aws-work branch (does NOT touch production Supabase).
+# Usage:
+#   cp aws/env.example aws/.env.staging   # fill values
+#   docker compose -f aws/docker-compose.yml up --build
+#
+# API: http://localhost:3000/api/health
+# Optional Postgres (RDS substitute for dev): localhost:5433
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: aws/Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../.env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    restart: unless-stopped
+
+  # Optional local Postgres (RDS substitute). Not required for Phase 1 (Supabase API).
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ezyintern
+      POSTGRES_PASSWORD: ezyintern_staging_only
+      POSTGRES_DB: ezyintern
+    volumes:
+      - ezyintern_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ezyintern -d ezyintern"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ezyintern_pgdata:

@@ -1,0 +1,12 @@
+---
+description: Push code to sandhya/main only (not dev or other branches)
+alwaysApply: true
+---
+
+# Git push target
+
+When the user asks to push code:
+
+- Push only to **`sandhya` remote, branch `main`** (`git push sandhya main`).
+- Do **not** create or push to `dev` or other branches unless the user explicitly asks for a different branch.
+- Never commit `.env`, credentials, CSV/XLSX, or `captures/` screenshots.

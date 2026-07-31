@@ -1,0 +1,11 @@
+project_id = "unqfphgjilxpbzajcdjl"
+
+# Payment: Razorpay + enrollment (service role auto-injected — no Vercel keys)
+[functions.payment-webhook]
+verify_jwt = false
+
+[functions.payment-create-order]
+verify_jwt = false
+
+[functions.payment-verify]
+verify_jwt = false

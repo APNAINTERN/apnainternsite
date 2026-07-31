@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-05-28T10:20:35.752Z",
+  "mode": "dry_run",
+  "summary": {
+    "captured": 0,
+    "already": 0,
+    "skipped": 0,
+    "errors": 0,
+    "dryListed": 1
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SukUNNFSkLNti8",
+      "amount_paise": 54900,
+      "created_at": 1779963589,
+      "status": "authorized",
+      "action": "would_capture"
+    }
+  ]
+}

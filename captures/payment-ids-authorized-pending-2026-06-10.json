@@ -1,0 +1,172 @@
+{
+  "generated_at": "2026-06-10T13:23:58.643Z",
+  "mode": "dry_run",
+  "filter": "status=authorized only",
+  "summary": {
+    "authorized_count": 27
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SzvamnnJ2LRpfv",
+      "amount_paise": 50000,
+      "created_at": 1781094391,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szv1rZWBB21Ycr",
+      "amount_paise": 24900,
+      "created_at": 1781092408,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzunUSkIPCE8On",
+      "amount_paise": 50000,
+      "created_at": 1781091591,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzuhRHLtKkLDt9",
+      "amount_paise": 50000,
+      "created_at": 1781091247,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzuHRbQSCx01b8",
+      "amount_paise": 50000,
+      "created_at": 1781089771,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szu7gHkvEklPbw",
+      "amount_paise": 54900,
+      "created_at": 1781089216,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szu5PUwz773L0M",
+      "amount_paise": 50000,
+      "created_at": 1781089087,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szt5xi7AWPzzjy",
+      "amount_paise": 50000,
+      "created_at": 1781085597,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzsObHsjLe36jT",
+      "amount_paise": 50000,
+      "created_at": 1781083134,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szrd8sRrbCFkfh",
+      "amount_paise": 50000,
+      "created_at": 1781080439,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzrXNzdcg4kRZt",
+      "amount_paise": 50000,
+      "created_at": 1781080112,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzqXqNm2KhGusm",
+      "amount_paise": 54900,
+      "created_at": 1781076616,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzqG7f0Baz4hTw",
+      "amount_paise": 50000,
+      "created_at": 1781075609,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzpahVqd3FagNr",
+      "amount_paise": 24900,
+      "created_at": 1781073257,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szp7EP5gpQjPWY",
+      "amount_paise": 54900,
+      "created_at": 1781071583,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzoSKkY0dyEdQI",
+      "amount_paise": 60000,
+      "created_at": 1781069260,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzntHuul78tA0h",
+      "amount_paise": 50000,
+      "created_at": 1781067269,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Sznnb0cxvaOMik",
+      "amount_paise": 50000,
+      "created_at": 1781066946,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SznZWUyVDirnak",
+      "amount_paise": 50000,
+      "created_at": 1781066147,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzbLtNxRCSrlqc",
+      "amount_paise": 54900,
+      "created_at": 1781023113,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzbDLFfTw4X3KY",
+      "amount_paise": 54900,
+      "created_at": 1781022627,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_Szas3gyon6wQeU",
+      "amount_paise": 50000,
+      "created_at": 1781021418,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzaOUWwI2H0xmJ",
+      "amount_paise": 50000,
+      "created_at": 1781019739,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzZw3RgVF0RsGB",
+      "amount_paise": 50000,
+      "created_at": 1781018124,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzZPJ8muBFGDch",
+      "amount_paise": 50000,
+      "created_at": 1781016264,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzYVlrTKIw9lVI",
+      "amount_paise": 50000,
+      "created_at": 1781013109,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_SzV4RMg2ePCHu3",
+      "amount_paise": 50000,
+      "created_at": 1781000992,
+      "status": "authorized"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-06-03T02:22:43.417Z",
+  "mode": "dry_run",
+  "filter": "status=authorized only",
+  "summary": {
+    "authorized_count": 1
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SwzWlY7whcomLd",
+      "amount_paise": 40000,
+      "created_at": 1780453229,
+      "status": "authorized"
+    }
+  ]
+}

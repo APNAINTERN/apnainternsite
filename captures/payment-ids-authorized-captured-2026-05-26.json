@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-05-26T12:07:13.545Z",
+  "mode": "execute",
+  "summary": {
+    "captured": 8,
+    "already": 0,
+    "skipped": 0,
+    "errors": 0,
+    "dryListed": 0
+  },
+  "payments": [
+    {
+      "payment_id": "pay_StzBilQhLnOlK6",
+      "amount_paise": 50000,
+      "created_at": 1779797014,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_StzBXAk1OANpHM",
+      "amount_paise": 54900,
+      "created_at": 1779797003,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_StzBUFzuw4QcUX",
+      "amount_paise": 54900,
+      "created_at": 1779797000,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_StzAcC5Ig2XurF",
+      "amount_paise": 50000,
+      "created_at": 1779796950,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_Stz9PPQB2P0j5x",
+      "amount_paise": 50000,
+      "created_at": 1779796882,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_Stz7uaaaqzvhZy",
+      "amount_paise": 54900,
+      "created_at": 1779796797,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_Stz7ssy4SSA6yi",
+      "amount_paise": 54900,
+      "created_at": 1779796795,
+      "action": "captured",
+      "status": "captured"
+    },
+    {
+      "payment_id": "pay_Stz7Gv7w6HU3jI",
+      "amount_paise": 50000,
+      "created_at": 1779796761,
+      "action": "captured",
+      "status": "captured"
+    }
+  ]
+}

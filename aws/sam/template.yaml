@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: EzyIntern API — Lambda + HTTP API (RDS + auth/rest/storage shim)
+
+Parameters:
+  StageName:
+    Type: String
+    Default: staging
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+  LocalJwtSecret:
+    Type: String
+    NoEcho: true
+  RazorpayKeyId:
+    Type: String
+  RazorpayKeySecret:
+    Type: String
+    NoEcho: true
+  SmtpUser:
+    Type: String
+    NoEcho: true
+  SmtpPass:
+    Type: String
+    NoEcho: true
+  GeminiApiKey:
+    Type: String
+    Default: ""
+    NoEcho: true
+  S3BucketConsentForms:
+    Type: String
+    Default: ezyintern-staging-consent-forms
+  S3BucketLogos:
+    Type: String
+    Default: ezyintern-staging-logos
+  S3BucketLearningMaterials:
+    Type: String
+    Default: ezyintern-staging-learning-materials
+  S3BucketAssignmentUploads:
+    Type: String
+    Default: ezyintern-staging-learning-materials
+
+Globals:
+  Function:
+    Timeout: 60
+    MemorySize: 512
+    Runtime: nodejs20.x
+    Architectures:
+      - arm64
+
+Resources:
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref StageName
+      # CORS is handled in Express (aws/server/app.ts) so we can reflect the
+      # request Origin. API Gateway "*" CORS overwrites Lambda headers and breaks
+      # credentialed browser calls from Vercel.
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ezyintern-api-${StageName}
+      Description: EzyIntern API (RDS + local Supabase-compatible shim)
+      CodeUri: ../lambda/dist
+      Handler: handler.handler
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketConsentForms
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketLogos
+        - S3CrudPolicy:
+            BucketName: !Ref S3BucketLearningMaterials
+      Environment:
+        Variables:
+          NODE_ENV: production
+          AWS_STAGE: !Ref StageName
+          DATABASE_URL: !Ref DatabaseUrl
+          LOCAL_SUPABASE: "true"
+          LOCAL_JWT_SECRET: !Ref LocalJwtSecret
+          RDS_RPC_OPEN: "false"
+          RAZORPAY_KEY_ID: !Ref RazorpayKeyId
+          RAZORPAY_KEY_SECRET: !Ref RazorpayKeySecret
+          SMTP_HOST: email-smtp.ap-south-1.amazonaws.com
+          SMTP_PORT: "587"
+          SMTP_USER: !Ref SmtpUser
+          SMTP_PASS: !Ref SmtpPass
+          MAIL_FROM: EzyIntern <admin@ezyintern.in>
+          GEMINI_API_KEY: !Ref GeminiApiKey
+          S3_BUCKET_CONSENT_FORMS: !Ref S3BucketConsentForms
+          S3_BUCKET_LOGOS: !Ref S3BucketLogos
+          S3_BUCKET_LEARNING_MATERIALS: !Ref S3BucketLearningMaterials
+          S3_BUCKET_ASSIGNMENT_UPLOADS: !Ref S3BucketAssignmentUploads
+      Events:
+        Health:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/health
+            Method: GET
+        ApiRoutes:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/{proxy+}
+            Method: ANY
+        AuthRoutes:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /auth/{proxy+}
+            Method: ANY
+        RestRoutes:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /rest/{proxy+}
+            Method: ANY
+        StorageRoutes:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /storage/{proxy+}
+            Method: ANY
+        FunctionsRoutes:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /functions/{proxy+}
+            Method: ANY
+
+Outputs:
+  ApiBaseUrl:
+    Description: Set VITE_SITE_API_ORIGIN and VITE_SUPABASE_URL to this URL (no trailing slash)
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}
+  HealthCheckUrl:
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}/api/health

@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-05-30T14:06:34.624Z",
+  "mode": "execute",
+  "summary": {
+    "captured": 0,
+    "already": 4,
+    "skipped": 0,
+    "errors": 0,
+    "dryListed": 0
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SvbOe99EJECeJJ",
+      "amount_paise": 50000,
+      "created_at": 1780149909,
+      "action": "already_captured"
+    },
+    {
+      "payment_id": "pay_SvbO5E5XiO7yoJ",
+      "amount_paise": 50000,
+      "created_at": 1780149877,
+      "action": "already_captured"
+    },
+    {
+      "payment_id": "pay_SvbL6BzBmGVk9J",
+      "amount_paise": 50000,
+      "created_at": 1780149709,
+      "action": "already_captured"
+    },
+    {
+      "payment_id": "pay_SvbKxm41i16rHF",
+      "amount_paise": 50000,
+      "created_at": 1780149700,
+      "action": "already_captured"
+    }
+  ]
+}

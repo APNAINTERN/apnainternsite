@@ -1,0 +1,26 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "ezyintern-api-staging"
+resolve_s3 = true
+s3_prefix = "ezyintern-api"
+region = "ap-south-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = false
+
+# Replace placeholders before first deploy. Do NOT commit real secrets.
+parameter_overrides = [
+  "StageName=staging",
+  "SupabaseUrl=https://YOUR_PROJECT.supabase.co",
+  "SupabaseServiceRoleKey=REPLACE_ME",
+  "RazorpayKeyId=rzp_test_REPLACE",
+  "RazorpayKeySecret=REPLACE_ME",
+  "SmtpUser=REPLACE_ME",
+  "SmtpPass=REPLACE_ME",
+  "GeminiApiKey="
+]
+
+[default.build.parameters]
+cached = true
+parallel = true

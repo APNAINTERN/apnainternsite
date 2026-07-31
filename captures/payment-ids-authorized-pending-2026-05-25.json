@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-05-25T15:34:58.508Z",
+  "mode": "dry_run",
+  "summary": {
+    "captured": 0,
+    "already": 0,
+    "skipped": 0,
+    "errors": 0,
+    "dryListed": 4
+  },
+  "payments": [
+    {
+      "payment_id": "pay_SteDHpU7o7FAG7",
+      "amount_paise": 50000,
+      "created_at": 1779723148,
+      "status": "authorized",
+      "action": "would_capture"
+    },
+    {
+      "payment_id": "pay_SteC0KNr9rhH4n",
+      "amount_paise": 50000,
+      "created_at": 1779723075,
+      "status": "authorized",
+      "action": "would_capture"
+    },
+    {
+      "payment_id": "pay_Ste7GJAqFc3vhD",
+      "amount_paise": 54900,
+      "created_at": 1779722806,
+      "status": "authorized",
+      "action": "would_capture"
+    },
+    {
+      "payment_id": "pay_Ste3zaJH3cCsyr",
+      "amount_paise": 50000,
+      "created_at": 1779722620,
+      "status": "authorized",
+      "action": "would_capture"
+    }
+  ]
+}

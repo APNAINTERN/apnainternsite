@@ -1,0 +1,13 @@
+---
+description: Never remove or hide Admin sidebar menu items when fixing bugs
+alwaysApply: true
+---
+
+# Admin sidebar stability
+
+When changing the Admin panel (`AdminShell`, `Admin.tsx`):
+
+- **Do not remove** existing sidebar menu items (Directory, Engineering, Eng. Management, Non-Tech Management, Add Registration, Student Data Upload, Attendance, Staff Management, Certificates, ID Cards, Uploads, Live Classes, Payments, Leads, Fees, Notifications, Assignments, Comms, Cyber Cafes, Referrals, Rosters, Settings, etc.).
+- **Do not gate** core items like **Attendance** behind `admin_permissions` flags that default to `false` — those false defaults previously hid Attendance for all admins.
+- Prefer **adding** items or fixing data/loading bugs. If a permission check is needed, only hide when the flag is **explicitly** denied for a limited sub-admin — never as a new-column default of false for existing admins.
+- Staff dashboard permissions are separate; do not “clean up” Admin nav by mirroring staff flags.

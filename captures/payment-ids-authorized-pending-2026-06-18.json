@@ -1,0 +1,532 @@
+{
+  "generated_at": "2026-06-18T05:43:24.946Z",
+  "mode": "dry_run",
+  "filter": "status=authorized only",
+  "summary": {
+    "authorized_count": 87
+  },
+  "payments": [
+    {
+      "payment_id": "pay_T2yqLXVpTDQRow",
+      "amount_paise": 50000,
+      "created_at": 1781760860,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2yZdIlIzw0AqU",
+      "amount_paise": 50000,
+      "created_at": 1781759911,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2hyMdgMLLffYm",
+      "amount_paise": 50000,
+      "created_at": 1781701448,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2fFar2xpQQKEg",
+      "amount_paise": 54900,
+      "created_at": 1781691862,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2f6PDuecT8cUk",
+      "amount_paise": 54900,
+      "created_at": 1781691340,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2e7w09giYY9dx",
+      "amount_paise": 54900,
+      "created_at": 1781687905,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2dGVesZUJrRcM",
+      "amount_paise": 50000,
+      "created_at": 1781684871,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2d4qO2PDLKgky",
+      "amount_paise": 50000,
+      "created_at": 1781684208,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2btKfcdDObvSh",
+      "amount_paise": 50000,
+      "created_at": 1781680033,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2aC34PeeiIhPb",
+      "amount_paise": 50000,
+      "created_at": 1781674053,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2YNzu9D5FPNSM",
+      "amount_paise": 50000,
+      "created_at": 1781667688,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2L1gd2Hm3SGFM",
+      "amount_paise": 50000,
+      "created_at": 1781620640,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2Ki7vsnksSInP",
+      "amount_paise": 50000,
+      "created_at": 1781619529,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2KVS8XGuE3Cz0",
+      "amount_paise": 60000,
+      "created_at": 1781618809,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2JgwaruNmoNY2",
+      "amount_paise": 50000,
+      "created_at": 1781615940,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2JAf3MKklpBAX",
+      "amount_paise": 50000,
+      "created_at": 1781614106,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2IqDrQAFJuNr9",
+      "amount_paise": 50000,
+      "created_at": 1781612945,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2Ein49lHibyty",
+      "amount_paise": 50000,
+      "created_at": 1781598437,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2EaUUXY89blvs",
+      "amount_paise": 50000,
+      "created_at": 1781597965,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2ETcEtXqklTzg",
+      "amount_paise": 50000,
+      "created_at": 1781597575,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2DFp4tLFEYFeH",
+      "amount_paise": 50000,
+      "created_at": 1781593270,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2DEszF4uTRXJG",
+      "amount_paise": 60000,
+      "created_at": 1781593216,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2CzCWT26446R4",
+      "amount_paise": 50000,
+      "created_at": 1781592326,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2CxNcM46halcv",
+      "amount_paise": 50000,
+      "created_at": 1781592222,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2Cwp4aj3TfVEu",
+      "amount_paise": 50000,
+      "created_at": 1781592191,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2CvBrUM8wR9cb",
+      "amount_paise": 50000,
+      "created_at": 1781592098,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2CjpbeFl6QcrA",
+      "amount_paise": 50000,
+      "created_at": 1781591453,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2C6GsWJslikPM",
+      "amount_paise": 60000,
+      "created_at": 1781589206,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2ByOZEQDxh7Gs",
+      "amount_paise": 60000,
+      "created_at": 1781588758,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2BoZ5G4VwfDHI",
+      "amount_paise": 50000,
+      "created_at": 1781588200,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T2B2ybrrmEUJqW",
+      "amount_paise": 54900,
+      "created_at": 1781585497,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1ykaKNZXnYlmV",
+      "amount_paise": 50000,
+      "created_at": 1781542193,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1yIPO274BBQk9",
+      "amount_paise": 54900,
+      "created_at": 1781540592,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1yA4qxl5rkX6P",
+      "amount_paise": 54900,
+      "created_at": 1781540119,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1xgs72qUGbSzU",
+      "amount_paise": 54900,
+      "created_at": 1781538460,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1xaZDi4zlxb2M",
+      "amount_paise": 54900,
+      "created_at": 1781538102,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1xZcprYs6WXGG",
+      "amount_paise": 50000,
+      "created_at": 1781538049,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1xHEkKJw0rwVM",
+      "amount_paise": 50000,
+      "created_at": 1781537004,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1wsJqUtP1coBR",
+      "amount_paise": 54900,
+      "created_at": 1781535589,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1wCV43onctY8A",
+      "amount_paise": 50000,
+      "created_at": 1781533214,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1vCTnyhJBZTAf",
+      "amount_paise": 50000,
+      "created_at": 1781529691,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1uuWnrVWZI6NL",
+      "amount_paise": 50000,
+      "created_at": 1781528671,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1uAMIrvowEuLk",
+      "amount_paise": 100,
+      "created_at": 1781526049,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1u5YKHJ4E3trk",
+      "amount_paise": 100,
+      "created_at": 1781525776,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1u5QTQlCS7Cix",
+      "amount_paise": 54900,
+      "created_at": 1781525769,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1sxfYOlpM17Tq",
+      "amount_paise": 50000,
+      "created_at": 1781521807,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1rk3EDxvEYaqP",
+      "amount_paise": 50000,
+      "created_at": 1781517511,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1rSvjSdiS9yHE",
+      "amount_paise": 50000,
+      "created_at": 1781516539,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1qWyIdh0uULVf",
+      "amount_paise": 50000,
+      "created_at": 1781513247,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1pNogkAMhHmgB",
+      "amount_paise": 50000,
+      "created_at": 1781509205,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1pHrmCxi3oDE2",
+      "amount_paise": 50000,
+      "created_at": 1781508867,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1p5QSE9auSyzO",
+      "amount_paise": 54900,
+      "created_at": 1781508160,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1p32OPawhc2R4",
+      "amount_paise": 50000,
+      "created_at": 1781508025,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1p31ZkTItvkMp",
+      "amount_paise": 50000,
+      "created_at": 1781508024,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1ouLxCRHrrqgI",
+      "amount_paise": 50000,
+      "created_at": 1781507531,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1oj8TGi8UoWRL",
+      "amount_paise": 50000,
+      "created_at": 1781506894,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1nW7itU8uGigy",
+      "amount_paise": 50000,
+      "created_at": 1781502634,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1nPKb9PCBzeOn",
+      "amount_paise": 54900,
+      "created_at": 1781502248,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1nFXMTYGVNn4T",
+      "amount_paise": 50000,
+      "created_at": 1781501691,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1n2fuvF7UTcWQ",
+      "amount_paise": 50000,
+      "created_at": 1781500961,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1mkEjda0sgaiI",
+      "amount_paise": 54900,
+      "created_at": 1781499914,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1mF5d5hroRhgf",
+      "amount_paise": 50000,
+      "created_at": 1781498144,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1m2qa7PVrHIfr",
+      "amount_paise": 54900,
+      "created_at": 1781497449,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1YFouUs5ZeqyI",
+      "amount_paise": 50000,
+      "created_at": 1781448883,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1XnznWceyaPrK",
+      "amount_paise": 54900,
+      "created_at": 1781447303,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1VyQZHbmNjzcJ",
+      "amount_paise": 54900,
+      "created_at": 1781440852,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1VCwTVWCzn5fh",
+      "amount_paise": 24900,
+      "created_at": 1781438155,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1UQdbPqnZEvr2",
+      "amount_paise": 50000,
+      "created_at": 1781435411,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1QuszHVo0koOc",
+      "amount_paise": 50000,
+      "created_at": 1781423043,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1OyNWW7JJQq4U",
+      "amount_paise": 50000,
+      "created_at": 1781416198,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T1AfpG6FWmhnSI",
+      "amount_paise": 54900,
+      "created_at": 1781365842,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T194kYjqbEBG8V",
+      "amount_paise": 40000,
+      "created_at": 1781360214,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T18zpMBf3BPoxe",
+      "amount_paise": 50000,
+      "created_at": 1781359935,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T18Rjyyk6do1il",
+      "amount_paise": 50000,
+      "created_at": 1781357998,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T15Tq2TM5QPVNh",
+      "amount_paise": 50000,
+      "created_at": 1781347553,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T13exzXDBLB3pD",
+      "amount_paise": 50000,
+      "created_at": 1781341142,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T13F1Pb7AfPlyu",
+      "amount_paise": 24900,
+      "created_at": 1781339668,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T13ERWKs8r3Dko",
+      "amount_paise": 50000,
+      "created_at": 1781339635,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T12zAfrtRGkIKk",
+      "amount_paise": 54900,
+      "created_at": 1781338768,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T12vNnvlDPyE9D",
+      "amount_paise": 50000,
+      "created_at": 1781338552,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T12pzbVx90Msie",
+      "amount_paise": 50000,
+      "created_at": 1781338246,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T12cBrevAkNnjk",
+      "amount_paise": 50000,
+      "created_at": 1781337462,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T10wbFJskALulk",
+      "amount_paise": 50000,
+      "created_at": 1781331578,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T10txL6273yfk0",
+      "amount_paise": 50000,
+      "created_at": 1781331428,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T10lvJEBfwBKII",
+      "amount_paise": 50000,
+      "created_at": 1781330972,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T10goPPDdOjjSk",
+      "amount_paise": 50000,
+      "created_at": 1781330682,
+      "status": "authorized"
+    },
+    {
+      "payment_id": "pay_T10gFlX4MSav18",
+      "amount_paise": 50000,
+      "created_at": 1781330650,
+      "status": "authorized"
+    }
+  ]
+}

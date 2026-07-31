@@ -1,0 +1,43 @@
+-- ============================================
+-- SUPABASE SMTP CONFIGURATION GUIDE (Amazon SES)
+-- ============================================
+-- Run these steps in Supabase Dashboard:
+--
+-- 1. Go to: Authentication → Settings → SMTP Provider
+-- 2. Enable Custom SMTP
+-- 3. Fill in:
+--    Host:         email-smtp.ap-south-1.amazonaws.com
+--    Port:         587
+--    Username:     AKIA… (SES SMTP username — NOT your email address)
+--    Password:     [SES SMTP password from IAM]
+--    Sender Name:  EzyIntern
+--    Sender Email: admin@ezyintern.in  (must be verified in SES)
+--
+-- 4. Go to: Authentication → Email Templates
+--    → Customize OTP / Magic Link templates with EzyIntern branding
+--
+-- ============================================
+-- EDGE FUNCTION SECRETS (run in terminal)
+-- ============================================
+--
+--   npx supabase secrets set SMTP_USER=AKIAxxxxxxxx
+--   npx supabase secrets set SMTP_PASS=your_ses_smtp_password
+--   npx supabase secrets set SMTP_HOST=email-smtp.ap-south-1.amazonaws.com
+--   npx supabase secrets set SMTP_PORT=587
+--   npx supabase secrets set MAIL_FROM="EzyIntern <admin@ezyintern.in>"
+--
+-- ============================================
+-- VERCEL ENV (Project Settings → Environment Variables)
+-- ============================================
+-- Same SMTP_USER, SMTP_PASS, SMTP_HOST, SMTP_PORT, MAIL_FROM as above.
+--
+-- ============================================
+-- OTP Login: Enable Magic Link in Supabase
+-- ============================================
+-- 1. Go to: Authentication → Settings
+-- 2. Under "Auth Providers" → Email
+-- 3. Enable "Email OTP" or "Magic Link"
+-- 4. Set OTP expiry to 600 seconds (10 mins)
+-- 5. OTPs are sent via /api/send-mail (login_otp) using SES SMTP above.
+--
+-- ============================================

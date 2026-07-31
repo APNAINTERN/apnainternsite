@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: EzyIntern staging S3 buckets (consent-forms, logos, learning-materials)
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: ezyintern
+  StageName:
+    Type: String
+    Default: staging
+
+Resources:
+  ConsentFormsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${ProjectName}-${StageName}-consent-forms
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ["*"]
+            AllowedMethods: [GET, PUT, POST, HEAD]
+            AllowedOrigins: ["*"]
+            MaxAge: 3600
+
+  LogosBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${ProjectName}-${StageName}-logos
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ["*"]
+            AllowedMethods: [GET, PUT, POST, HEAD]
+            AllowedOrigins: ["*"]
+            MaxAge: 3600
+
+  LearningMaterialsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${ProjectName}-${StageName}-learning-materials
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ["*"]
+            AllowedMethods: [GET, PUT, POST, HEAD]
+            AllowedOrigins: ["*"]
+            MaxAge: 3600
+
+  ConsentFormsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ConsentFormsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicRead
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${ConsentFormsBucket}/*
+
+  LogosBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LogosBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicRead
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${LogosBucket}/*
+
+  LearningMaterialsBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref LearningMaterialsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: PublicRead
+            Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::${LearningMaterialsBucket}/*
+
+Outputs:
+  ConsentFormsBucketName:
+    Value: !Ref ConsentFormsBucket
+  LogosBucketName:
+    Value: !Ref LogosBucket
+  LearningMaterialsBucketName:
+    Value: !Ref LearningMaterialsBucket
+  ConsentFormsUrl:
+    Value: !Sub https://${ConsentFormsBucket}.s3.${AWS::Region}.amazonaws.com
+  LogosUrl:
+    Value: !Sub https://${LogosBucket}.s3.${AWS::Region}.amazonaws.com
+  LearningMaterialsUrl:
+    Value: !Sub https://${LearningMaterialsBucket}.s3.${AWS::Region}.amazonaws.com

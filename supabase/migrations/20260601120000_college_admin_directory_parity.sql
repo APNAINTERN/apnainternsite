@@ -1,0 +1,1 @@
+-- See supabase/hotfix_college_admin_list_students_timeout.sql (run that file on production SQL editor).

@@ -1,0 +1,2 @@
+# Database dumps from Supabase — never commit
+*.sql
