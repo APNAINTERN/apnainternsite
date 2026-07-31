@@ -95,11 +95,16 @@ export function HomeHeroSection({ onRegister, onVerify }: HomeHeroSectionProps) 
         <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
           <div className="grid grid-cols-6 gap-3 sm:gap-4">
             <div className="col-span-6 overflow-hidden rounded-3xl border border-white/60 bg-white p-2 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.25)] ring-1 ring-slate-200/60">
-              <img
-                src="/student_real.png"
-                alt="Student completing an online internship"
-                className="aspect-[5/4] w-full rounded-2xl object-cover"
-              />
+              <picture>
+                <source srcSet="/hero-home.webp" type="image/webp" />
+                <img
+                  src="/hero-home.jpg"
+                  alt="Young professional working on an internship at a modern workspace"
+                  className="aspect-[5/4] w-full rounded-2xl object-cover"
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              </picture>
             </div>
 
             <div className="col-span-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-soft">
