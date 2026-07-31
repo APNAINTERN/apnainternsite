@@ -172,17 +172,17 @@ export const SiteNav = () => {
       <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link to="/" className="flex min-w-0 shrink items-start gap-2.5 sm:gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-slate-900 shadow-sm sm:size-11">
-            <img src="/logo.png" alt="EzyIntern" className="size-full object-cover" />
+            <img src="/logo.png" alt="Apna Intern" className="size-full object-cover" />
           </div>
           <div className="min-w-0 leading-tight">
             <div className="font-display text-[18px] font-bold tracking-tight text-slate-900 sm:text-[20px]">
-              <span className="text-primary">Ezy</span>intern
+              <span className="text-primary">Apna</span> Intern
             </div>
             <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               India&apos;s Trusted Internship Provider
             </div>
             <div className="mt-0.5 text-[8px] font-semibold uppercase leading-snug tracking-[0.04em] text-slate-400 sm:text-[9px]">
-              Unit of EzyIntern SDP Technology Private Limited
+              Apna Intern
             </div>
           </div>
         </Link>

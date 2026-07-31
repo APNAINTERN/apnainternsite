@@ -371,7 +371,7 @@ const Login = () => {
           console.warn("account_may_use_referral_login RPC:", refRpcErr.message);
         } else if (mayRef !== true) {
           toast.error(
-            "No referral promoter account found for this email. Use the promoter sign-in link you received, or contact EzyIntern support."
+            "No referral promoter account found for this email. Use the promoter sign-in link you received, or contact Apna Intern support."
           );
           return;
         }
@@ -843,9 +843,9 @@ const Login = () => {
             <div className="flex justify-center mb-8">
               <Link to="/" className="flex items-center gap-3">
                 <div className="size-12 rounded-xl overflow-hidden shadow-elegant">
-                  <img src="/logo.png" alt="EzyIntern" className="w-full h-full object-cover" />
+                  <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-2xl font-bold tracking-tighter text-slate-900">EzyIntern</span>
+                <span className="text-2xl font-bold tracking-tighter text-slate-900">Apna Intern</span>
               </Link>
             </div>
             <div className="text-center mb-8">

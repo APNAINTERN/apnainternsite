@@ -104,7 +104,7 @@ function CertificateHeader() {
         <div className="flex items-center shrink-0 pl-0.5">
           <img
             src="/certificate/header-logo.png"
-            alt="Ezyintern"
+            alt="Apna Intern"
             className="block shrink-0"
             style={{ height: "14mm", width: "auto", objectFit: "contain" }}
             crossOrigin="anonymous"

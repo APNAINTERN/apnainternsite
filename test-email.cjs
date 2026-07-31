@@ -16,7 +16,7 @@ async function sendTestEmail() {
   const pass = process.env.SMTP_PASS;
   const from =
     process.env.MAIL_FROM ||
-    `"EzyIntern" <${process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in'}>`;
+    `"Apna Intern" <${process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in'}>`;
 
   if (!user || !pass) {
     console.error('SMTP_USER and SMTP_PASS must be set');
@@ -34,8 +34,8 @@ async function sendTestEmail() {
     const info = await transporter.sendMail({
       from,
       to,
-      subject: 'EzyIntern Email Test — SES SMTP',
-      html: `<p>Test email from EzyIntern via Amazon SES.</p><p>Time: ${new Date().toISOString()}</p>`,
+      subject: 'Apna Intern Email Test — SES SMTP',
+      html: `<p>Test email from Apna Intern via Amazon SES.</p><p>Time: ${new Date().toISOString()}</p>`,
     });
 
     console.log('Test email sent:', info.messageId);

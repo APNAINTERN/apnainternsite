@@ -200,11 +200,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const mailOptions = {
         ...sesMailHeaders(),
         to: normalizedEmail,
-        subject: `EzyIntern — Account created (${regId})`,
+        subject: `Apna Intern — Account created (${regId})`,
         html: `
           <div style="font-family: Georgia, 'Times New Roman', serif; padding: 32px; border: 1px solid #e2e8f0; border-radius: 4px; max-width: 600px; margin: 0 auto; color: #1e293b;">
             <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 24px;">
-              <p style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">EzyIntern</p>
+              <p style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Apna Intern</p>
               <h1 style="color: #1e293b; margin: 12px 0 0; font-size: 22px; font-weight: 600;">Your account is ready</h1>
               <p style="margin: 10px 0 0; color: #64748b; font-size: 15px; font-family: system-ui, sans-serif;">
                 An administrator has created your internship portal account.
@@ -224,7 +224,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               <a href="https://www.ezyintern.in/login?portal=student" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
             </div>
             <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 32px; font-family: system-ui, sans-serif;">
-              © 2026 EzyIntern. All rights reserved.
+              © 2026 Apna Intern. All rights reserved.
             </p>
           </div>
         `

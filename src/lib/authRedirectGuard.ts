@@ -60,7 +60,7 @@ export function hasAuthCallbackInUrl(
   );
 }
 
-/** If `redirect_to` in the URL points at Lovable, return the EzyIntern confirm URL instead. */
+/** If `redirect_to` in the URL points at Lovable, return the Apna Intern confirm URL instead. */
 export function sanitizeRedirectToParam(redirectTo: string | null): string {
   if (!redirectTo?.trim()) return getAuthEmailRedirectUrl();
   try {

@@ -1,6 +1,6 @@
-# EzyIntern Portal
+# Apna Intern Portal
 
-An internship management platform by EZYINTERN SDP TECHNOLOGY PRIVATE LIMITED.
+An internship management platform by Apna Intern.
 
 ## Features
 - Student registration & dashboard

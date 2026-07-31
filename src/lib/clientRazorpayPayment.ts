@@ -216,7 +216,7 @@ export async function runClientRazorpayCheckout(opts: {
       key,
       amount: amountPaise,
       currency: opts.paymentSettings.currency || "INR",
-      name: "EzyIntern",
+      name: "Apna Intern",
       description: opts.description || "Student Registration Fee",
       ...(checkoutImage ? { image: checkoutImage } : {}),
       prefill: opts.prefill,

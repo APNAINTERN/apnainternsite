@@ -255,7 +255,7 @@ export async function runRegistrationRazorpayCheckout(opts: {
             order_id: orderId,
             amount: orderAmount,
             currency,
-            name: "EzyIntern",
+            name: "Apna Intern",
             description,
             ...(checkoutImage ? { image: checkoutImage } : {}),
             prefill: opts.prefill,

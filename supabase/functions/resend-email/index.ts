@@ -52,13 +52,13 @@ function registrationTemplate(data: any): string {
 <body>
 <div class="container">
   <div class="header">
-    <h1>Welcome to EzyIntern</h1>
+    <h1>Welcome to Apna Intern</h1>
     <p>Your internship programme portal.</p>
   </div>
   <div class="body">
     <div class="badge">Registration confirmed</div>
     <div class="greeting">Hello, ${data.fullName}!</div>
-    <p class="text">Congratulations on successfully registering for the EzyIntern programme. Your application has been received and your student portal is ready to access.</p>
+    <p class="text">Congratulations on successfully registering for the Apna Intern programme. Your application has been received and your student portal is ready to access.</p>
     
     <div class="reg-id">Your Registration ID: ${data.registrationId}</div>
     
@@ -82,7 +82,7 @@ function registrationTemplate(data: any): string {
     <p class="text" style="font-size:13px;">If you have any questions, feel free to reach out to us. Keep this email safe — your Registration ID is required for all official communications.</p>
   </div>
   <div class="footer">
-    <p><strong>EzyIntern</strong> — Official Internship Programme</p>
+    <p><strong>Apna Intern</strong> — Official Internship Programme</p>
     <p>www.ezyintern.com | noreply@ezyintern.in</p>
     <p style="margin-top:8px;font-size:11px;">This is an automated email. Please do not reply to this address.</p>
   </div>
@@ -143,7 +143,7 @@ function certificateTemplate(data: any): string {
     <p class="text">You can also verify your certificate anytime at <strong>www.ezyintern.com/verify</strong> using your Certificate ID.</p>
   </div>
   <div class="footer">
-    <p><strong>EzyIntern</strong> — Official Internship Programme</p>
+    <p><strong>Apna Intern</strong> — Official Internship Programme</p>
     <p>This is an automated notification. Do not reply.</p>
   </div>
 </div>
@@ -168,7 +168,7 @@ function otpTemplate(otp: string, type: string): string {
         <p style="font-size: 14px; color: #64748b;">This code will expire in 15 minutes. If you did not request this, please ignore this email.</p>
       </div>
       <div style="background-color: #f1f5f9; padding: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
-        © 2026 EzyIntern. All rights reserved.
+        © 2026 Apna Intern. All rights reserved.
       </div>
     </div>
   `;
@@ -210,10 +210,10 @@ Deno.serve(async (req) => {
     let recipient = to;
 
     if (type === "registration_confirmation") {
-      subject = `EzyIntern — Registration confirmed (${data.registrationId})`;
+      subject = `Apna Intern — Registration confirmed (${data.registrationId})`;
       htmlContent = registrationTemplate(data);
     } else if (type === "certificate_generated") {
-      subject = `EzyIntern — Certificate ready (${data.certificateId})`;
+      subject = `Apna Intern — Certificate ready (${data.certificateId})`;
       htmlContent = certificateTemplate(data);
     } else if (type === "password_reset_otp" || type === "send_otp" || type === "login_otp") {
       subject = type === "login_otp" ? "Your Login Verification Code" : "Your Password Reset OTP";
@@ -226,7 +226,7 @@ Deno.serve(async (req) => {
       subject = `Diagnostic Test: ${data.subject || 'No Subject'}`;
       htmlContent = `
         <div style="font-family: sans-serif; padding: 20px; border: 2px solid #4F46E5; border-radius: 12px;">
-          <h2 style="color: #4F46E5;">EzyIntern SMTP diagnostic</h2>
+          <h2 style="color: #4F46E5;">Apna Intern SMTP diagnostic</h2>
           <p>This is a manual test email triggered from the Super Admin Panel.</p>
           <div style="background: #f8fafc; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #4F46E5;">
             <p><strong>Test Message:</strong></p>

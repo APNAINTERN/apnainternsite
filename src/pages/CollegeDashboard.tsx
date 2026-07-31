@@ -375,7 +375,7 @@ export default function CollegeDashboard() {
       <aside className="hidden md:flex w-56 flex-col border-r border-slate-200 bg-white shadow-sm shrink-0">
         <div className="p-4 border-b border-slate-100">
           <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600">College portal</p>
-          <p className="font-black text-sm mt-0.5">EzyIntern</p>
+          <p className="font-black text-sm mt-0.5">Apna Intern</p>
         </div>
         <NavLinks />
         <div className="mt-auto p-3 border-t border-slate-100">
@@ -397,7 +397,7 @@ export default function CollegeDashboard() {
               <SheetContent side="left" className="w-64 p-0 flex flex-col">
                 <div className="p-4 border-b">
                   <p className="text-[10px] font-black uppercase text-emerald-600">College portal</p>
-                  <p className="font-black">EzyIntern</p>
+                  <p className="font-black">Apna Intern</p>
                 </div>
                 <NavLinks mobile />
                 <div className="mt-auto p-4 border-t">

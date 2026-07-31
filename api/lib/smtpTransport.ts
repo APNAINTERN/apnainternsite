@@ -26,7 +26,7 @@ export function resolveMailFromAddress(): string {
 }
 
 /** Nodemailer `from` object — SES rejects some string-only formats (501). */
-export function resolveMailFrom(label = 'EzyIntern'): MailFrom {
+export function resolveMailFrom(label = 'Apna Intern'): MailFrom {
   const address = resolveMailFromAddress();
   const explicit = (process.env.MAIL_FROM || '').trim();
   const nameMatch = explicit.match(/^"?([^"<]+)"?\s*</);
@@ -34,7 +34,7 @@ export function resolveMailFrom(label = 'EzyIntern'): MailFrom {
   return { name, address };
 }
 
-export function sesMailHeaders(label = 'EzyIntern'): { from: MailFrom; sender: string } {
+export function sesMailHeaders(label = 'Apna Intern'): { from: MailFrom; sender: string } {
   const from = resolveMailFrom(label);
   return { from, sender: from.address };
 }

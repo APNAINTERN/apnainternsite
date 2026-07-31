@@ -25,7 +25,7 @@ export const CERTIFICATE_DISPLAY_PERCENT_OPTIONS = CERTIFICATE_MARKS_PERCENT_OPT
 
 export const CERTIFICATE_VERIFY_URL = "https://www.ezyintern.in/verify";
 
-export const CERTIFICATE_COMPANY = "EZYINTERN SDP TECHNOLOGY PRIVATE LIMITED";
+export const CERTIFICATE_COMPANY = "Apna Intern";
 
 export const CERTIFICATE_CEO = "Raushan Kumar";
 
@@ -56,9 +56,9 @@ export type CertificateDisplayData = {
   parentName?: string | null;
   /** University roll number — shown in certificate body. */
   universityRollNo?: string | null;
-  /** BNMU university registration number (not EzyIntern certificate ID). */
+  /** BNMU university registration number (not Apna Intern certificate ID). */
   universityRegistrationNumber?: string | null;
-  /** EzyIntern certificate / registration ID — footer Certificate Number only. */
+  /** Apna Intern certificate / registration ID — footer Certificate Number only. */
   registrationId?: string | null;
   collegeName?: string | null;
   universityName?: string | null;
@@ -114,8 +114,8 @@ export function certificateVerifyUrl(certificateId: string): string {
   return `${CERTIFICATE_VERIFY_URL}?cert=${encodeURIComponent(certificateId)}`;
 }
 
-/** EzyIntern internal IDs must never appear as university roll numbers. */
-export function isEzyInternRegistrationId(value: string | null | undefined): boolean {
+/** Apna Intern internal IDs must never appear as university roll numbers. */
+export function isApnaInternRegistrationId(value: string | null | undefined): boolean {
   const v = String(value ?? "").trim();
   if (!v) return false;
   return /^EZY\/\d{4}\/INT\//i.test(v) || isPlaceholderRegistrationId(v);
@@ -124,7 +124,7 @@ export function isEzyInternRegistrationId(value: string | null | undefined): boo
 export function isValidUniversityRollNo(value: string | null | undefined): boolean {
   const v = String(value ?? "").trim();
   if (!v) return false;
-  if (isEzyInternRegistrationId(v)) return false;
+  if (isApnaInternRegistrationId(v)) return false;
   return true;
 }
 
@@ -161,7 +161,7 @@ export function resolveUniversityRegistrationNumber(
   ];
   for (const candidate of candidates) {
     const v = String(candidate ?? "").trim();
-    if (v && !isEzyInternRegistrationId(v)) return v;
+    if (v && !isApnaInternRegistrationId(v)) return v;
   }
   return "";
 }

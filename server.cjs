@@ -57,7 +57,7 @@ function mailFrom() {
   const addr = mailFromAddress();
   const explicit = (process.env.MAIL_FROM || '').trim();
   const nameMatch = explicit.match(/^"?([^"<]+)"?\s*</);
-  const name = nameMatch ? nameMatch[1].trim() : 'EzyIntern';
+  const name = nameMatch ? nameMatch[1].trim() : 'Apna Intern';
   return { name, address: addr };
 }
 
@@ -87,13 +87,13 @@ function bulkAnnouncementHtml(message) {
   return `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: #ffffff;">
       <div style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 32px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">EzyIntern Announcement</h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">Apna Intern Announcement</h1>
       </div>
       <div style="padding: 40px 32px; color: #1e293b; line-height: 1.6;">
         <div style="font-size: 16px;">${String(message || '').replace(/\n/g, '<br/>')}</div>
       </div>
       <div style="background: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
-        <p style="margin: 0; font-size: 12px; color: #94a3b8;">EzyIntern — Empowering Future Careers</p>
+        <p style="margin: 0; font-size: 12px; color: #94a3b8;">Apna Intern — Empowering Future Careers</p>
       </div>
     </div>
   `;
@@ -108,7 +108,7 @@ async function sendBulkMails(transporter, recipients, subject, message) {
   const from = mailFrom();
   const sender = mailFromAddress();
   const html = bulkAnnouncementHtml(message);
-  const mailSubject = String(subject || 'Update from EzyIntern').trim();
+  const mailSubject = String(subject || 'Update from Apna Intern').trim();
 
   let sent = 0;
   let failed = 0;
@@ -179,7 +179,7 @@ async function handleSendMail(req, res) {
     }
 
     if (action === 'bulk_custom_mail') {
-      const subject = String(body.subject || 'Update from EzyIntern').trim();
+      const subject = String(body.subject || 'Update from Apna Intern').trim();
       const msg = String(body.message || '').trim();
       if (!to || !to.includes('@')) {
         return jsonRes(res, 400, { success: false, message: 'Missing recipient email' });
@@ -209,7 +209,7 @@ async function handleSendMail(req, res) {
     }
 
     if (action === 'bulk_custom_mail_batch') {
-      const subject = String(body.subject || 'Update from EzyIntern').trim();
+      const subject = String(body.subject || 'Update from Apna Intern').trim();
       const msg = String(body.message || '').trim();
       const list = (Array.isArray(body.recipients) ? body.recipients : [])
         .map((e) => String(e || '').trim().toLowerCase())

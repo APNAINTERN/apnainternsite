@@ -66,7 +66,7 @@ const VerifyIdCard = () => {
             </div>
             <h1 className="text-4xl font-black text-slate-900 mb-4">ID Card Verification</h1>
             <p className="text-slate-500 max-w-xl mx-auto">
-              Scan the QR code on an EzyIntern ID card or enter the card number to verify authenticity.
+              Scan the QR code on an Apna Intern ID card or enter the card number to verify authenticity.
             </p>
           </div>
 

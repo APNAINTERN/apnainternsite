@@ -108,7 +108,7 @@ function EngineeringCertificatePage({
       <header className="relative z-10 flex items-start justify-between gap-4 shrink-0">
         <img
           src="/certificate/header-logo.png"
-          alt="Ezyintern"
+          alt="Apna Intern"
           className="block shrink-0"
           style={{ height: "13mm", width: "auto", objectFit: "contain" }}
           crossOrigin="anonymous"
@@ -266,7 +266,7 @@ function EngineeringCertificatePage({
             <div className="relative w-full flex justify-end items-end" style={{ height: "22mm" }}>
               <img
                 src={STAMP_SRC}
-                alt="Ezyintern company stamp"
+                alt="Apna Intern company stamp"
                 className="absolute object-contain"
                 style={{
                   right: "0",

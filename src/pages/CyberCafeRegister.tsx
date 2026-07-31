@@ -30,7 +30,7 @@ const CyberCafeRegister = () => {
 
   // SEO Implementation
   useEffect(() => {
-    document.title = "Partner with EzyIntern | EzyIntern Cyber Cafe Program";
+    document.title = "Partner with Apna Intern | Apna Intern Cyber Cafe Program";
     
     let metaDescription = document.querySelector('meta[name="description"]');
     if (!metaDescription) {
@@ -38,11 +38,11 @@ const CyberCafeRegister = () => {
       metaDescription.setAttribute('name', 'description');
       document.head.appendChild(metaDescription);
     }
-    metaDescription.setAttribute('content', 'Join the EzyIntern Cyber Cafe Partner Program. Get authorized to register students for UGC-approved internships, increase footfall, and earn commissions. Apply now!');
+    metaDescription.setAttribute('content', 'Join the Apna Intern Cyber Cafe Partner Program. Get authorized to register students for UGC-approved internships, increase footfall, and earn commissions. Apply now!');
 
     return () => {
-      document.title = "EzyIntern - Internship Platform";
-      metaDescription?.setAttribute('content', 'EzyIntern provides UGC-compliant internship programmes, digital certification, and academic credit tracking.');
+      document.title = "Apna Intern - Internship Platform";
+      metaDescription?.setAttribute('content', 'Apna Intern provides UGC-compliant internship programmes, digital certification, and academic credit tracking.');
     };
   }, []);
 
@@ -191,7 +191,7 @@ const CyberCafeRegister = () => {
             Transform Your Cyber Cafe Into A <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">Career Hub</span>
           </h1>
           <p className="text-lg md:text-xl text-slate-400 mb-10 leading-relaxed font-medium max-w-2xl mx-auto">
-            Partner with EzyIntern. Help local students secure UGC-approved internships, grow your daily footfall, and open a new stream of revenue.
+            Partner with Apna Intern. Help local students secure UGC-approved internships, grow your daily footfall, and open a new stream of revenue.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -232,7 +232,7 @@ const CyberCafeRegister = () => {
       <section className="py-20 md:py-32 bg-white relative">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-16 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">Why Partner With EzyIntern?</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">Why Partner With Apna Intern?</h2>
             <p className="text-slate-600 text-lg">We provide you with all the tools needed to seamlessly register students and manage their lifecycle.</p>
           </div>
           
@@ -314,7 +314,7 @@ const CyberCafeRegister = () => {
         <div className="container mx-auto px-4 relative z-10 max-w-3xl">
           <h2 className="text-4xl md:text-5xl font-black mb-6">Ready to Grow Your Business?</h2>
           <p className="text-xl text-slate-400 mb-10">
-            Join the network of authorized EzyIntern Cyber Cafes and bring premium educational opportunities to your locality.
+            Join the network of authorized Apna Intern Cyber Cafes and bring premium educational opportunities to your locality.
           </p>
           <Dialog>
             <DialogTrigger asChild>

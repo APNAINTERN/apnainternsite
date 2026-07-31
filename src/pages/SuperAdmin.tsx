@@ -120,7 +120,7 @@ const SuperAdmin = () => {
   const [logsLoading, setLogsLoading] = useState(false);
   const [testMailTo, setTestMailTo] = useState("");
   const [testMailSubject, setTestMailSubject] = useState("System Diagnostic");
-  const [testMailBody, setTestMailBody] = useState("Hello! This is a test email from the EzyIntern Super Admin panel to verify SMTP settings.");
+  const [testMailBody, setTestMailBody] = useState("Hello! This is a test email from the Apna Intern Super Admin panel to verify SMTP settings.");
   const [isSendingTestMail, setIsSendingTestMail] = useState(false);
   const [logsPage, setLogsPage] = useState(0);
   const [logsTotalCount, setLogsTotalCount] = useState(0);
@@ -1667,7 +1667,7 @@ const SuperAdmin = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-8 rounded-lg overflow-hidden bg-white border border-slate-100">
-              <img src="/logo.png" alt="EzyIntern" className="w-full h-full object-cover" />
+              <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
             </div>
             <span className="font-bold text-slate-900 hidden sm:block">Super Portal</span>
           </div>
@@ -4582,7 +4582,7 @@ const SuperAdmin = () => {
 
       <footer className="py-8 bg-slate-900 text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] border-t border-slate-800">
         <div className="container mx-auto px-4 text-center">
-          <p>© {new Date().getFullYear()} EzyIntern Super Admin. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Apna Intern Super Admin. All rights reserved.</p>
         </div>
       </footer>
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>

@@ -270,12 +270,12 @@ export function AdminSidebar({
       <div className="flex items-center justify-between gap-2 border-b border-slate-100 px-5 py-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="size-9 shrink-0 overflow-hidden rounded-lg border border-slate-100 bg-white">
-            <img src="/logo.png" alt="EzyIntern" className="h-full w-full object-cover" />
+            <img src="/logo.png" alt="Apna Intern" className="h-full w-full object-cover" />
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-black text-slate-900">Admin Portal</p>
             <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              EzyIntern
+              Apna Intern
             </p>
           </div>
         </div>

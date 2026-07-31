@@ -71,7 +71,7 @@ export const IdCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }, ref) =>
       <div className="relative z-10 flex flex-col items-center pt-8 px-8 flex-grow">
         {/* Logo Section */}
         <div className="bg-white p-3 rounded-2xl shadow-md mb-6 border border-slate-100 flex items-center justify-center w-40 h-14">
-          <img src="/logo.png" alt="EzyIntern" className="h-full w-full object-contain" crossOrigin="anonymous" />
+          <img src="/logo.png" alt="Apna Intern" className="h-full w-full object-contain" crossOrigin="anonymous" />
         </div>
 
         {/* Profile Image */}
@@ -177,7 +177,7 @@ export const IdCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }, ref) =>
           </div>
         </div>
         <div className="bg-[#1E40AF] text-white text-[11px] font-black text-center py-2 tracking-[0.25em] uppercase">
-          EzyIntern SDP Technology Pvt Ltd
+          Apna Intern SDP Technology Pvt Ltd
         </div>
       </div>
     </div>

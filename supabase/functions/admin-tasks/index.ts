@@ -325,10 +325,10 @@ serve(async (req) => {
             await client.send({
               from: resolveMailFrom(),
               to: emailLower,
-              subject: "Welcome to EzyIntern - Registration Successful",
+              subject: "Welcome to Apna Intern - Registration Successful",
               html: `
                 <div style="font-family: sans-serif; padding: 24px; border: 2px solid #4F46E5; border-radius: 16px;">
-                  <h2 style="color: #4F46E5;">Welcome to EzyIntern, ${name}!</h2>
+                  <h2 style="color: #4F46E5;">Welcome to Apna Intern, ${name}!</h2>
                   <p>Your payment has been successfully verified and your account has been created by our staff team.</p>
                   <p><strong>Login Email:</strong> ${emailLower}</p>
                   <p><strong>Password:</strong> ${password}</p>
@@ -360,7 +360,7 @@ serve(async (req) => {
       await connectSmtpClient(client);
 
       await client.send({
-        from: resolveMailFrom("EzyIntern Admin Test"),
+        from: resolveMailFrom("Apna Intern Admin Test"),
         to: to,
         subject: `[ADMIN TEST] ${subject}`,
         html: `

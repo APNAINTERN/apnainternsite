@@ -25,7 +25,7 @@ function resolveMailFromAddress(): string {
   return process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in';
 }
 
-function resolveMailFrom(label = 'EzyIntern'): MailFrom {
+function resolveMailFrom(label = 'Apna Intern'): MailFrom {
   const address = resolveMailFromAddress();
   const explicit = (process.env.MAIL_FROM || '').trim();
   const nameMatch = explicit.match(/^"?([^"<]+)"?\s*</);
@@ -33,7 +33,7 @@ function resolveMailFrom(label = 'EzyIntern'): MailFrom {
   return { name, address };
 }
 
-function sesMailHeaders(label = 'EzyIntern'): { from: MailFrom; sender: string } {
+function sesMailHeaders(label = 'Apna Intern'): { from: MailFrom; sender: string } {
   const from = resolveMailFrom(label);
   return { from, sender: from.address };
 }
@@ -98,7 +98,7 @@ function bulkAnnouncementHtml(message: string): string {
   return `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: #ffffff;">
       <div style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 32px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">EzyIntern Announcement</h1>
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">Apna Intern Announcement</h1>
       </div>
       <div style="padding: 40px 32px; color: #1e293b; line-height: 1.6;">
         <div style="font-size: 16px;">
@@ -106,8 +106,8 @@ function bulkAnnouncementHtml(message: string): string {
         </div>
       </div>
       <div style="background: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
-        <p style="margin: 0; font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">EzyIntern — Empowering Future Careers</p>
-        <p style="margin: 4px 0 0; font-size: 11px; color: #cbd5e1;">This is an official communication from the EzyIntern platform.</p>
+        <p style="margin: 0; font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Apna Intern — Empowering Future Careers</p>
+        <p style="margin: 4px 0 0; font-size: 11px; color: #cbd5e1;">This is an official communication from the Apna Intern platform.</p>
       </div>
     </div>
   `;
@@ -193,7 +193,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const { user: SMTP_USER, pass: SMTP_PASS } = getSmtpCredentials();
-    const { from: mailFrom, sender: mailSender } = sesMailHeaders('EzyIntern');
+    const { from: mailFrom, sender: mailSender } = sesMailHeaders('Apna Intern');
 
     if (!SMTP_USER || !SMTP_PASS) {
       return res.status(500).json({ success: false, message: 'SMTP Credentials missing' });
@@ -220,7 +220,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      const mailSubject = String(subject || 'Update from EzyIntern').trim();
+      const mailSubject = String(subject || 'Update from Apna Intern').trim();
       const html = bulkAnnouncementHtml(String(message));
       const from = mailFrom;
       const sender = mailSender;
@@ -313,7 +313,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       mailOptions.subject = `[TEST] ${subject || 'Diagnostic Test'}`;
       mailOptions.html = `
         <div style="font-family: sans-serif; padding: 20px; border: 2px solid #0084FF; border-radius: 10px;">
-          <h2 style="color: #0084FF;">EzyIntern Mail Test</h2>
+          <h2 style="color: #0084FF;">Apna Intern Mail Test</h2>
           <p>Manual test from Super Admin Panel via Vercel API.</p>
           <hr/>
           <p><strong>Message:</strong> ${message || 'No content'}</p>
@@ -339,24 +339,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } else if (normalizedAction === 'registration_confirmation' || normalizedAction === 'registration_success') {
       const isResend = normalizedAction === 'registration_success';
       mailOptions.subject = isResend
-        ? `EzyIntern — Login credentials (${data.regId || 'your account'})`
-        : `EzyIntern — Registration confirmed (${data.registrationId || ''})`;
+        ? `Apna Intern — Login credentials (${data.regId || 'your account'})`
+        : `Apna Intern — Registration confirmed (${data.registrationId || ''})`;
 
       mailOptions.html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; padding: 32px; border: 1px solid #e2e8f0; border-radius: 4px; max-width: 600px; margin: 0 auto; color: #1e293b;">
           <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 24px;">
-            <p style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">EzyIntern</p>
+            <p style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Apna Intern</p>
             <h1 style="color: #1e293b; margin: 12px 0 0; font-size: 22px; font-weight: 600;">
               ${isResend ? 'Your login credentials' : 'Registration confirmed'}
             </h1>
             <p style="margin: 10px 0 0; color: #64748b; font-size: 15px; font-family: system-ui, sans-serif;">
-              ${isResend ? 'Use the details below to sign in to your internship account.' : 'Thank you for registering with EzyIntern.'}
+              ${isResend ? 'Use the details below to sign in to your internship account.' : 'Thank you for registering with Apna Intern.'}
             </p>
           </div>
 
           <p style="font-size: 15px; line-height: 1.6;">Dear ${data.fullName},</p>
           <p style="font-size: 15px; line-height: 1.6; font-family: system-ui, sans-serif;">
-            ${isResend ? 'Below are your current login credentials for the EzyIntern platform.' : 'Your registration has been completed successfully. Your login details are provided below.'}
+            ${isResend ? 'Below are your current login credentials for the Apna Intern platform.' : 'Your registration has been completed successfully. Your login details are provided below.'}
           </p>
 
           <div style="background: #f8fafc; padding: 22px 24px; border-radius: 4px; margin: 24px 0; border: 1px solid #e2e8f0; font-family: system-ui, sans-serif;">
@@ -379,16 +379,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 32px; font-family: system-ui, sans-serif;">
             For support, reply to this email or contact us through the official channels listed on our website.<br/>
-            <span style="color: #cbd5e1;">© 2026 EzyIntern. All rights reserved.</span>
+            <span style="color: #cbd5e1;">© 2026 Apna Intern. All rights reserved.</span>
           </p>
         </div>
       `;
     } else if (normalizedAction === 'admin_password_reset') {
-      mailOptions.subject = 'EzyIntern — Password reset by administrator';
+      mailOptions.subject = 'Apna Intern — Password reset by administrator';
       mailOptions.html = `
         <div style="font-family: Georgia, 'Times New Roman', serif; padding: 32px; border: 1px solid #e2e8f0; border-radius: 4px; max-width: 600px; margin: 0 auto; color: #1e293b;">
           <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 24px;">
-            <p style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">EzyIntern</p>
+            <p style="margin: 0; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Apna Intern</p>
             <h1 style="color: #1e293b; margin: 12px 0 0; font-size: 22px; font-weight: 600;">Password reset notification</h1>
             <p style="margin: 10px 0 0; color: #64748b; font-size: 15px; font-family: system-ui, sans-serif;">
               An administrator has reset your account password.
@@ -397,7 +397,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           <p style="font-size: 15px; line-height: 1.6;">Dear ${data.fullName},</p>
           <p style="font-size: 15px; line-height: 1.6; font-family: system-ui, sans-serif;">
-            Your password for the EzyIntern platform has been reset. Use the new password below to sign in.
+            Your password for the Apna Intern platform has been reset. Use the new password below to sign in.
           </p>
 
           <div style="background: #fafaf9; padding: 22px 24px; border-radius: 4px; margin: 24px 0; border: 1px solid #e7e5e4; font-family: system-ui, sans-serif;">
@@ -419,12 +419,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
           <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 32px; font-family: system-ui, sans-serif;">
             If you did not expect this email, contact support immediately.<br/>
-            <span style="color: #cbd5e1;">© 2026 EzyIntern. All rights reserved.</span>
+            <span style="color: #cbd5e1;">© 2026 Apna Intern. All rights reserved.</span>
           </p>
         </div>
       `;
     } else if (normalizedAction === 'certificate_generated') {
-      mailOptions.subject = `EzyIntern — Certificate ready (${data.certificateId})`;
+      mailOptions.subject = `Apna Intern — Certificate ready (${data.certificateId})`;
       mailOptions.html = `
         <div style="font-family: sans-serif; padding: 32px; border: 1px solid #eee; border-radius: 16px;">
           <h1 style="color: #059669;">Certificate Ready!</h1>
@@ -446,7 +446,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           message: 'Missing recipient (to) or collegeAdminId for college_admin_welcome',
         });
       }
-      mailOptions.subject = 'EzyIntern — College portal access';
+      mailOptions.subject = 'Apna Intern — College portal access';
       mailOptions.html = `
         <div style="font-family: system-ui, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;">
           <div style="background: linear-gradient(135deg, #059669 0%, #047857 100%); padding: 28px; text-align: center;">
@@ -454,7 +454,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </div>
           <div style="padding: 28px 24px; line-height: 1.6;">
             <p style="margin: 0 0 12px;">Dear ${fullName},</p>
-            <p style="margin: 0 0 16px;">Your EzyIntern <strong>college portal</strong> account is ready. Sign in with your email and the College Admin ID below (this is your sign-in secret; store it safely).</p>
+            <p style="margin: 0 0 16px;">Your Apna Intern <strong>college portal</strong> account is ready. Sign in with your email and the College Admin ID below (this is your sign-in secret; store it safely).</p>
             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 18px 20px; margin: 20px 0;">
               <p style="margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: #166534; font-weight: 700;">College Admin ID</p>
               <p style="margin: 0; font-size: 18px; font-family: ui-monospace, monospace; font-weight: 800; color: #14532d;">${collegeAdminId}</p>
@@ -466,25 +466,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             </div>
             <p style="margin: 0; font-size: 13px; color: #64748b;">If the button does not work, copy this URL into your browser:<br/><span style="word-break: break-all; color: #0f766e;">${loginLink}</span></p>
           </div>
-          <p style="font-size: 11px; color: #94a3b8; text-align: center; padding: 16px; margin: 0; border-top: 1px solid #e2e8f0;">© 2026 EzyIntern</p>
+          <p style="font-size: 11px; color: #94a3b8; text-align: center; padding: 16px; margin: 0; border-top: 1px solid #e2e8f0;">© 2026 Apna Intern</p>
         </div>
       `;
     } else if (normalizedAction === 'bulk_custom_mail') {
-      mailOptions.subject = subject || 'Update from EzyIntern';
+      mailOptions.subject = subject || 'Update from Apna Intern';
       mailOptions.html = bulkAnnouncementHtml(String(message || ''));
     } else if (
       !normalizedAction &&
       String(email || '').trim() &&
       (String(message || '').trim() || String(name || '').trim())
     ) {
-      Object.assign(mailOptions, sesMailHeaders('EzyIntern Contact'));
+      Object.assign(mailOptions, sesMailHeaders('Apna Intern Contact'));
       mailOptions.to = 'noreply@ezyintern.in';
       mailOptions.subject = `New Contact Request from ${name || 'User'}`;
       mailOptions.html = `<h3>Message from ${name} (${email}):</h3><p>${message}</p>`;
 
       const visitor = String(name || 'there').trim() || 'there';
       await sendMailWithRetry(transporter, {
-        ...sesMailHeaders('EzyIntern Support'),
+        ...sesMailHeaders('Apna Intern Support'),
         to: email,
         subject: 'We received your message!',
         html: `<p>Hi ${visitor}, we received your message and will get back to you soon.</p>`,
