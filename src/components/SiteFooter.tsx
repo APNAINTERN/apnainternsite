@@ -12,8 +12,8 @@ export const SiteFooter = () => (
         <div className="space-y-6">
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2.5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white">
-                <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white p-1">
+                <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain" />
               </div>
               <div className="leading-none">
                 <div className="font-display font-bold text-2xl tracking-tighter text-white">

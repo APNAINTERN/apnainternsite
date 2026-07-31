@@ -48,7 +48,7 @@ export const PrintableIDCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }
     >
       {/* Background Watermark */}
       <img
-        src="/logo.png"
+        src="/logo-icon.png"
         alt=""
         crossOrigin="anonymous"
         style={{

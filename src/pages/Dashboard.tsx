@@ -1603,7 +1603,7 @@ const Dashboard = () => {
               >
                 {/* Background Watermark */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-32 select-none">
-                  <img src="/logo.png" alt="Watermark" className="w-[85%] max-w-[500px] h-auto object-contain opacity-[0.15] grayscale" crossOrigin="anonymous" />
+                  <img src="/logo-icon.png" alt="Watermark" className="w-[85%] max-w-[500px] h-auto object-contain opacity-[0.15] grayscale" crossOrigin="anonymous" />
                 </div>
 
                 {/* Custom Header from Certificate */}

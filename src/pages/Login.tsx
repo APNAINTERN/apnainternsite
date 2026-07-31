@@ -842,8 +842,8 @@ const Login = () => {
           >
             <div className="flex justify-center mb-8">
               <Link to="/" className="flex items-center gap-3">
-                <div className="size-12 rounded-xl overflow-hidden shadow-elegant">
-                  <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
+                <div className="size-12 rounded-xl overflow-hidden shadow-elegant bg-white p-1">
+                  <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-2xl font-bold tracking-tighter text-slate-900">Apna Intern</span>
               </Link>
@@ -1169,7 +1169,7 @@ const Login = () => {
                     {verifyingCaptcha ? "Verifying..." : captchaVerified ? "Success!" : "Verify you are human"}
                   </span>
                   <div className="ml-auto opacity-30 flex items-center gap-1">
-                    <img src="/logo.png" alt="Security" className="w-5 h-5 grayscale object-contain" />
+                    <img src="/logo-icon.png" alt="Security" className="w-5 h-5 grayscale object-contain" />
                     <span className="text-[10px] font-bold uppercase">Protected</span>
                   </div>
                 </div>

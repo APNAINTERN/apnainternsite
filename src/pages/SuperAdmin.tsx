@@ -1667,7 +1667,7 @@ const SuperAdmin = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-8 rounded-lg overflow-hidden bg-white border border-slate-100">
-              <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
+              <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain p-0.5" />
             </div>
             <span className="font-bold text-slate-900 hidden sm:block">Super Portal</span>
           </div>

@@ -171,8 +171,8 @@ export const SiteNav = () => {
     <header className="relative sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
       <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link to="/" className="flex min-w-0 shrink items-start gap-2.5 sm:gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-slate-900 shadow-sm sm:size-11">
-            <img src="/logo.png" alt="Apna Intern" className="size-full object-cover" />
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white p-1 shadow-sm sm:size-11">
+            <img src="/logo-icon.png" alt="Apna Intern" className="size-full object-contain" />
           </div>
           <div className="min-w-0 leading-tight">
             <div className="font-display text-[18px] font-bold tracking-tight text-slate-900 sm:text-[20px]">
