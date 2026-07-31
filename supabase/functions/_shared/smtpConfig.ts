@@ -26,7 +26,7 @@ export function resolveSmtpPort(): number {
 }
 
 /** Verified SES identity — not the SMTP username (AKIA…). */
-export function resolveMailFrom(label = "EzyIntern"): string {
+export function resolveMailFrom(label = "Apna Intern"): string {
   const explicit = Deno.env.get("MAIL_FROM") ?? Deno.env.get("SMTP_FROM");
   if (explicit?.trim()) return explicit.trim();
   const addr = Deno.env.get("MAIL_FROM_ADDRESS") ?? "admin@ezyintern.in";

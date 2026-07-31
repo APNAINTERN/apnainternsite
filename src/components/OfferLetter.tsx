@@ -66,7 +66,7 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
           <div className="flex items-center gap-3 min-w-0 shrink">
             <img
               src="/logo.png"
-              alt="Ezyintern"
+              alt="Apna Intern"
               width={56}
               height={56}
               className="h-14 w-14 shrink-0 rounded-md object-contain bg-white"
@@ -74,7 +74,7 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
               decoding="sync"
             />
             <span className="text-[20px] font-bold text-sky-600 tracking-tight whitespace-nowrap">
-              Ezy<span className="text-slate-700">intern</span>
+              Apna <span className="text-slate-700">Intern</span>
             </span>
           </div>
 
@@ -127,7 +127,7 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
           <p className="font-bold">Dear Candidate,</p>
           <p>
             We are pleased to accept your application and formally offer you an internship at{" "}
-            <span className="font-bold">Ezyintern SDP Technology Private Limited (Ezyintern)</span>.
+            <span className="font-bold">Apna Intern</span>.
             Our internship programmes are designed in full alignment with{" "}
             <span className="font-bold">NEP-2020, AICTE and UGC Internship Guidelines</span>, and your
             university&apos;s specific internship framework.
@@ -164,7 +164,7 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
 
           <p>
             We look forward to a meaningful and enriching internship experience and appreciate your
-            interest in <span className="font-bold">Ezyintern</span>.
+            interest in <span className="font-bold">Apna Intern</span>.
           </p>
         </div>
 

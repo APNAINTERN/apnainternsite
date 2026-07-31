@@ -272,8 +272,8 @@ export default function ReferralPartnerDashboard() {
   };
 
   const shareMessage = partner?.full_name
-    ? `Register for EzyIntern internship program using my referral link:\n${registerUrl}`
-    : `Register for EzyIntern:\n${registerUrl}`;
+    ? `Register for Apna Intern internship program using my referral link:\n${registerUrl}`
+    : `Register for Apna Intern:\n${registerUrl}`;
 
   const collegeChart = useMemo(() => topByField(chartSample, "college_name"), [chartSample]);
   const universityChart = useMemo(() => topByField(chartSample, "university_name"), [chartSample]);
@@ -355,7 +355,7 @@ export default function ReferralPartnerDashboard() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center gap-4">
         <p className="text-slate-700 font-medium max-w-md text-sm leading-relaxed">
-          No referral profile is linked to this account. Ask your EzyIntern contact to enable promoter access for your
+          No referral profile is linked to this account. Ask your Apna Intern contact to enable promoter access for your
           email.
         </p>
         <Button variant="outline" onClick={signOut}>
@@ -370,7 +370,7 @@ export default function ReferralPartnerDashboard() {
       <aside className="hidden md:flex w-52 flex-col border-r border-slate-200 bg-white shrink-0">
         <div className="p-4 border-b border-slate-100">
           <p className="text-xs font-semibold text-primary">Referral</p>
-          <p className="text-sm font-bold text-slate-900 mt-0.5">EzyIntern</p>
+          <p className="text-sm font-bold text-slate-900 mt-0.5">Apna Intern</p>
         </div>
         <NavLinks />
         <div className="mt-auto p-3 border-t border-slate-100">
@@ -392,7 +392,7 @@ export default function ReferralPartnerDashboard() {
               <SheetContent side="left" className="w-60 p-0 flex flex-col">
                 <div className="p-4 border-b">
                   <p className="text-xs font-semibold text-primary">Referral</p>
-                  <p className="text-sm font-bold">EzyIntern</p>
+                  <p className="text-sm font-bold">Apna Intern</p>
                 </div>
                 <NavLinks mobile />
                 <div className="mt-auto p-4 border-t">
@@ -452,7 +452,7 @@ export default function ReferralPartnerDashboard() {
                     size="sm"
                     className="gap-2 text-sky-700 border-sky-200"
                     onClick={() =>
-                      window.open(buildTelegramShareUrl(registerUrl, "Register for EzyIntern internship"), "_blank", "noopener,noreferrer")
+                      window.open(buildTelegramShareUrl(registerUrl, "Register for Apna Intern internship"), "_blank", "noopener,noreferrer")
                     }
                   >
                     <Share2 className="size-4" /> Telegram

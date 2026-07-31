@@ -28,7 +28,7 @@ export function generateRegistrationSignUpPassword(): string {
   const bytes = new Uint8Array(24);
   crypto.getRandomValues(bytes);
   const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-  return `EzyReg_${hex}!9ZzAa1`;
+  return `ApnaReg_${hex}!9ZzAa1`;
 }
 
 function isAlreadyRegisteredAuthError(err: { message?: string; code?: string }): boolean {

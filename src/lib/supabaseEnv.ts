@@ -42,7 +42,7 @@ export function resolveSupabaseAnonKey(): string {
 export function assertSupabaseConfig(url: string, context = "Supabase client"): void {
   if (!url) {
     throw new Error(
-      `[ezyintern] ${context}: supabaseUrl is required. ` +
+      `[apnaintern] ${context}: supabaseUrl is required. ` +
         "Set VITE_SUPABASE_URL in .env.local (dev) or Vercel Environment Variables (production), " +
         "or run npm run dev:frontend:awsrds for local AWS shim."
     );

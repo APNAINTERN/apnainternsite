@@ -720,7 +720,7 @@ const StaffDashboard = () => {
 
       try {
         await downloadOfferLetterPdf(offerLetterRef.current, {
-          fileName: `EzyIntern_Offer_Letter_${student.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
+          fileName: `ApnaIntern_Offer_Letter_${student.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
           captureInPlace: false,
         });
         toast.success("Offer letter downloaded successfully!");
@@ -1322,7 +1322,7 @@ const StaffDashboard = () => {
             : activeTab === 'my-attendance' ? 'My Attendance'
             : activeTab === 'requests' ? 'Requests'
             : services.find(s => s.tab === activeTab)?.label
-          }</h1><p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">EzyIntern Staff Access</p></div>
+          }</h1><p className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Apna Intern Staff Access</p></div>
           {(() => {
             const avatar =
               resolveStorageUrl(staffProfile?.profile_image_url || "") || staffProfile?.profile_image_url;

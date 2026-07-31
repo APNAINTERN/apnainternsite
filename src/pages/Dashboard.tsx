@@ -461,7 +461,7 @@ const Dashboard = () => {
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Payment_Receipt_${profile?.full_name?.replace(/\s+/g, "_") || "EzyIntern"}.pdf`);
+      pdf.save(`Payment_Receipt_${profile?.full_name?.replace(/\s+/g, "_") || "Apna Intern"}.pdf`);
       toast.success("Receipt downloaded successfully!");
     } catch (error) {
       toast.error("Failed to generate PDF");
@@ -476,7 +476,7 @@ const Dashboard = () => {
     setGenerating(true);
     try {
       await downloadOfferLetterPdf(offerLetterRef.current, {
-        fileName: `EzyIntern_Offer_Letter_${profile?.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
+        fileName: `ApnaIntern_Offer_Letter_${profile?.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
         captureInPlace: false,
       });
       toast.success("Offer letter downloaded successfully!");
@@ -767,7 +767,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-8 rounded-lg bg-[#5AA3E6] flex items-center justify-center shrink-0">
-              <span className="text-white font-black text-[11px] tracking-tight">EI</span>
+              <span className="text-white font-black text-[11px] tracking-tight">AI</span>
             </div>
             <span className="font-bold text-slate-900 hidden sm:block">Student Portal</span>
           </div>
@@ -1620,11 +1620,11 @@ const Dashboard = () => {
                     {/* Left Logo */}
                     <div className="flex items-center gap-2 md:gap-3">
                       <div className="size-12 md:size-14 rounded-[10px] md:rounded-[12px] bg-[#5AA3E6] flex items-center justify-center shadow-sm">
-                        <span className="text-white font-black text-2xl md:text-3xl tracking-tighter leading-none mt-0.5 md:mt-1">EI</span>
+                        <span className="text-white font-black text-2xl md:text-3xl tracking-tighter leading-none mt-0.5 md:mt-1">AI</span>
                       </div>
                       <div className="flex items-center text-[1.8rem] md:text-[2.2rem] tracking-tight leading-none mt-0.5 md:mt-1">
-                        <span className="font-bold text-[#5AA3E6]">Ezy</span>
-                        <span className="font-bold text-slate-900">intern</span>
+                        <span className="font-bold text-[#5AA3E6]">Apna</span>
+                        <span className="font-bold text-slate-900"> Intern</span>
                       </div>
                     </div>
                     
@@ -1701,7 +1701,7 @@ const Dashboard = () => {
                   </div>
 
                   <div className="mt-20 pt-8 border-t border-slate-200 text-center">
-                    <p className="text-sm font-bold text-slate-900 mb-1">EzyIntern Educational Services</p>
+                    <p className="text-sm font-bold text-slate-900 mb-1">Apna Intern</p>
                     <p className="text-xs text-slate-500">This is a computer-generated receipt and does not require a physical signature.</p>
                   </div>
                 </div>

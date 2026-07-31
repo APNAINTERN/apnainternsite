@@ -86,7 +86,7 @@ const VerifyCertificate = () => {
     try {
       await downloadCertificatePdf(
         certRef.current,
-        `EzyIntern_Certificate_${cert?.certificate_id || student?.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`
+        `ApnaIntern_Certificate_${cert?.certificate_id || student?.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`
       );
       toast.success("Certificate downloaded!");
     } catch {
@@ -107,7 +107,7 @@ const VerifyCertificate = () => {
             </div>
             <h1 className="text-4xl font-black text-slate-900 mb-4">Certificate Verification</h1>
             <p className="text-slate-500 max-w-xl mx-auto">
-              Verify the authenticity of EzyIntern certificates. Use Certificate ID, email, phone, or student name with university roll number.
+              Verify the authenticity of Apna Intern certificates. Use Certificate ID, email, phone, or student name with university roll number.
             </p>
           </div>
 
@@ -163,7 +163,7 @@ const VerifyCertificate = () => {
                   <CheckCircle2 className="size-8 shrink-0" />
                   <div>
                     <h3 className="text-xl font-bold">Authentic Certificate</h3>
-                    <p className="text-sm opacity-80">Verified and issued by EzyIntern — Certificate ID: {cert.certificate_id}</p>
+                    <p className="text-sm opacity-80">Verified and issued by Apna Intern — Certificate ID: {cert.certificate_id}</p>
                   </div>
                 </div>
                 <Button

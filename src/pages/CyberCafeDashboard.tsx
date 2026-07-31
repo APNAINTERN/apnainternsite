@@ -130,7 +130,7 @@ const CyberCafeDashboard = () => {
 
       try {
         await downloadOfferLetterPdf(offerLetterRef.current, {
-          fileName: `EzyIntern_Offer_Letter_${student.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
+          fileName: `ApnaIntern_Offer_Letter_${student.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
           captureInPlace: false,
         });
         toast.success("Offer letter downloaded successfully!");

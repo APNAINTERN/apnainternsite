@@ -15,7 +15,7 @@ export function looksLikePhoneNumber(raw: string): boolean {
 
 /**
  * Resolve sign-in identifier to a normalized auth email.
- * Accepts email, Indian mobile, EzyIntern registration ID (EZY/…), or college roll number.
+ * Accepts email, Indian mobile, Apna Intern registration ID (EZY/…), or college roll number.
  */
 export async function resolveLoginIdentifier(
   supabase: SupabaseClient,

@@ -383,7 +383,7 @@ export function HomeGallerySection({
           <SectionHead
             pill="Moments"
             title="Training & Campus Gallery"
-            description="Offline programmes and campus moments from EzyIntern — full images, auto-sliding."
+            description="Offline programmes and campus moments from Apna Intern — full images, auto-sliding."
           />
           <div className="flex justify-center py-16">
             <Loader2 className="size-8 animate-spin text-primary" />
@@ -553,7 +553,7 @@ export function HomeSampleCertificatesSection({ items }: HomeSampleCertificatesS
                 {/* Top banner */}
                 <div className="relative z-10 bg-gradient-to-r from-yellow-700 via-amber-600 to-yellow-700 py-3 text-center">
                   <p className="text-[10px] md:text-xs font-black uppercase tracking-[4px] text-yellow-100">
-                    EzyIntern &nbsp;·&nbsp; Official Internship Certificate
+                    Apna Intern &nbsp;·&nbsp; Official Internship Certificate
                   </p>
                 </div>
 
@@ -1147,7 +1147,7 @@ export function HomeTestimonialsSection({ testimonials }: HomeTestimonialsSectio
         <SectionHead
           pill="Testimonials"
           title="What Our Students Say"
-          description="Real feedback from students who completed internships through EzyIntern."
+          description="Real feedback from students who completed internships through Apna Intern."
         />
         <div className="relative px-12">
           <Carousel

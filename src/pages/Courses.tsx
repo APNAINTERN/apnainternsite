@@ -92,7 +92,7 @@ export default function Courses() {
           <div className="container relative mx-auto px-6 text-center">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold">
               <GraduationCap className="size-4" />
-              EzyIntern Courses
+              Apna Intern Courses
             </div>
             <h1 className="font-display mb-4 text-4xl font-black md:text-5xl">Browse All Courses</h1>
             <p className="mx-auto max-w-2xl text-slate-300">

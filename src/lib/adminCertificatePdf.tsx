@@ -164,5 +164,5 @@ export function certificatePdfFilename(
 ): string {
   const id = sanitizeFilename(certId || "certificate");
   const name = sanitizeFilename(studentName || "student");
-  return `EzyIntern_Certificate_${id}_${name}.pdf`;
+  return `ApnaIntern_Certificate_${id}_${name}.pdf`;
 }

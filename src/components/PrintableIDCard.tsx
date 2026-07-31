@@ -459,7 +459,7 @@ export const PrintableIDCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }
               boxSizing: "border-box",
             }}
           >
-            EzyIntern SDP Technology Pvt Ltd
+            Apna Intern SDP Technology Pvt Ltd
           </div>
         </div>
       </div>

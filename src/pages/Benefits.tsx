@@ -20,7 +20,7 @@ const Benefits = () => {
           <div className="container mx-auto px-6 relative z-10 text-center">
             <h1 className="text-4xl md:text-6xl font-black mb-6">Internship Benefits</h1>
             <p className="text-xl text-blue-100 max-w-2xl mx-auto">
-              Unlock a world of opportunities with EzyIntern. Our programs are designed to bridge the gap between academic learning and industry excellence.
+              Unlock a world of opportunities with Apna Intern. Our programs are designed to bridge the gap between academic learning and industry excellence.
             </p>
           </div>
         </section>

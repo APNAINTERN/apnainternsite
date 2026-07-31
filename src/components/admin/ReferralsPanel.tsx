@@ -424,7 +424,7 @@ export const ReferralsPanel = () => {
     const toEmail = opts.to.trim().toLowerCase();
     const message = `Hello ${opts.name},
 
-Your EzyIntern referral promoter portal is ready. You can sign in to see students who registered using your referral link.
+Your Apna Intern referral promoter portal is ready. You can sign in to see students who registered using your referral link.
 
 Promoter sign-in URL:
 ${loginUrl}
@@ -437,10 +437,10 @@ ${regUrl}
 
 Referral code: ${opts.referralCode}
 
-Please keep your Promoter Login ID private. If you need help, contact EzyIntern support.
+Please keep your Promoter Login ID private. If you need help, contact Apna Intern support.
 
 Thank you,
-EzyIntern Team`;
+Apna Intern Team`;
 
     const res = await fetch(getSendMailApiUrl(), {
       method: "POST",
@@ -448,7 +448,7 @@ EzyIntern Team`;
       body: JSON.stringify({
         to: toEmail,
         action: "bulk_custom_mail",
-        subject: "EzyIntern — Referral promoter portal access",
+        subject: "Apna Intern — Referral promoter portal access",
         message,
       }),
     });
@@ -678,7 +678,7 @@ EzyIntern Team`;
 
   const sendReferralEmail = async (p: PartnerRow) => {
     const url = getPublicRegisterUrlWithRef(p.referral_code);
-    const body = `Hello ${p.full_name},\n\nPlease use the link below to register students for the EzyIntern internship program under your referral.\n\n${url}\n\nReferral code: ${p.referral_code}\n\nIf the link does not open, copy the URL into your browser.\n\nThank you,\nEzyIntern Team`;
+    const body = `Hello ${p.full_name},\n\nPlease use the link below to register students for the Apna Intern internship program under your referral.\n\n${url}\n\nReferral code: ${p.referral_code}\n\nIf the link does not open, copy the URL into your browser.\n\nThank you,\nApna Intern Team`;
     try {
       const res = await fetch(getSendMailApiUrl(), {
         method: "POST",
@@ -686,7 +686,7 @@ EzyIntern Team`;
         body: JSON.stringify({
           to: p.email,
           action: "bulk_custom_mail",
-          subject: "Your EzyIntern referral registration link",
+          subject: "Your Apna Intern referral registration link",
           message: body,
         }),
       });

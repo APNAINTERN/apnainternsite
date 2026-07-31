@@ -9,12 +9,12 @@ export const SiteFooter = () => (
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-2.5">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white">
-                <img src="/logo.png" alt="EzyIntern" className="w-full h-full object-cover" />
+                <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
               </div>
               <div className="leading-none">
                 <div className="font-display font-bold text-2xl tracking-tighter text-white">
-                  <span className="text-[#5ea4e8]">Ezy</span>
-                  <span>intern</span>
+                  <span className="text-[#5ea4e8]">Apna</span>
+                  <span> Intern</span>
                 </div>
                 <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">
                   Internship Provider
@@ -22,7 +22,7 @@ export const SiteFooter = () => (
               </div>
             </div>
             <div className="text-[9px] uppercase tracking-wide text-slate-500 leading-snug max-w-[17.5rem]">
-              UNIT OF EZYINTERN SDP TECHNOLOGY PRIVATE LIMITED
+              Apna Intern
             </div>
           </div>
           <p className="text-sm leading-relaxed text-slate-400">
@@ -101,7 +101,7 @@ export const SiteFooter = () => (
 
 
       <div className="mt-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-500">
-        <p>© {new Date().getFullYear()} EzyIntern. Government Certified Provider.</p>
+        <p>© {new Date().getFullYear()} Apna Intern. Government Certified Provider.</p>
         <div className="flex gap-8">
           <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
           <Link to="/terms" className="hover:text-white">Terms of Service</Link>

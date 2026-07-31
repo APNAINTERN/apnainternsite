@@ -306,7 +306,7 @@ const Index = () => {
     {
       cat: "Academics",
       q: "Is the certificate valid / recognised?",
-      a: "Yes, Ezyintern is a government authorized and certified company. Our certificates are recognized by universities as per UGC Guidelines 2023. We are MCA Registered, MSME Certified, and ISO Certified.",
+      a: "Yes, Apna Intern is a government authorized and certified company. Our certificates are recognized by universities as per UGC Guidelines 2023. We are MCA Registered, MSME Certified, and ISO Certified.",
     },
     {
       cat: "Academics",
@@ -404,7 +404,7 @@ const Index = () => {
     },
     {
       quote:
-        "Employers could verify my certificate online in seconds. That transparency is why I chose EzyIntern.",
+        "Employers could verify my certificate online in seconds. That transparency is why I chose Apna Intern.",
       role: "B.Sc. student · Data / Research track",
     },
   ];
@@ -711,7 +711,7 @@ const Index = () => {
                   onClick={() =>
                     void downloadStorageFile(
                       consentFormUrl,
-                      consentFormName?.replace(/\s+/g, "_") || "EzyIntern_Consent_Form.pdf"
+                      consentFormName?.replace(/\s+/g, "_") || "ApnaIntern_Consent_Form.pdf"
                     )
                   }
                 >
@@ -937,7 +937,7 @@ const Index = () => {
             </h2>
             <p className="mx-auto mb-8 max-w-2xl text-[15px] text-blue-100/90">
               Join 70,000+ students who have already earned their verified internship certificate with
-              EzyIntern.
+              Apna Intern.
             </p>
             <div className="mb-10 flex flex-wrap items-center justify-center gap-3">
               <Button

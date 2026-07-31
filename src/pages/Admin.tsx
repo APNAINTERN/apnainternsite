@@ -738,7 +738,7 @@ export default function Admin() {
 
         } else if (importType === "students" || importType === "profiles") {
           // 1. Generate password and phone if missing
-          const pwd = record.data.password || "EzyIntern@" + Math.floor(1000 + Math.random() * 9000);
+          const pwd = record.data.password || "ApnaIntern@" + Math.floor(1000 + Math.random() * 9000);
           let phone = record.data.contact_number || "";
           phone = phone.replace(/\D/g, "").slice(-10);
           if (phone.length < 10) {
@@ -2695,7 +2695,7 @@ export default function Admin() {
 
       try {
         await downloadOfferLetterPdf(offerLetterRef.current, {
-          fileName: `EzyIntern_Offer_Letter_${data.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
+          fileName: `ApnaIntern_Offer_Letter_${data.full_name?.replace(/\s+/g, "_") || "Student"}.pdf`,
           captureInPlace: false,
         });
         toast.success("Offer letter downloaded successfully!");
@@ -2888,7 +2888,7 @@ export default function Admin() {
       // Same mail path as ReferralsPanel (`bulk_custom_mail`) so hosts that strip custom actions still deliver.
       const message = `Hello ${displayName},
 
-Your EzyIntern college portal access is ready.
+Your Apna Intern college portal access is ready.
 
 Sign-in URL:
 ${loginUrl}
@@ -2899,7 +2899,7 @@ College Admin ID (enter this on the sign-in page with your email): ${collegeAdmi
 Please keep your College Admin ID private. If you need help, contact your institution administrator.
 
 Thank you,
-EzyIntern Team`;
+Apna Intern Team`;
 
       const emailRes = await fetch(getSendMailApiUrl(), {
         method: "POST",
@@ -2907,7 +2907,7 @@ EzyIntern Team`;
         body: JSON.stringify({
           to: toEmail,
           action: "bulk_custom_mail",
-          subject: "EzyIntern — College portal access",
+          subject: "Apna Intern — College portal access",
           message,
         }),
       });
@@ -5849,7 +5849,7 @@ EzyIntern Team`;
 
       <footer className="py-8 bg-slate-900 text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] border-t border-slate-800">
         <div className="container mx-auto px-4 text-center">
-          <p>© {new Date().getFullYear()} EzyIntern Admin. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Apna Intern Admin. All rights reserved.</p>
         </div>
       </footer>
 

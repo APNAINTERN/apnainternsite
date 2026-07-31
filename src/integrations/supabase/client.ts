@@ -20,12 +20,12 @@ if (typeof window !== "undefined" && SUPABASE_URL.includes("supabase.co")) {
   const usingDefaults = !import.meta.env.VITE_SUPABASE_URL;
   if (usingDefaults) {
     console.info(
-      "[ezyintern] Using default Supabase URL for project unqfphgjilxpbzajcdjl.",
+      "[apnaintern] Using default Supabase URL for project unqfphgjilxpbzajcdjl.",
       "Set VITE_SUPABASE_URL in Vercel for explicit configuration."
     );
   } else {
     console.warn(
-      "[ezyintern] VITE_SUPABASE_URL points at live Supabase:",
+      "[apnaintern] VITE_SUPABASE_URL points at live Supabase:",
       SUPABASE_URL,
       "— for local AWS use npm run dev:frontend:awsrds (URL forced to http://localhost:8080)"
     );

@@ -103,7 +103,7 @@ export function useStudentDocumentActions({
         id: "acceptance",
         title: "Acceptance Letter",
         description:
-          "Official confirmation that you have been accepted into the EzyIntern programme.",
+          "Official confirmation that you have been accepted into the Apna Intern programme.",
         ready: true,
         statusLabel: "Ready",
       },
@@ -135,7 +135,7 @@ export function useStudentDocumentActions({
         id: "project",
         title: "Project Report",
         description:
-          "Your domain-specific project report, uploaded by the EzyIntern team for your batch.",
+          "Your domain-specific project report, uploaded by the Apna Intern team for your batch.",
         ready: projectReady,
         statusLabel: projectReady ? "Ready" : "Not shared yet",
       },

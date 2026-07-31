@@ -58,10 +58,10 @@ const Privacy = () => {
             {/* Document Header */}
             <div className="border-b-2 border-slate-900 pb-6 mb-10 text-center relative z-10">
               <div className="flex justify-center items-center gap-3 mb-3">
-                <img src="/logo.png" alt="EzyIntern Logo" className="h-10 w-auto object-contain" />
+                <img src="/logo.png" alt="Apna Intern Logo" className="h-10 w-auto object-contain" />
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight uppercase">
-                Ezyintern SDP Technology Private Limited
+                Apna Intern
               </h2>
               <p className="text-[10px] sm:text-xs font-bold tracking-widest text-slate-500 uppercase mt-1">
                 Registered Under Ministry of Corporate Affairs, Govt. of India
@@ -150,7 +150,7 @@ const Privacy = () => {
                   4. DATA SECURITY
                 </h3>
                 <p className="text-slate-700 mb-2">
-                  Ezyintern implements standard technical and administrative security frameworks to safeguard your information:
+                  Apna Intern implements standard technical and administrative security frameworks to safeguard your information:
                 </p>
                 <ul className="list-disc pl-5 space-y-2 text-slate-700">
                   <li>
@@ -192,7 +192,7 @@ const Privacy = () => {
             <div className="border-t border-slate-200 mt-12 pt-8 text-xs text-slate-500 relative z-10">
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
-                  <p className="font-bold text-slate-800">Ezyintern SDP Technology Private Limited</p>
+                  <p className="font-bold text-slate-800">Apna Intern</p>
                   <p>Arfabad Colony, East Nahar Road, Bajrangpuri, Patna - 800007, Bihar</p>
                   <p>Contact: contact@ezyintern.in | +91 70509 36593</p>
                 </div>
