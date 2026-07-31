@@ -1,11 +1,17 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { buildAuthSignUpOptions } from "@/lib/authRoutes";
+import {
+  assertSupabaseConfig,
+  resolveSupabaseAnonKey,
+  resolveSupabaseUrl,
+} from "@/lib/supabaseEnv";
 
 /** Never persists session — safe for signing up another user while an admin stays logged in on the main client. */
 export function createEphemeralSupabaseAuthClient() {
-  const url = import.meta.env.VITE_SUPABASE_URL as string;
-  const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
-  if (!url || !key) throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY");
+  const url = resolveSupabaseUrl();
+  const key = resolveSupabaseAnonKey();
+  assertSupabaseConfig(url, "Ephemeral auth client");
+  if (!key) throw new Error("Missing VITE_SUPABASE_PUBLISHABLE_KEY");
 
   return createClient(url, key, {
     auth: {

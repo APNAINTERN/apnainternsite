@@ -1,21 +1,35 @@
 import { createClient } from '@supabase/supabase-js';
 import { AUTH_STORAGE_KEY, createPersistingAuthStorage } from '@/lib/studentAuthSession';
 import { usePollingInsteadOfRealtime } from '@/lib/siteApi';
+import {
+  assertSupabaseConfig,
+  resolveSupabaseAnonKey,
+  resolveSupabaseUrl,
+} from '@/lib/supabaseEnv';
 
 /**
- * App data client: supabase-js protocol against local Express shim (auth/rest/storage → RDS + S3).
- * Run with `npm run dev` or `npm run dev:frontend:awsrds` — URL is forced to http://localhost:8080.
+ * App data client: supabase-js protocol against Supabase cloud or local Express shim.
+ * Run with `npm run dev` or `npm run dev:frontend:awsrds` — awsrds mode uses localhost:8080.
  */
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
-const SUPABASE_PUBLISHABLE_KEY =
-  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "local-anon-key";
+const SUPABASE_URL = resolveSupabaseUrl();
+const SUPABASE_PUBLISHABLE_KEY = resolveSupabaseAnonKey();
+
+assertSupabaseConfig(SUPABASE_URL);
 
 if (typeof window !== "undefined" && SUPABASE_URL.includes("supabase.co")) {
-  console.warn(
-    "[ezyintern] VITE_SUPABASE_URL still points at live Supabase:",
-    SUPABASE_URL,
-    "— for local AWS use npm run dev:frontend:awsrds (URL forced to http://localhost:8080)"
-  );
+  const usingDefaults = !import.meta.env.VITE_SUPABASE_URL;
+  if (usingDefaults) {
+    console.info(
+      "[ezyintern] Using default Supabase URL for project unqfphgjilxpbzajcdjl.",
+      "Set VITE_SUPABASE_URL in Vercel for explicit configuration."
+    );
+  } else {
+    console.warn(
+      "[ezyintern] VITE_SUPABASE_URL points at live Supabase:",
+      SUPABASE_URL,
+      "— for local AWS use npm run dev:frontend:awsrds (URL forced to http://localhost:8080)"
+    );
+  }
 }
 
 const disableRealtime = usePollingInsteadOfRealtime();
