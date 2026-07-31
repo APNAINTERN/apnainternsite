@@ -3,6 +3,8 @@ export const BRAND_NAME = "Apna Intern";
 
 export const BRAND_LEGAL_NAME = "Apna Intern";
 
+export const BRAND_TAGLINE = "Your Career Starts Here";
+
 export const BRAND_CONTACT_EMAIL = "contact@apnaintern.in";
 export const BRAND_SUPPORT_EMAIL = "support@apnaintern.in";
 export const BRAND_ADMIN_EMAIL = "admin@apnaintern.in";

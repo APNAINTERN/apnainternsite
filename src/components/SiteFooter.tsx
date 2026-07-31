@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   BRAND_CONTACT_EMAIL,
   BRAND_SUPPORT_EMAIL,
+  BRAND_TAGLINE,
 } from "@/lib/brand";
 
 export const SiteFooter = () => (
@@ -10,24 +11,19 @@ export const SiteFooter = () => (
     <div className="mx-auto max-w-[1200px] px-8 py-16">
       <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-6">
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white p-1">
-                <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain" />
+          <div className="flex flex-col gap-4">
+            <Link to="/" className="inline-block w-fit">
+              <div className="rounded-xl bg-white p-3 shadow-sm">
+                <img
+                  src="/logo-full.png"
+                  alt="Apna Intern"
+                  className="h-24 w-auto object-contain"
+                />
               </div>
-              <div className="leading-none">
-                <div className="font-display font-bold text-2xl tracking-tighter text-white">
-                  <span className="text-[#5ea4e8]">Apna</span>
-                  <span> Intern</span>
-                </div>
-                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">
-                  Internship Provider
-                </div>
-              </div>
-            </div>
-            <div className="text-[9px] uppercase tracking-wide text-slate-500 leading-snug max-w-[17.5rem]">
-              Apna Intern
-            </div>
+            </Link>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              {BRAND_TAGLINE}
+            </p>
           </div>
           <p className="text-sm leading-relaxed text-slate-400">
             India&apos;s trusted platform for UGC-compliant internship programmes, digital certification, and academic credit tracking.

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchRolesForUser } from "@/lib/portalAuth";
+import { BRAND_TAGLINE } from "@/lib/brand";
 
 const navLinkClass =
   "relative shrink-0 whitespace-nowrap text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900 xl:text-[14px]";
@@ -179,7 +180,7 @@ export const SiteNav = () => {
               <span className="text-primary">Apna</span> Intern
             </div>
             <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-              India&apos;s Trusted Internship Provider
+              {BRAND_TAGLINE}
             </div>
             <div className="mt-0.5 text-[8px] font-semibold uppercase leading-snug tracking-[0.04em] text-slate-400 sm:text-[9px]">
               Apna Intern

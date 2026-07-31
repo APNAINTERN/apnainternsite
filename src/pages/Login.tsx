@@ -841,11 +841,12 @@ const Login = () => {
             }
           >
             <div className="flex justify-center mb-8">
-              <Link to="/" className="flex items-center gap-3">
-                <div className="size-12 rounded-xl overflow-hidden shadow-elegant bg-white p-1">
-                  <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain" />
-                </div>
-                <span className="text-2xl font-bold tracking-tighter text-slate-900">Apna Intern</span>
+              <Link to="/" className="block">
+                <img
+                  src="/logo-full.png"
+                  alt="Apna Intern"
+                  className="h-28 w-auto object-contain"
+                />
               </Link>
             </div>
             <div className="text-center mb-8">
