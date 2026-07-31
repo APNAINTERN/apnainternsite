@@ -23,7 +23,9 @@ export const CERTIFICATE_MARKS_PERCENT_OPTIONS = [90, 95, 100] as const;
 /** @deprecated Attendance is no longer shown on certificates. */
 export const CERTIFICATE_DISPLAY_PERCENT_OPTIONS = CERTIFICATE_MARKS_PERCENT_OPTIONS;
 
-export const CERTIFICATE_VERIFY_URL = "https://www.ezyintern.in/verify";
+import { brandVerifyUrl } from "@/lib/brand";
+
+export const CERTIFICATE_VERIFY_URL = brandVerifyUrl();
 
 export const CERTIFICATE_COMPANY = "Apna Intern";
 

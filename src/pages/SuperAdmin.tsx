@@ -4141,7 +4141,7 @@ const SuperAdmin = () => {
           <div className="p-8 space-y-6">
             <div className="space-y-2">
               <Label className="text-xs font-black uppercase text-slate-500">Authorized Email Address</Label>
-              <Input value={staffEmail} onChange={e => setStaffEmail(e.target.value)} placeholder="admin@ezyintern.com" className="h-12 bg-slate-50 border-none shadow-inner" />
+              <Input value={staffEmail} onChange={e => setStaffEmail(e.target.value)} placeholder="admin@apnaintern.in" className="h-12 bg-slate-50 border-none shadow-inner" />
             </div>
             <div className="flex flex-col gap-2">
               <Button onClick={handleAddStaff} className="h-12 font-black shadow-glow">Finalize Appointment</Button>

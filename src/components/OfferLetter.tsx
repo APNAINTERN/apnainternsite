@@ -82,8 +82,8 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
             <p>Arfabad Colony, East Nahar Road, Bajranngpuri,</p>
             <p>Patna - 800007</p>
             <p className="font-semibold">7050936593</p>
-            <p>contact@ezyintern.in</p>
-            <p>www.ezyintern.in</p>
+            <p>contact@apnaintern.in</p>
+            <p>www.apnaintern.in</p>
           </div>
         </div>
 

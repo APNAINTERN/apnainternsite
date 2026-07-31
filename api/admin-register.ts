@@ -221,7 +221,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               <p style="margin: 8px 0; font-size: 14px;"><strong>Password:</strong> ${passwordToUse}</p>
             </div>
             <div style="text-align: center; margin: 28px 0;">
-              <a href="https://www.ezyintern.in/login?portal=student" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
+              <a href="https://www.apnaintern.in/login?portal=student" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
             </div>
             <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 32px; font-family: system-ui, sans-serif;">
               © 2026 Apna Intern. All rights reserved.
