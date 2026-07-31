@@ -32,6 +32,14 @@ Open [http://localhost:3000](http://localhost:3000). The homepage lists internsh
 | `npm run start` | Run production server (after build) |
 | `npm run lint` | Run ESLint |
 
+## Deploy on Vercel
+
+1. Import this repository in [Vercel](https://vercel.com/new).
+2. Use the default settings (Framework: **Next.js**, Build: `npm run build`).
+3. Deploy from the `main` branch.
+
+Requires Node.js **20.9+** (set automatically via `package.json` `engines`).
+
 ## Project structure
 
 ```
