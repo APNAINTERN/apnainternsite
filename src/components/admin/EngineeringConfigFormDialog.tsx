@@ -17,6 +17,7 @@ import {
 import {
   fetchCollegesForUniversity,
   parseMultilineList,
+  defaultEngineeringOptions,
   type EngineeringConfigInput,
   type EngineeringUniversityConfig,
   withOtherOption,
@@ -32,6 +33,16 @@ type Props = {
 
 function listWithoutOther(values: string[]): string {
   return values.filter((v) => v !== "Other").join("\n");
+}
+
+function branchRowsForCourses(courses: string[]): Array<{ course: string; branchesText: string }> {
+  const defaults = defaultEngineeringOptions();
+  return courses
+    .filter((c) => c !== "Other")
+    .map((course) => ({
+      course,
+      branchesText: listWithoutOther(defaults.branches_by_course[course] || []),
+    }));
 }
 
 export function EngineeringConfigFormDialog({
@@ -84,14 +95,18 @@ export function EngineeringConfigFormDialog({
     }
 
     setLoading(false);
+    const defaults = defaultEngineeringOptions();
+    const defaultCourses = listWithoutOther(defaults.courses);
     setUniversityName("");
     setCollegesText("");
-    setCoursesText("B.Tech\nM.Tech\nDiploma");
+    setCoursesText(defaultCourses);
     setDomainsText("");
-    setBranchRows([]);
+    setBranchRows(branchRowsForCourses(parseMultilineList(defaultCourses)));
+    return;
   }, [open, initialConfig]);
 
   useEffect(() => {
+    const defaults = defaultEngineeringOptions();
     setBranchRows((prev) => {
       // Preserve branches when a course is renamed in-place (same index).
       return courses.map((course, index) => {
@@ -101,7 +116,10 @@ export function EngineeringConfigFormDialog({
         if (byIndex && !courses.includes(byIndex.course)) {
           return { course, branchesText: byIndex.branchesText };
         }
-        return { course, branchesText: "" };
+        return {
+          course,
+          branchesText: listWithoutOther(defaults.branches_by_course[course] || []),
+        };
       });
     });
   }, [courses]);

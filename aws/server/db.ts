@@ -65,6 +65,42 @@ async function applyJwtClaims(client: import("pg").PoolClient, jwt: JwtClaims | 
 }
 
 /**
+ * Run queries in a transaction with request.jwt.claim.* set so auth.uid() and RLS
+ * policies work the same as Supabase PostgREST (used by REST shim + RPC).
+ */
+export async function withJwtSession<T>(
+  jwt: JwtClaims | null,
+  fn: (client: import("pg").PoolClient) => Promise<T>
+): Promise<T> {
+  if (!jwt?.sub) {
+    throw new Error("withJwtSession requires jwt.sub");
+  }
+  const pool = getPool();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await applyJwtClaims(client, jwt);
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+export async function queryAsJwt<T extends QueryResultRow = QueryResultRow>(
+  jwt: JwtClaims | null,
+  text: string,
+  params?: unknown[]
+) {
+  if (!jwt?.sub) return query<T>(text, params);
+  return withJwtSession(jwt, (client) => client.query<T>(text, params));
+}
+
+/**
  * Bind RPC args for node-pg.
  * JS objects/arrays must not be sent raw to jsonb params — node-pg encodes
  * arrays as Postgres array literals → "invalid input syntax for type json".
