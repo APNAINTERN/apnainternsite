@@ -69,6 +69,8 @@ export async function requestAdminLoginOtp(
     };
   }
 
+  let mailPayload: { devOtp?: string; warning?: string; error?: string; message?: string } = {};
+
   try {
     const response = await fetch(getSendMailApiUrl(), {
       method: "POST",
@@ -81,16 +83,15 @@ export async function requestAdminLoginOtp(
       }),
     });
     const raw = await response.text();
-    let payload: { devOtp?: string; warning?: string } = {};
     try {
-      payload = JSON.parse(raw) as { devOtp?: string; warning?: string };
+      mailPayload = JSON.parse(raw) as typeof mailPayload;
     } catch {
       /* ignore */
     }
     if (!response.ok) {
       throw new Error(
-        (payload as { error?: string; message?: string }).error ||
-          (payload as { message?: string }).message ||
+        mailPayload.error ||
+          mailPayload.message ||
           raw.slice(0, 280) ||
           `Email request failed (${response.status})`
       );
@@ -105,7 +106,7 @@ export async function requestAdminLoginOtp(
   }
 
   markAdminLoginOtpSent(email);
-  const apiDevOtp = payload.devOtp?.trim();
+  const apiDevOtp = mailPayload.devOtp?.trim();
   return {
     ok: true,
     email,
