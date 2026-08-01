@@ -43,4 +43,4 @@ Brand constants: `shared/brand.ts` (`BRAND_NAME`, `BRAND_TAGLINE`, `@apnaintern.
 - VM update script: `npm ci`
 - No Docker required for default dev; AWS deploy needs AWS CLI + SAM (`npm run aws:tools:install`)
 - `.env`, `.env.*.local` are gitignored — never commit secrets
-- Production Supabase project ID default: `unqfphgjilxpbzajcdjl` (see `src/lib/supabaseEnv.ts` fallbacks)
+- Production API default: AWS Lambda staging URL in `shared/aws.ts` (see `src/lib/supabaseEnv.ts`); RDS holds schema + data. Remove legacy `*.supabase.co` from Vercel env when cut over.

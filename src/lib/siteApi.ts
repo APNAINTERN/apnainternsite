@@ -1,3 +1,5 @@
+import { AWS_STAGING_API_ORIGIN } from "../../shared/aws";
+
 /**
  * API base URL for the frontend.
  *
@@ -5,10 +7,7 @@
  * |--------------------|-------------------------------------|
  * | `.env.local`       | Local proxy → localhost:3000        |
  * | `.env.aws.local`   | AWS Lambda (deployed)               |
- * | Production Vercel  | Same-origin `/api/*` on Vercel      |
- *
- * Set `VITE_SITE_API_ORIGIN` to your Lambda URL (no trailing slash), e.g.
- * `https://abc.execute-api.ap-south-1.amazonaws.com/staging`
+ * | Production Vercel  | Lambda when VITE_SITE_API_ORIGIN set |
  */
 export function getSiteApiOrigin(): string {
   if (typeof window === "undefined") return "";
@@ -16,6 +15,13 @@ export function getSiteApiOrigin(): string {
   if (fromEnv?.trim()) return fromEnv.trim().replace(/\/$/, "");
   const appUrl = import.meta.env.VITE_PUBLIC_APP_URL as string | undefined;
   if (appUrl?.trim()) return appUrl.trim().replace(/\/$/, "");
+  const supabaseUrl = String(import.meta.env.VITE_SUPABASE_URL || "").trim();
+  if (/execute-api\.amazonaws\.com/i.test(supabaseUrl)) {
+    return supabaseUrl.replace(/\/$/, "");
+  }
+  if (!import.meta.env.VITE_SUPABASE_URL?.trim()) {
+    return AWS_STAGING_API_ORIGIN;
+  }
   return "";
 }
 

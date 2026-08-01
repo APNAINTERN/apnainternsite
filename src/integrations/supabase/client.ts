@@ -3,6 +3,7 @@ import { AUTH_STORAGE_KEY, createPersistingAuthStorage } from '@/lib/studentAuth
 import { usePollingInsteadOfRealtime } from '@/lib/siteApi';
 import {
   assertSupabaseConfig,
+  isHostedSupabaseUrl,
   resolveSupabaseAnonKey,
   resolveSupabaseUrl,
 } from '@/lib/supabaseEnv';
@@ -16,20 +17,14 @@ const SUPABASE_PUBLISHABLE_KEY = resolveSupabaseAnonKey();
 
 assertSupabaseConfig(SUPABASE_URL);
 
-if (typeof window !== "undefined" && SUPABASE_URL.includes("supabase.co")) {
-  const usingDefaults = !import.meta.env.VITE_SUPABASE_URL;
-  if (usingDefaults) {
-    console.info(
-      "[apnaintern] Using default Supabase URL for project unqfphgjilxpbzajcdjl.",
-      "Set VITE_SUPABASE_URL in Vercel for explicit configuration."
-    );
-  } else {
-    console.warn(
-      "[apnaintern] VITE_SUPABASE_URL points at live Supabase:",
-      SUPABASE_URL,
-      "— for local AWS use npm run dev:frontend:awsrds (URL forced to http://localhost:8080)"
-    );
-  }
+if (typeof window !== "undefined" && isHostedSupabaseUrl(SUPABASE_URL)) {
+  console.warn(
+    "[apnaintern] VITE_SUPABASE_URL still points at hosted Supabase:",
+    SUPABASE_URL,
+    "— migrate to AWS: set VITE_SUPABASE_URL to your Lambda URL and redeploy Vercel."
+  );
+} else if (typeof window !== "undefined" && /execute-api\.amazonaws\.com/i.test(SUPABASE_URL)) {
+  console.info("[apnaintern] Using AWS API (RDS backend):", SUPABASE_URL);
 }
 
 const disableRealtime = usePollingInsteadOfRealtime();
