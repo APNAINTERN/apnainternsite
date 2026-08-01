@@ -26,7 +26,19 @@ type AuthUserRow = {
   last_sign_in_at: string | null;
 };
 
-function supabaseUser(row: AuthUserRow) {
+async function fetchUserRoles(userId: string): Promise<string[]> {
+  const { rows } = await query<{ role: string }>(
+    `SELECT role::text AS role FROM public.user_roles WHERE user_id = $1::uuid`,
+    [userId]
+  );
+  return rows.map((r) => r.role);
+}
+
+function supabaseUser(row: AuthUserRow, roles: string[] = []) {
+  const baseMeta =
+    row.raw_app_meta_data && typeof row.raw_app_meta_data === "object"
+      ? { ...(row.raw_app_meta_data as Record<string, unknown>) }
+      : { provider: "email", providers: ["email"] };
   return {
     id: row.id,
     aud: "authenticated",
@@ -36,7 +48,7 @@ function supabaseUser(row: AuthUserRow) {
     phone: "",
     confirmed_at: row.email_confirmed_at,
     last_sign_in_at: row.last_sign_in_at || new Date().toISOString(),
-    app_metadata: row.raw_app_meta_data || { provider: "email", providers: ["email"] },
+    app_metadata: { ...baseMeta, roles },
     user_metadata: row.raw_user_meta_data || {},
     identities: [],
     created_at: row.created_at,
@@ -66,8 +78,9 @@ async function findUserById(id: string): Promise<AuthUserRow | null> {
   return rows[0] || null;
 }
 
-function tokenResponse(row: AuthUserRow) {
-  const user = supabaseUser(row);
+async function tokenResponse(row: AuthUserRow) {
+  const roles = await fetchUserRoles(row.id);
+  const user = supabaseUser(row, roles);
   const access_token = signAccessToken({
     id: row.id,
     email: row.email || "",
@@ -118,7 +131,7 @@ export async function authToken(req: Request, res: Response) {
         res.status(401).json({ error: "invalid_grant", error_description: "User not found" });
         return;
       }
-      res.json(tokenResponse(row));
+      res.json(await tokenResponse(row));
       return;
     }
 
@@ -171,7 +184,7 @@ export async function authToken(req: Request, res: Response) {
             await query(`UPDATE auth.users SET last_sign_in_at = now() WHERE id = $1::uuid`, [
               again.id,
             ]);
-            res.json(tokenResponse(again));
+            res.json(await tokenResponse(again));
             return;
           }
         }
@@ -186,7 +199,7 @@ export async function authToken(req: Request, res: Response) {
     }
 
     await query(`UPDATE auth.users SET last_sign_in_at = now() WHERE id = $1::uuid`, [row.id]);
-    res.json(tokenResponse(row));
+    res.json(await tokenResponse(row));
   } catch (err) {
     console.error("[auth/token]", err);
     res.status(500).json({
@@ -214,7 +227,8 @@ export async function authUser(req: Request, res: Response) {
     res.json(userFromPayload(payload));
     return;
   }
-  res.json(supabaseUser(row));
+  const roles = await fetchUserRoles(row.id);
+  res.json(supabaseUser(row, roles));
 }
 
 /** POST /auth/v1/logout */
@@ -273,7 +287,7 @@ export async function authSignup(req: Request, res: Response) {
       /* optional */
     }
     res.json({
-      ...tokenResponse(row),
+      ...(await tokenResponse(row)),
       // GoTrue signup clients sometimes read id at the top level
       id: row.id,
     });

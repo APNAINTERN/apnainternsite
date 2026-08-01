@@ -17,6 +17,7 @@ import sendBulkMail from "../../api/send-bulk-mail";
 import sendMail from "../../api/send-mail";
 import rpcByName from "../../api/rpc-call";
 import dataSelect from "../../api/data-select";
+import dataBatchSelect from "../../api/data-batch-select";
 import { loadRootEnv } from "./load-env";
 import {
   authLogout,
@@ -188,6 +189,7 @@ async function buildApp(): Promise<Express> {
 
   // Whitelisted table reads against RDS (local testing / Phase 2)
   app.post("/api/data/select", asVercelHandler(dataSelect));
+  app.post("/api/data/batch-select", asVercelHandler(dataBatchSelect));
 
   // Keep CORS on late errors / unhandled failures (browsers otherwise report a false CORS block).
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
