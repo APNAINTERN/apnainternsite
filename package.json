@@ -24,6 +24,7 @@
     "aws:tools:install": "bash scripts/install-aws-tools.sh",
     "aws:setup": "bash scripts/setup-apnaintern-aws.sh",
     "aws:setup:check": "bash scripts/setup-apnaintern-aws.sh check",
+    "aws:migrate:rds": "bash scripts/migrate-supabase-to-rds.sh",
     "aws:rds:provision": "bash aws/scripts/provision-rds.sh",
     "aws:rds:export": "node aws/scripts/run-rds-export.mjs",
     "aws:rds:export:full": "node aws/scripts/run-rds-export.mjs --full",

@@ -85,7 +85,7 @@ Resources:
           SMTP_PORT: "587"
           SMTP_USER: !Ref SmtpUser
           SMTP_PASS: !Ref SmtpPass
-          MAIL_FROM: EzyIntern <admin@ezyintern.in>
+          MAIL_FROM: Apna Intern <admin@apnaintern.in>
           GEMINI_API_KEY: !Ref GeminiApiKey
           S3_BUCKET_CONSENT_FORMS: !Ref S3BucketConsentForms
           S3_BUCKET_LOGOS: !Ref S3BucketLogos
