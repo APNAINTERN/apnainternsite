@@ -9,7 +9,7 @@ import {
   isAdminIntentionalLogout,
 } from '@/lib/adminAuthSession';
 import { isStudentPortalSessionActive } from '@/lib/studentAuthSession';
-import { fetchCybercafeExists, fetchRolesForUser, readRolesFromUser } from '@/lib/portalAuth';
+import { fetchCybercafeExists, fetchRolesForUser, hasPortalRole, readRolesFromUser } from '@/lib/portalAuth';
 
 export type UserRole = 'super_admin' | 'admin' | 'staff' | 'student' | 'cybercafe' | 'college_admin' | 'referral_partner';
 
@@ -124,11 +124,14 @@ export const useAuth = () => {
         lastCheckUserIdRef.current = session.user.id;
         setRoles(rolesList);
 
+        const needsCybercafeCheck = !hasPortalRole(rolesList);
         let cybercafe = false;
-        try {
-          cybercafe = await fetchCybercafeExists(supabase, session.user.id);
-        } catch (cyberErr) {
-          console.warn('[useAuth] cybercafe_profiles check skipped:', cyberErr);
+        if (needsCybercafeCheck) {
+          try {
+            cybercafe = await fetchCybercafeExists(supabase, session.user.id);
+          } catch (cyberErr) {
+            console.warn('[useAuth] cybercafe_profiles check skipped:', cyberErr);
+          }
         }
 
         if (cancelled) return;

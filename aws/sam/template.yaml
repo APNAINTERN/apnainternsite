@@ -43,7 +43,7 @@ Parameters:
 Globals:
   Function:
     Timeout: 60
-    MemorySize: 512
+    MemorySize: 1024
     Runtime: nodejs20.x
     Architectures:
       - arm64

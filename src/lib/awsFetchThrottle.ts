@@ -1,12 +1,14 @@
 /**
  * Limit concurrent HTTP requests to the AWS Lambda API.
- * Retries 502/503, dedupes identical in-flight GETs, and queues excess work.
+ * Account concurrency is ~10; admin UI must stay ≤2 in-flight to avoid 503/CORS storms.
  */
-const MAX_IN_FLIGHT = 3;
-const MAX_RETRIES = 4;
-const RETRY_BASE_MS = 250;
+const MAX_IN_FLIGHT = 2;
+const MIN_GAP_MS = 120;
+const MAX_RETRIES = 5;
+const RETRY_BASE_MS = 400;
 
 let inFlight = 0;
+let lastStartMs = 0;
 const queue: Array<() => void> = [];
 const inflightByKey = new Map<string, Promise<Response>>();
 
@@ -14,15 +16,23 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function acquire(): Promise<void> {
+async function acquire(): Promise<void> {
   if (inFlight < MAX_IN_FLIGHT) {
+    const wait = Math.max(0, MIN_GAP_MS - (Date.now() - lastStartMs));
+    if (wait > 0) await sleep(wait);
     inFlight += 1;
-    return Promise.resolve();
+    lastStartMs = Date.now();
+    return;
   }
   return new Promise((resolve) => {
     queue.push(() => {
-      inFlight += 1;
-      resolve();
+      void (async () => {
+        const wait = Math.max(0, MIN_GAP_MS - (Date.now() - lastStartMs));
+        if (wait > 0) await sleep(wait);
+        inFlight += 1;
+        lastStartMs = Date.now();
+        resolve();
+      })();
     });
   });
 }
@@ -39,7 +49,7 @@ export function isAwsLambdaApiUrl(url: string): boolean {
 
 function requestKey(input: RequestInfo | URL, init?: RequestInit): string | null {
   const method = (init?.method || "GET").toUpperCase();
-  if (method !== "GET" && method !== "HEAD" && method !== "OPTIONS") return null;
+  if (method !== "GET" && method !== "HEAD") return null;
   const url =
     typeof input === "string"
       ? input
@@ -51,16 +61,29 @@ function requestKey(input: RequestInfo | URL, init?: RequestInit): string | null
   return url ? `${method}:${url}` : null;
 }
 
+function shouldRetry(status: number) {
+  return status === 429 || status === 502 || status === 503 || status === 504;
+}
+
 async function fetchWithRetry(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
   let attempt = 0;
   while (true) {
-    const res = await fetch(input, init);
-    if ((res.status === 502 || res.status === 503) && attempt < MAX_RETRIES) {
-      attempt += 1;
-      await sleep(RETRY_BASE_MS * attempt);
-      continue;
+    try {
+      const res = await fetch(input, init);
+      if (shouldRetry(res.status) && attempt < MAX_RETRIES) {
+        attempt += 1;
+        await sleep(RETRY_BASE_MS * attempt);
+        continue;
+      }
+      return res;
+    } catch (err) {
+      if (attempt < MAX_RETRIES) {
+        attempt += 1;
+        await sleep(RETRY_BASE_MS * attempt);
+        continue;
+      }
+      throw err;
     }
-    return res;
   }
 }
 

@@ -12,6 +12,18 @@ export function readRolesFromUser(user: { id: string; app_metadata?: Record<stri
   return raw.map((r) => String(r));
 }
 
+const PORTAL_ROLES = new Set([
+  "super_admin",
+  "admin",
+  "staff",
+  "college_admin",
+  "referral_partner",
+]);
+
+export function hasPortalRole(roles: string[]): boolean {
+  return roles.some((r) => PORTAL_ROLES.has(r));
+}
+
 /** Coalesced role list for post-login routing (single round-trip via local REST → RDS). */
 export async function fetchRolesForUser(
   client: SupabaseClient,
