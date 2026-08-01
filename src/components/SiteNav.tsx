@@ -13,7 +13,7 @@ import { fetchRolesForUser } from "@/lib/portalAuth";
 import { BRAND_TAGLINE } from "@/lib/brand";
 
 const navLinkClass =
-  "relative shrink-0 whitespace-nowrap text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900 xl:text-[14px]";
+  "relative shrink-0 whitespace-nowrap text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full xl:text-[14px]";
 
 type NavItem = { to: string; label: string };
 
@@ -38,6 +38,7 @@ export const SiteNav = () => {
     ? CYBER_CAFE_LOGIN_PATH
     : STUDENT_LOGIN_PATH;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isAuthed, setIsAuthed] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
@@ -46,6 +47,13 @@ export const SiteNav = () => {
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const checkRole = async (userId: string) => {
@@ -169,10 +177,16 @@ export const SiteNav = () => {
   );
 
   return (
-    <header className="relative sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
+        scrolled
+          ? "border-slate-200/80 bg-white/90 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.15)] backdrop-blur-xl"
+          : "border-transparent bg-white/80 backdrop-blur-md"
+      }`}
+    >
       <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link to="/" className="flex min-w-0 shrink items-start gap-2.5 sm:gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white p-1 shadow-sm sm:size-11">
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white p-1 shadow-md ring-2 ring-primary/15 sm:size-11">
             <img src="/logo-icon.png" alt="Apna Intern" className="size-full object-contain" />
           </div>
           <div className="min-w-0 leading-tight">

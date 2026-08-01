@@ -126,6 +126,68 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  .reveal-stagger > .reveal-on-scroll:nth-child(1) { transition-delay: 0ms; }
+  .reveal-stagger > .reveal-on-scroll:nth-child(2) { transition-delay: 80ms; }
+  .reveal-stagger > .reveal-on-scroll:nth-child(3) { transition-delay: 160ms; }
+  .reveal-stagger > .reveal-on-scroll:nth-child(4) { transition-delay: 240ms; }
+  .reveal-stagger > .reveal-on-scroll:nth-child(5) { transition-delay: 320ms; }
+  .reveal-stagger > .reveal-on-scroll:nth-child(6) { transition-delay: 400ms; }
+
+  .home-mesh-bg {
+    background-image:
+      radial-gradient(ellipse 80% 50% at 20% -10%, hsl(208 74% 63% / 0.18), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 90% 10%, hsl(38 92% 50% / 0.08), transparent 50%),
+      radial-gradient(circle at 1px 1px, rgb(148 163 184 / 0.12) 1px, transparent 0);
+    background-size: auto, auto, 32px 32px;
+  }
+
+  .home-glass {
+    @apply border border-white/60 bg-white/70 backdrop-blur-xl shadow-[0_8px_32px_-8px_rgba(15,23,42,0.12)];
+  }
+
+  .home-card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  .home-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .home-gradient-text {
+    @apply bg-gradient-to-r from-sky-600 via-primary to-teal-500 bg-clip-text text-transparent;
+  }
+
+  .home-shimmer-line {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(208 74% 63% / 0.35) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+    .animate-float,
+    .animate-marquee,
+    .animate-fade-in-up,
+    .home-shimmer-line {
+      animation: none !important;
+    }
+  }
 }
 
 @keyframes progress {
@@ -140,4 +202,8 @@
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
