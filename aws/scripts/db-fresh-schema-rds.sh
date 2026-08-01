@@ -20,6 +20,8 @@ PRE_MIGRATION_SQL=(
   "$ROOT/supabase/unified_fix.sql"
   "$ROOT/supabase/custom_otp_reset.sql"
   "$ROOT/supabase/hotfix_assignment_management_complete.sql"
+  "$ROOT/supabase/site_settings.sql"
+  "$ROOT/supabase/add_whatsapp_link_to_settings.sql"
 )
 
 POST_MIGRATION_SQL=(
