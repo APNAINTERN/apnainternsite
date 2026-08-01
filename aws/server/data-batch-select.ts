@@ -7,7 +7,6 @@ const ALLOWED_TABLES = new Set([
   "user_roles",
   "cybercafe_profiles",
   "students",
-  "payment_config",
   "profiles",
   "universities",
   "colleges",

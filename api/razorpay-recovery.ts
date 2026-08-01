@@ -1,17 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getServerDb } from './lib/getServerDb';
+import { requireStaffOrAdmin } from './lib/apiSecurity';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization'
-  );
-
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ success: false, message: 'Method not allowed' });
+
+  const staff = await requireStaffOrAdmin(req, res);
+  if (!staff) return;
 
   if (!req.body) {
     let raw = '';

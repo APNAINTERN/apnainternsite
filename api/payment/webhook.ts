@@ -24,18 +24,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     .maybeSingle();
 
   const webhookSecret =
-    config?.razorpay_webhook_secret ||
-    config?.razorpay_key_secret ||
-    process.env.RAZORPAY_WEBHOOK_SECRET;
+    config?.razorpay_webhook_secret || process.env.RAZORPAY_WEBHOOK_SECRET;
   const signature = req.headers['x-razorpay-signature'] as string;
 
-  if (webhookSecret) {
-    const shasum = crypto.createHmac('sha256', String(webhookSecret));
-    shasum.update(JSON.stringify(req.body));
-    const digest = shasum.digest('hex');
-    if (digest !== signature) {
-      return res.status(400).json({ message: 'Invalid signature' });
-    }
+  if (!webhookSecret) {
+    console.error('[payment/webhook] Webhook secret not configured');
+    return res.status(503).json({ message: 'Webhook not configured' });
+  }
+
+  if (!signature) {
+    return res.status(400).json({ message: 'Missing signature' });
+  }
+
+  const shasum = crypto.createHmac('sha256', String(webhookSecret));
+  shasum.update(JSON.stringify(req.body));
+  const digest = shasum.digest('hex');
+  if (digest !== signature) {
+    return res.status(400).json({ message: 'Invalid signature' });
   }
 
   const event = req.body as {

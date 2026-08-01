@@ -1,5 +1,6 @@
 import { isLocalDevEnvironment } from "@/lib/isLocalDev";
 import { siteApiUrl } from "@/lib/siteApi";
+import { supabase } from "@/integrations/supabase/client";
 import {
   formatGeminiUserError,
   GEMINI_MODELS,
@@ -60,10 +61,15 @@ async function callGeminiDirect(prompt: string, apiKey: string): Promise<string>
   throw new Error(formatGeminiUserError(lastError));
 }
 
-async function callGeminiViaServer(prompt: string): Promise<string> {
+async function callGeminiViaServer(prompt: string, accessToken?: string): Promise<string> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
   const res = await fetch(getGeminiGenerateApiUrl(), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ prompt }),
   });
 
@@ -117,8 +123,11 @@ function isLocalServerFallbackError(message: string): boolean {
 }
 
 export async function generateGeminiText(prompt: string): Promise<string> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const accessToken = session?.access_token;
+
   try {
-    return await callGeminiViaServer(prompt);
+    return await callGeminiViaServer(prompt, accessToken);
   } catch (serverErr) {
     const clientKey = resolveClientGeminiKey();
     const serverMessage = serverErr instanceof Error ? serverErr.message : "";

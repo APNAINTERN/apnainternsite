@@ -1,4 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import {
+  applyCorsHeaders,
+  applySecurityHeaders,
+  checkRateLimit,
+  clientIp,
+  escapeHtml,
+  requireAdmin,
+} from './lib/apiSecurity';
 
 /** Inlined — importing api/lib/*.ts crashes this Vercel function (FUNCTION_INVOCATION_FAILED). */
 type MailFrom = { name: string; address: string };
@@ -95,6 +103,7 @@ const BULK_RATE_LIMIT_DELAYS_MS = [15_000, 45_000, 90_000];
 const BULK_BATCH_MAX = 15;
 
 function bulkAnnouncementHtml(message: string): string {
+  const safeBody = escapeHtml(String(message || "")).replace(/\n/g, "<br/>");
   return `
     <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; background: #ffffff;">
       <div style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); padding: 32px; text-align: center;">
@@ -102,7 +111,7 @@ function bulkAnnouncementHtml(message: string): string {
       </div>
       <div style="padding: 40px 32px; color: #1e293b; line-height: 1.6;">
         <div style="font-size: 16px;">
-          ${String(message || '').replace(/\n/g, '<br/>')}
+          ${safeBody}
         </div>
       </div>
       <div style="background: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
@@ -165,13 +174,8 @@ async function deliverOutbound(
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  applyCorsHeaders(req, res);
+  applySecurityHeaders(res);
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -208,9 +212,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return '';
     })();
 
+    const PRIVILEGED_ACTIONS = new Set([
+      'bulk_custom_mail_batch',
+      'bulk_custom_mail',
+      'test_mail',
+      'admin_password_reset',
+      'college_admin_welcome',
+      'certificate_generated',
+    ]);
+
+    if (PRIVILEGED_ACTIONS.has(normalizedAction)) {
+      const admin = await requireAdmin(req, res);
+      if (!admin) return;
+    }
+
     if (normalizedAction === 'send_otp' || normalizedAction === 'login_otp') {
       const recipient = String(to || email || '').trim();
       const code = String(otp || '').trim();
+      const ip = clientIp(req);
+      const rl = checkRateLimit(`otp:${ip}:${recipient}`, 8, 15 * 60 * 1000);
+      if (!rl.ok) {
+        return res.status(429).json({
+          success: false,
+          message: `Too many OTP requests. Try again in ${rl.retryAfterSec}s.`,
+        });
+      }
       if (!recipient || code.length < 6) {
         return res.status(400).json({
           success: false,
