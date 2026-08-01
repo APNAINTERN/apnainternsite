@@ -88,6 +88,10 @@ import {
   type NonEngineeringUniversityConfig,
 } from "@/lib/nonEngineeringConfig";
 import {
+  departmentsForNonTechDegree,
+  filterNonEngineeringCoursesForDegree,
+} from "@/lib/studentTrack";
+import {
   isAllowedConsentLetterFile,
   uploadConsentLetterToStorage,
 } from "@/lib/studentDocuments";
@@ -218,6 +222,12 @@ export const RegistrationForm = ({
     () => resolveNonEngineeringOptions(activeNonTechConfig),
     [activeNonTechConfig]
   );
+  const departmentOptions = useMemo(() => {
+    if (activeNonTechConfig) {
+      return filterNonEngineeringCoursesForDegree(degree, nonTechOptions.courses);
+    }
+    return departmentsForNonTechDegree(degree);
+  }, [activeNonTechConfig, degree, nonTechOptions.courses]);
   const isEngineeringFlow = Boolean(activeEngineeringConfig) || isBeuStudent(selectedUni?.name);
   const isBeuFlow = isEngineeringFlow;
 
@@ -442,6 +452,7 @@ export const RegistrationForm = ({
   useEffect(() => {
     setDepartmentName("");
     setSubject("");
+    setCourse("");
   }, [degree]);
 
   // ── College Roster auto-fill ────────────────────────────────────────────────
@@ -559,8 +570,18 @@ export const RegistrationForm = ({
           toast.error("Select university and college for engineering registration");
           return false;
         }
-      } else if (!universityId || !collegeId || !degree || !classSem || !session || !rollNo || !course) {
-        toast.error("Please fill all required academic fields"); return false;
+      } else if (
+        !universityId ||
+        !collegeId ||
+        !degree ||
+        !departmentName ||
+        !classSem ||
+        !session ||
+        !rollNo ||
+        !course
+      ) {
+        toast.error("Please fill all required academic fields");
+        return false;
       }
     }
     if (step === 3) {
@@ -1549,35 +1570,27 @@ export const RegistrationForm = ({
             {!isBeuFlow && (
               <>
             <div className="space-y-1"><Label className="text-xs">Degree *</Label>
-              <RadioGroup value={degree} onValueChange={setDegree} className="flex gap-4 pt-1">
+              <RadioGroup
+                value={degree}
+                onValueChange={setDegree}
+                className="flex gap-4 pt-1"
+              >
                 {["UG", "PG"].map((d) => (<label key={d} className="flex items-center gap-1.5 cursor-pointer text-xs"><RadioGroupItem value={d} id={`d-${d}`} />{d}</label>))}
               </RadioGroup>
             </div>
             <div className="space-y-1"><Label className="text-xs">Department *</Label>
-              <Select value={departmentName} onValueChange={(val) => { setDepartmentName(val); setSubject(""); setCourse(""); }} disabled={!degree && !activeNonTechConfig}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select dept" /></SelectTrigger>
+              <Select
+                value={departmentName}
+                onValueChange={(val) => { setDepartmentName(val); setSubject(""); setCourse(""); }}
+                disabled={!degree}
+              >
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={degree ? "Select dept" : "Select degree first"} /></SelectTrigger>
                 <SelectContent>
-                  {activeNonTechConfig ? (
-                    nonTechOptions.courses
-                      .filter((c) => c !== "Other")
-                      .map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))
-                  ) : degree === "UG" ? (
-                    <>
-                      <SelectItem value="B.A.">B.A.</SelectItem>
-                      <SelectItem value="B.Sc">B.Sc</SelectItem>
-                      <SelectItem value="B.Com">B.Com</SelectItem>
-                    </>
-                  ) : (
-                    <>
-                      <SelectItem value="M.A.">M.A.</SelectItem>
-                      <SelectItem value="M.Sc">M.Sc</SelectItem>
-                      <SelectItem value="M.Com">M.Com</SelectItem>
-                    </>
-                  )}
+                  {departmentOptions.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

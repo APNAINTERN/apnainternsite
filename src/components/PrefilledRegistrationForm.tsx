@@ -62,6 +62,11 @@ import {
   type RegistrationCollege,
   type RegistrationUniversity,
 } from "@/lib/registrationCatalog";
+import { subjectsFor } from "@/lib/subjectOptions";
+import {
+  departmentMatchesNonTechDegree,
+  departmentsForNonTechDegree,
+} from "@/lib/studentTrack";
 
 type University = RegistrationUniversity;
 type College = RegistrationCollege;
@@ -363,6 +368,20 @@ export const PrefilledRegistrationForm = ({
   const [course, setCourse] = useState<string>(
     () => (rawDomain && rawDomain.split("|")[0]?.trim()) || ""
   );
+
+  const departmentOptions = useMemo(
+    () => departmentsForNonTechDegree(degree),
+    [degree]
+  );
+
+  useEffect(() => {
+    if (!departmentName) return;
+    if (!departmentMatchesNonTechDegree(degree, departmentName)) {
+      setDepartmentName("");
+      setSubject("");
+      setCourse("");
+    }
+  }, [degree, departmentName]);
 
   // When department changes, drop a Subject value that no longer belongs to the
   // new department's option list (otherwise the dropdown shows the placeholder
@@ -950,7 +969,15 @@ export const PrefilledRegistrationForm = ({
 
         <div className="space-y-2">
           <Label>Degree *</Label>
-          <Select value={degree} onValueChange={setDegree}>
+          <Select
+            value={degree}
+            onValueChange={(v) => {
+              setDegree(v);
+              setDepartmentName("");
+              setSubject("");
+              setCourse("");
+            }}
+          >
             <SelectTrigger className={prefilledClass}>
               <SelectValue placeholder="Select degree" />
             </SelectTrigger>
@@ -962,14 +989,12 @@ export const PrefilledRegistrationForm = ({
         </div>
         <div className="space-y-2">
           <Label>Department *</Label>
-          <Select value={departmentName} onValueChange={setDepartmentName}>
+          <Select value={departmentName} onValueChange={setDepartmentName} disabled={!degree}>
             <SelectTrigger className={prefilledClass}>
-              <SelectValue placeholder="Select department" />
+              <SelectValue placeholder={degree ? "Select department" : "Select degree first"} />
             </SelectTrigger>
             <SelectContent>
-              {(degree === "PG"
-                ? ["M.A.", "M.Sc", "M.Com"]
-                : ["B.A.", "B.Sc", "B.Com"]).map((d) => (
+              {departmentOptions.map((d) => (
                 <SelectItem key={d} value={d}>{d}</SelectItem>
               ))}
             </SelectContent>
