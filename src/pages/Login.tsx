@@ -234,6 +234,9 @@ const Login = () => {
         (typeof window !== "undefined" ? window.sessionStorage.getItem("admin_login_otp") : null);
       setAdminDevOtp(devCode);
       setAdminOtpSent(true);
+      if (sent.devOtp) {
+        toast.info(`Verification code: ${sent.devOtp}`, { duration: 30000 });
+      }
       toast.success(`Verification code sent to ${sent.email}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to send verification code";
@@ -891,10 +894,10 @@ const Login = () => {
                     <> Sending verification code…</>
                   )}
                 </div>
-                {isLocalDev && adminDevOtp ? (
+                {adminDevOtp ? (
                   <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
                     <p className="font-bold text-xs uppercase tracking-wide text-amber-800 mb-1">
-                      Local testing only
+                      {isLocalDev ? "Local testing only" : "Email pending — use code below"}
                     </p>
                     <p>
                       Your verification code:{" "}

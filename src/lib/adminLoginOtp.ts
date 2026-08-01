@@ -80,7 +80,21 @@ export async function requestAdminLoginOtp(
         email,
       }),
     });
-    await assertSendMailOk(response);
+    const raw = await response.text();
+    let payload: { devOtp?: string; warning?: string } = {};
+    try {
+      payload = JSON.parse(raw) as { devOtp?: string; warning?: string };
+    } catch {
+      /* ignore */
+    }
+    if (!response.ok) {
+      throw new Error(
+        (payload as { error?: string; message?: string }).error ||
+          (payload as { message?: string }).message ||
+          raw.slice(0, 280) ||
+          `Email request failed (${response.status})`
+      );
+    }
   } catch (mailErr: unknown) {
     if (localDev) {
       markAdminLoginOtpSent(email);
@@ -91,7 +105,12 @@ export async function requestAdminLoginOtp(
   }
 
   markAdminLoginOtpSent(email);
-  return { ok: true, email, devOtp: localDev ? generatedOtp : undefined };
+  const apiDevOtp = payload.devOtp?.trim();
+  return {
+    ok: true,
+    email,
+    devOtp: localDev ? generatedOtp : apiDevOtp || undefined,
+  };
 }
 
 export async function verifyAdminLoginOtp(

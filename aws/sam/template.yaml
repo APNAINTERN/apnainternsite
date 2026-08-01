@@ -71,6 +71,12 @@ Resources:
             BucketName: !Ref S3BucketLogos
         - S3CrudPolicy:
             BucketName: !Ref S3BucketLearningMaterials
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: "*"
       Environment:
         Variables:
           NODE_ENV: production
@@ -85,7 +91,8 @@ Resources:
           SMTP_PORT: "587"
           SMTP_USER: !Ref SmtpUser
           SMTP_PASS: !Ref SmtpPass
-          MAIL_FROM: Apna Intern <admin@apnaintern.in>
+          MAIL_FROM: Apna Intern <info@apnaintern.in>
+          USE_SES_API: "true"
           GEMINI_API_KEY: !Ref GeminiApiKey
           S3_BUCKET_CONSENT_FORMS: !Ref S3BucketConsentForms
           S3_BUCKET_LOGOS: !Ref S3BucketLogos
