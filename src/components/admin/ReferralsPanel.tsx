@@ -46,7 +46,7 @@ import {
   Share2,
   Users,
 } from "lucide-react";
-import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { assertSendMailOk, postSendMail } from "@/lib/sendMailApi";
 import {
   generateReferralCode,
   getPublicRegisterUrlWithRef,
@@ -442,15 +442,11 @@ Please keep your Promoter Login ID private. If you need help, contact Apna Inter
 Thank you,
 Apna Intern Team`;
 
-    const res = await fetch(getSendMailApiUrl(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: toEmail,
-        action: "bulk_custom_mail",
-        subject: "Apna Intern — Referral promoter portal access",
-        message,
-      }),
+    const res = await postSendMail({
+      to: toEmail,
+      action: "bulk_custom_mail",
+      subject: "Apna Intern — Referral promoter portal access",
+      message,
     });
     await assertSendMailOk(res);
   };
@@ -680,15 +676,11 @@ Apna Intern Team`;
     const url = getPublicRegisterUrlWithRef(p.referral_code);
     const body = `Hello ${p.full_name},\n\nPlease use the link below to register students for the Apna Intern internship program under your referral.\n\n${url}\n\nReferral code: ${p.referral_code}\n\nIf the link does not open, copy the URL into your browser.\n\nThank you,\nApna Intern Team`;
     try {
-      const res = await fetch(getSendMailApiUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: p.email,
-          action: "bulk_custom_mail",
-          subject: "Your Apna Intern referral registration link",
-          message: body,
-        }),
+      const res = await postSendMail({
+        to: p.email,
+        action: "bulk_custom_mail",
+        subject: "Your Apna Intern referral registration link",
+        message: body,
       });
       await assertSendMailOk(res);
       toast.success("Email sent");

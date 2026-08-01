@@ -88,7 +88,7 @@ import { fetchAdminCoreBootstrap } from "@/lib/portalAuth";
 import { isAwsLambdaApiUrl } from "@/lib/awsFetchThrottle";
 import { resolveSupabaseUrl } from "@/lib/supabaseEnv";
 import { adminUpsertStudentProfile } from "@/lib/adminProfileUpsert";
-import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { assertSendMailOk, getSendMailApiUrl, postSendMail } from "@/lib/sendMailApi";
 import { DatabaseBackup, ArrowUpRight, UploadCloud, AlertTriangle, Check } from "lucide-react";
 import {
   estimateBulkMailSeconds,
@@ -718,8 +718,6 @@ export default function Admin() {
     let failedCount = 0;
     const errors: string[] = [];
 
-    const sendMailUrl = getSendMailApiUrl();
-
     for (let i = 0; i < totalToImport; i++) {
       const record = recordsToImport[i];
       try {
@@ -797,19 +795,15 @@ export default function Admin() {
 
           // 4. Send welcome email notification
           try {
-            const mailRes = await fetch(sendMailUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                action: "registration_success",
-                email: record.email,
-                data: {
-                  fullName: fullName,
-                  regId: regId,
-                  password: pwd,
-                  loginLink: "https://www.apnaintern.in/login?portal=student",
-                },
-              }),
+            const mailRes = await postSendMail({
+              action: "registration_success",
+              email: record.email,
+              data: {
+                fullName: fullName,
+                regId: regId,
+                password: pwd,
+                loginLink: "https://www.apnaintern.in/login?portal=student",
+              },
             });
             await assertSendMailOk(mailRes);
           } catch (e) {
@@ -1004,20 +998,16 @@ export default function Admin() {
       const toEmail = String(latestData.email || student.email || "").trim();
       if (!toEmail) throw new Error("Student has no email address — update their profile first.");
 
-      const res = await fetch(getSendMailApiUrl(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: toEmail,
-          email: toEmail,
-          action: 'registration_success',
-          data: {
-            fullName: latestData.full_name || student.full_name,
-            regId: finalRegId || "",
-            password: finalPassword,
-            loginLink: buildStudentCredentialLoginLink(),
-          }
-        })
+      const res = await postSendMail({
+        to: toEmail,
+        email: toEmail,
+        action: 'registration_success',
+        data: {
+          fullName: latestData.full_name || student.full_name,
+          regId: finalRegId || "",
+          password: finalPassword,
+          loginLink: buildStudentCredentialLoginLink(),
+        }
       });
       await assertSendMailOk(res);
       toast.success("Credentials sent successfully!");
@@ -1058,19 +1048,15 @@ export default function Admin() {
       const resetEmail = String(resetPassUser.email || "").trim();
       if (resetEmail) {
         try {
-          const emailRes = await fetch(getSendMailApiUrl(), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              to: resetEmail,
-              email: resetEmail,
-              action: 'admin_password_reset',
-              data: {
-                fullName: resetPassUser.full_name,
-                password: newPassword,
-                loginLink: buildStudentCredentialLoginLink(),
-              }
-            })
+          const emailRes = await postSendMail({
+            to: resetEmail,
+            email: resetEmail,
+            action: 'admin_password_reset',
+            data: {
+              fullName: resetPassUser.full_name,
+              password: newPassword,
+              loginLink: buildStudentCredentialLoginLink(),
+            }
           });
           await assertSendMailOk(emailRes);
         } catch (mailErr: unknown) {
@@ -2965,15 +2951,11 @@ Please keep your College Admin ID private. If you need help, contact your instit
 Thank you,
 Apna Intern Team`;
 
-      const emailRes = await fetch(getSendMailApiUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: toEmail,
-          action: "bulk_custom_mail",
-          subject: "Apna Intern — College portal access",
-          message,
-        }),
+      const emailRes = await postSendMail({
+        to: toEmail,
+        action: "bulk_custom_mail",
+        subject: "Apna Intern — College portal access",
+        message,
       });
       await assertSendMailOk(emailRes);
 

@@ -49,7 +49,7 @@ import {
   getStudentDirectoryPassword,
 } from "@/lib/studentCredentials";
 import { adminUpsertStudentProfile } from "@/lib/adminProfileUpsert";
-import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { assertSendMailOk, postSendMail } from "@/lib/sendMailApi";
 import { siteApiUrl } from "@/lib/siteApi";
 import {
   estimateBulkMailSeconds,
@@ -414,20 +414,16 @@ const SuperAdmin = () => {
       const toEmail = String(latestData.email || student.email || "").trim();
       if (!toEmail) throw new Error("Student has no email address — update their profile first.");
 
-      const res = await fetch(getSendMailApiUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: toEmail,
-          email: toEmail,
-          action: "registration_success",
-          data: {
-            fullName: latestData.full_name || student.full_name,
-            regId: finalRegId || "",
-            password: finalPassword,
-            loginLink: buildStudentCredentialLoginLink(),
-          },
-        }),
+      const res = await postSendMail({
+        to: toEmail,
+        email: toEmail,
+        action: "registration_success",
+        data: {
+          fullName: latestData.full_name || student.full_name,
+          regId: finalRegId || "",
+          password: finalPassword,
+          loginLink: buildStudentCredentialLoginLink(),
+        },
       });
       await assertSendMailOk(res);
       toast.success("Credentials sent successfully!");
@@ -2400,15 +2396,11 @@ const SuperAdmin = () => {
                     onClick={async () => {
                       setIsSendingTestMail(true);
                       try {
-                        const response = await fetch(getSendMailApiUrl(), {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            action: 'test_mail',
-                            to: testMailTo,
-                            subject: testMailSubject,
-                            message: testMailBody
-                          })
+                        const response = await postSendMail({
+                          action: 'test_mail',
+                          to: testMailTo,
+                          subject: testMailSubject,
+                          message: testMailBody
                         });
                         
                         const result = await response.json();

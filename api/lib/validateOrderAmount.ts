@@ -45,6 +45,22 @@ export async function assertOrderAmountValid(
     university = (data as Record<string, unknown>) || null;
   }
 
+  if (!college && !collegeId) {
+    const collegeName = String(studentData.college || studentData.college_name || "").trim();
+    if (collegeName) {
+      const { data } = await db.from("colleges").select("*").ilike("name", collegeName).maybeSingle();
+      college = (data as Record<string, unknown>) || null;
+      if (college?.university_id && !university) {
+        const { data: uni } = await db
+          .from("universities")
+          .select("*")
+          .eq("id", String(college.university_id))
+          .maybeSingle();
+        university = (uni as Record<string, unknown>) || null;
+      }
+    }
+  }
+
   const { data: payCfg } = await db
     .from("payment_config")
     .select("amount_paise")

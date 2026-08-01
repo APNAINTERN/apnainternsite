@@ -782,6 +782,7 @@ export const RegistrationForm = ({
           college: selectedCollegeName,
           college_name: selectedCollegeName,
           college_id: collegeId,
+          university_id: universityId,
           course,
           degree,
           department: departmentName,

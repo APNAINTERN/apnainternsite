@@ -1,11 +1,7 @@
-import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { assertSendMailOk, postSendMail } from "@/lib/sendMailApi";
 
 async function postMail(body: Record<string, unknown>): Promise<void> {
-  const res = await fetch(getSendMailApiUrl(), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  const res = await postSendMail(body);
   await assertSendMailOk(res);
 }
 
