@@ -31,6 +31,7 @@
     "aws:rds:import": "node aws/scripts/run-rds-import.mjs",
     "aws:rds:fresh-schema": "bash -c 'set -a && [ -f .env.awsrds.local ] && . ./.env.awsrds.local; set +a; bash aws/scripts/db-fresh-schema-rds.sh'",
     "aws:rds:seed-admin": "node aws/scripts/seed-rds-admin.mjs",
+    "supabase:seed-admin": "node aws/scripts/seed-supabase-admin.mjs",
     "aws:rds:import:csv": "bash -c 'set -a && [ -f .env.awsrds.local ] && . ./.env.awsrds.local; set +a; bash aws/scripts/import-csv-tables.sh'",
     "aws:rds:verify": "node aws/scripts/run-rds-verify.mjs",
     "aws:s3:provision": "bash aws/scripts/provision-s3-storage.sh",
