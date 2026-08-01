@@ -44,7 +44,9 @@ function release() {
 }
 
 export function isAwsLambdaApiUrl(url: string): boolean {
-  return /execute-api\.[a-z0-9-]+\.amazonaws\.com/i.test(url);
+  return (
+    /execute-api\.[a-z0-9-]+\.amazonaws\.com/i.test(url) || /\/aws-api(?:\/|$)/i.test(url)
+  );
 }
 
 function requestKey(input: RequestInfo | URL, init?: RequestInit): string | null {

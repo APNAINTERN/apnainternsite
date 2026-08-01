@@ -21,6 +21,10 @@
     }
   ],
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    {
+      "source": "/aws-api/:path*",
+      "destination": "https://eikmcrd7ei.execute-api.ap-south-1.amazonaws.com/staging/:path*"
+    },
+    { "source": "/((?!api/|aws-api/).*)", "destination": "/index.html" }
   ]
 }

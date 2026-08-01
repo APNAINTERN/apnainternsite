@@ -10,6 +10,7 @@ import {
   AWS_LOCAL_PROJECT_ID,
   AWS_STAGING_API_ORIGIN,
 } from "../../shared/aws";
+import { resolveBrowserApiOrigin } from "./awsApiOrigin";
 
 export function resolveSupabaseProjectId(): string {
   const fromEnv = String(import.meta.env.VITE_SUPABASE_PROJECT_ID || "").trim();
@@ -18,8 +19,7 @@ export function resolveSupabaseProjectId(): string {
 
 export function resolveSupabaseUrl(): string {
   const fromEnv = String(import.meta.env.VITE_SUPABASE_URL || "").trim();
-  if (fromEnv) return fromEnv.replace(/\/$/, "");
-  return AWS_STAGING_API_ORIGIN;
+  return resolveBrowserApiOrigin(fromEnv || AWS_STAGING_API_ORIGIN);
 }
 
 export function resolveSupabaseAnonKey(): string {

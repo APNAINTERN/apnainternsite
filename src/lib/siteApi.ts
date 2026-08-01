@@ -1,4 +1,5 @@
 import { AWS_STAGING_API_ORIGIN } from "../../shared/aws";
+import { isDirectLambdaApiUrl, resolveBrowserApiOrigin, usesAwsApiProxy } from "./awsApiOrigin";
 
 /**
  * API base URL for the frontend.
@@ -12,15 +13,14 @@ import { AWS_STAGING_API_ORIGIN } from "../../shared/aws";
 export function getSiteApiOrigin(): string {
   if (typeof window === "undefined") return "";
   const fromEnv = import.meta.env.VITE_SITE_API_ORIGIN as string | undefined;
-  if (fromEnv?.trim()) return fromEnv.trim().replace(/\/$/, "");
+  if (fromEnv?.trim()) {
+    return resolveBrowserApiOrigin(fromEnv.trim());
+  }
   const appUrl = import.meta.env.VITE_PUBLIC_APP_URL as string | undefined;
   if (appUrl?.trim()) return appUrl.trim().replace(/\/$/, "");
   const supabaseUrl = String(import.meta.env.VITE_SUPABASE_URL || "").trim();
-  if (/execute-api\.amazonaws\.com/i.test(supabaseUrl)) {
-    return supabaseUrl.replace(/\/$/, "");
-  }
-  if (!import.meta.env.VITE_SUPABASE_URL?.trim()) {
-    return AWS_STAGING_API_ORIGIN;
+  if (isDirectLambdaApiUrl(supabaseUrl) || !supabaseUrl.trim()) {
+    return resolveBrowserApiOrigin(supabaseUrl || AWS_STAGING_API_ORIGIN);
   }
   return "";
 }
@@ -44,7 +44,10 @@ export function usePollingInsteadOfRealtime(): boolean {
   const haystack = `${supabaseUrl}\n${siteOrigin}\n${browserHost}`;
   return (
     /localhost|127\.0\.0\.1/i.test(haystack) ||
-    /execute-api\.amazonaws\.com/i.test(haystack) ||
+    isDirectLambdaApiUrl(supabaseUrl) ||
+    isDirectLambdaApiUrl(siteOrigin) ||
+    usesAwsApiProxy(supabaseUrl) ||
+    usesAwsApiProxy(siteOrigin) ||
     /amazonaws\.com/i.test(supabaseUrl)
   );
 }

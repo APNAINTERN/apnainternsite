@@ -2,12 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 import { AUTH_STORAGE_KEY, createPersistingAuthStorage } from '@/lib/studentAuthSession';
 import { usePollingInsteadOfRealtime } from '@/lib/siteApi';
 import { awsThrottledFetch, isAwsLambdaApiUrl } from '@/lib/awsFetchThrottle';
-import {
-  assertSupabaseConfig,
-  isHostedSupabaseUrl,
-  resolveSupabaseAnonKey,
-  resolveSupabaseUrl,
-} from '@/lib/supabaseEnv';
+import { assertSupabaseConfig, isHostedSupabaseUrl, resolveSupabaseAnonKey, resolveSupabaseUrl } from '@/lib/supabaseEnv';
+import { isDirectLambdaApiUrl, usesAwsApiProxy } from '@/lib/awsApiOrigin';
 
 /**
  * App data client: supabase-js protocol against Supabase cloud or local Express shim.
@@ -24,7 +20,10 @@ if (typeof window !== "undefined" && isHostedSupabaseUrl(SUPABASE_URL)) {
     SUPABASE_URL,
     "— migrate to AWS: set VITE_SUPABASE_URL to your Lambda URL and redeploy Vercel."
   );
-} else if (typeof window !== "undefined" && /execute-api\.amazonaws\.com/i.test(SUPABASE_URL)) {
+} else if (
+  typeof window !== "undefined" &&
+  (isDirectLambdaApiUrl(SUPABASE_URL) || usesAwsApiProxy(SUPABASE_URL))
+) {
   console.info("[apnaintern] Using AWS API (RDS backend):", SUPABASE_URL);
 }
 
