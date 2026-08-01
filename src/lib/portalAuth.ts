@@ -24,6 +24,14 @@ export async function fetchRolesForUser(
   return coalesce(
     `roles:${userId}`,
     async () => {
+      try {
+        const { data: { user } } = await client.auth.getUser();
+        const fromUser = readRolesFromUser(user, userId);
+        if (fromUser?.length) return fromUser;
+      } catch {
+        /* getUser optional when offline/throttled */
+      }
+
       const { data, error } = await client
         .from("user_roles")
         .select("role")
@@ -42,13 +50,21 @@ export async function fetchCybercafeExists(
   return coalesce(
     `cybercafe:${userId}`,
     async () => {
-      const { data, error } = await client
-        .from("cybercafe_profiles")
-        .select("id")
-        .eq("id", userId)
-        .maybeSingle();
-      if (error) throw error;
-      return Boolean(data?.id);
+      try {
+        const { data, error } = await client
+          .from("cybercafe_profiles")
+          .select("id")
+          .eq("id", userId)
+          .maybeSingle();
+        if (error) {
+          console.warn("[portalAuth] cybercafe_profiles:", error.message);
+          return false;
+        }
+        return Boolean(data?.id);
+      } catch (err) {
+        console.warn("[portalAuth] cybercafe_profiles fetch failed:", err);
+        return false;
+      }
     },
     120_000
   );

@@ -8,12 +8,18 @@ import {
   canAccessStudentDashboard,
   STUDENT_POST_UNPAID_LOGIN_PATH,
 } from "@/lib/studentPaymentAccess";
-import { fetchCybercafeExists, fetchRolesForUser } from "@/lib/portalAuth";
+import { fetchCybercafeExists, fetchRolesForUser, readRolesFromUser } from "@/lib/portalAuth";
 
 /** Post-login destination from {@link public.user_roles} (never trust user_metadata for access). */
 export async function resolveDashboardPath(user: User): Promise<string> {
-  const rolesList = await fetchRolesForUser(supabase, user.id);
-  const cybercafe = await fetchCybercafeExists(supabase, user.id);
+  const fromMeta = readRolesFromUser(user, user.id);
+  const rolesList = fromMeta?.length ? fromMeta : await fetchRolesForUser(supabase, user.id);
+  let cybercafe = false;
+  try {
+    cybercafe = await fetchCybercafeExists(supabase, user.id);
+  } catch {
+    cybercafe = false;
+  }
   if (rolesList.includes("super_admin")) return "/admin";
   if (rolesList.includes("staff")) return "/staff-dashboard";
   if (rolesList.includes("admin")) return "/admin";

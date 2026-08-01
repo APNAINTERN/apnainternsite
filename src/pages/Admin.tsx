@@ -2062,6 +2062,8 @@ export default function Admin() {
         if (!adminInitDoneRef.current) {
           adminInitDoneRef.current = true;
           await runInitialAdminLoad();
+        } else {
+          setLoading(false);
         }
       } else {
         setLoading(false);

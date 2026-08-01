@@ -78,8 +78,27 @@ export const useAuth = () => {
         let rolesList: UserRole[] = [];
         const fromMeta = readRolesFromUser(session.user, session.user.id) as UserRole[] | null;
         if (fromMeta?.length) {
-          rolesList = fromMeta;
+          rolesList = [...fromMeta];
         } else {
+          const cached = readCachedRoles(session.user.id);
+          if (cached.length > 0) {
+            rolesList = [...cached];
+          }
+        }
+
+        if (!rolesList.length) {
+          try {
+            const { data: { user: freshUser } } = await supabase.auth.getUser();
+            const fromUser = readRolesFromUser(freshUser, session.user.id) as UserRole[] | null;
+            if (fromUser?.length) {
+              rolesList = [...fromUser];
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+
+        if (!rolesList.length) {
           try {
             const roles = await fetchRolesForUser(supabase, session.user.id);
             rolesList = roles as UserRole[];
@@ -91,22 +110,26 @@ export const useAuth = () => {
                   ? String((rolesError as { message: unknown }).message)
                   : String(rolesError);
             console.error('[useAuth] user_roles:', msg);
-            const cached = readCachedRoles(session.user.id);
-            if (cached.length > 0) {
-              rolesRef.current = cached;
-              setRoles(cached);
-              lastCheckUserIdRef.current = session.user.id;
-            } else if (rolesRef.current.length > 0) {
-              setRoles(rolesRef.current);
+            if (!rolesList.length) {
+              setLoading(false);
+              return;
             }
-            setLoading(false);
-            return;
           }
         }
 
         if (cancelled) return;
 
-        const cybercafe = await fetchCybercafeExists(supabase, session.user.id);
+        // Apply roles before optional cybercafe lookup so a secondary failure cannot leave roles empty.
+        rolesRef.current = rolesList;
+        lastCheckUserIdRef.current = session.user.id;
+        setRoles(rolesList);
+
+        let cybercafe = false;
+        try {
+          cybercafe = await fetchCybercafeExists(supabase, session.user.id);
+        } catch (cyberErr) {
+          console.warn('[useAuth] cybercafe_profiles check skipped:', cyberErr);
+        }
 
         if (cancelled) return;
 
@@ -119,7 +142,6 @@ export const useAuth = () => {
         }
 
         rolesRef.current = rolesList;
-        lastCheckUserIdRef.current = session.user.id;
         writeCachedRoles(session.user.id, rolesList);
         setRoles(rolesList);
       } catch (error) {
