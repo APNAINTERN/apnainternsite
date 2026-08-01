@@ -34,8 +34,8 @@ export function getPool(): Pool {
 
   pool = new Pool({
     connectionString,
-    // Lambda: short-lived connections; keep pool tiny
-    max: process.env.AWS_LAMBDA_FUNCTION_NAME ? 2 : 10,
+    // Lambda: allow a few concurrent REST queries per warm container (admin UI bursts).
+    max: process.env.AWS_LAMBDA_FUNCTION_NAME ? 5 : 10,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 15_000,
     ssl: useSsl ? { rejectUnauthorized: false } : undefined,

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { AUTH_STORAGE_KEY, createPersistingAuthStorage } from '@/lib/studentAuthSession';
 import { usePollingInsteadOfRealtime } from '@/lib/siteApi';
+import { awsThrottledFetch, isAwsLambdaApiUrl } from '@/lib/awsFetchThrottle';
 import {
   assertSupabaseConfig,
   isHostedSupabaseUrl,
@@ -28,6 +29,7 @@ if (typeof window !== "undefined" && isHostedSupabaseUrl(SUPABASE_URL)) {
 }
 
 const disableRealtime = usePollingInsteadOfRealtime();
+const useAwsThrottle = isAwsLambdaApiUrl(SUPABASE_URL);
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   auth: {
@@ -38,6 +40,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     storage: createPersistingAuthStorage(),
     storageKey: AUTH_STORAGE_KEY,
   },
+  global: useAwsThrottle ? { fetch: awsThrottledFetch } : undefined,
 });
 
 // Lambda / local API has no Phoenix realtime. Block socket connect to stop wss 400 storms

@@ -53,9 +53,35 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: !Ref StageName
-      # CORS is handled in Express (aws/server/app.ts) so we can reflect the
-      # request Origin. API Gateway "*" CORS overwrites Lambda headers and breaks
-      # credentialed browser calls from Vercel.
+      # Gateway-level CORS so 502/503 from throttling still include ACAO (Express never runs).
+      # Express (app.ts) also sets CORS on successful Lambda responses.
+      CorsConfiguration:
+        AllowCredentials: true
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+          - apikey
+          - Prefer
+          - X-Client-Info
+          - X-Supabase-Api-Version
+          - X-Requested-With
+          - Accept
+          - x-razorpay-signature
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+          - HEAD
+        AllowOrigins:
+          - https://apnaintern.in
+          - https://www.apnaintern.in
+          - http://localhost:5173
+          - http://localhost:8080
+          - http://localhost:3000
+        MaxAge: 86400
 
   ApiFunction:
     Type: AWS::Serverless::Function
