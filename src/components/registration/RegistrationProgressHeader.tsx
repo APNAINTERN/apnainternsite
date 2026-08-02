@@ -8,6 +8,8 @@ export type RegistrationProgressHeaderProps = {
   step: number;
   maxStep: number;
   stepLabels: readonly string[];
+  /** When set, drives step dots and % from section completion (full-page form). */
+  sectionComplete?: boolean[];
   loading?: boolean;
   showLogo?: boolean;
   title?: string;
@@ -19,13 +21,26 @@ export function RegistrationProgressHeader({
   step,
   maxStep,
   stepLabels,
+  sectionComplete,
   loading = false,
   showLogo = true,
   title = "Student Registration",
   subtitle = "UGC-mandated internship programme",
   className,
 }: RegistrationProgressHeaderProps) {
-  const progress = Math.min(100, Math.round((step / Math.max(maxStep, 1)) * 100));
+  const completions =
+    sectionComplete ?? stepLabels.map((_, i) => i + 1 < step);
+  const completedCount = completions.filter(Boolean).length;
+  const activeIndex = completions.findIndex((c) => !c);
+  const progress = sectionComplete
+    ? Math.min(100, Math.round((completedCount / Math.max(stepLabels.length, 1)) * 100))
+    : Math.min(100, Math.round((step / Math.max(maxStep, 1)) * 100));
+  const displayStep =
+    sectionComplete && activeIndex >= 0
+      ? activeIndex + 1
+      : sectionComplete
+        ? maxStep
+        : step;
 
   return (
     <div className={cn("mb-6 space-y-4", className)}>
@@ -57,8 +72,17 @@ export function RegistrationProgressHeader({
               </span>
             ) : (
               <>
-                Step {step} of {maxStep}
-                <span className="text-primary"> · {progress}%</span>
+                {sectionComplete ? (
+                  <>
+                    {completedCount} of {maxStep} complete
+                    <span className="text-primary"> · {progress}%</span>
+                  </>
+                ) : (
+                  <>
+                    Step {displayStep} of {maxStep}
+                    <span className="text-primary"> · {progress}%</span>
+                  </>
+                )}
               </>
             )}
           </p>
@@ -77,8 +101,10 @@ export function RegistrationProgressHeader({
             <div className="flex justify-between gap-0.5 sm:gap-1">
               {stepLabels.map((label, i) => {
                 const stepNum = i + 1;
-                const done = step > stepNum;
-                const active = step === stepNum;
+                const done = completions[i];
+                const active = sectionComplete
+                  ? activeIndex === i
+                  : displayStep === stepNum;
                 return (
                   <div
                     key={label}

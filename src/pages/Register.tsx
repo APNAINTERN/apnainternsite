@@ -65,8 +65,8 @@ const Register = () => {
       <SiteNav />
       <NoticePopup page="registration" />
       <main className="flex-1 gradient-soft py-10 md:py-16">
-        <div className="container mx-auto px-4">
-          <Card className="max-w-3xl mx-auto p-6 md:p-10 shadow-elegant animate-fade-in-up">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <Card className="mx-auto p-6 md:p-10 shadow-elegant animate-fade-in-up border-none/80">
             {checking ? (
               <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
                 <BrandLogoMark size="lg" className="mx-auto" />

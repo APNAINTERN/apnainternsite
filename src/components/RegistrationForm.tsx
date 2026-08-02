@@ -95,7 +95,7 @@ import {
   isAllowedConsentLetterFile,
   uploadConsentLetterToStorage,
 } from "@/lib/studentDocuments";
-import { Eye, EyeOff, Loader2, CheckCircle2, ChevronLeft, ChevronRight, Info, Upload, FileText } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, Info, Upload, FileText } from "lucide-react";
 import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
 import { loadingMessage } from "@/lib/loadingMessages";
 import { z } from "zod";
@@ -137,7 +137,7 @@ export const RegistrationForm = ({
   const navigate = useNavigate();
   const isAdminVariant = variant === "admin";
   const isCyberCafeVariant = variant === "cybercafe";
-  const [step, setStep] = useState<Step>(1);
+  const derivedStepRef = useRef<Step>(1);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState<any>(null);
@@ -286,7 +286,7 @@ export const RegistrationForm = ({
     await upsertRegistrationLead(supabase, {
       email: normalizedEmail,
       phone: contact,
-      step,
+      step: derivedStepRef.current,
       payload,
       cybercafe_shop_name: cyberData.shop_name || null,
       cybercafe_email: cyberData.email || null,
@@ -310,7 +310,6 @@ export const RegistrationForm = ({
     if (!showConsentStep) {
       setConsentLetterFile(null);
       consentFormUrlRef.current = null;
-      setStep((s) => (s === 5 ? 4 : s));
     }
   }, [showConsentStep]);
 
@@ -321,11 +320,123 @@ export const RegistrationForm = ({
   const [rosterMatchedName, setRosterMatchedName] = useState<string>("");
   const [rosterAlreadyRegisteredOpen, setRosterAlreadyRegisteredOpen] = useState(false);
 
-  // Save incomplete registrations as leads (public flow only; step ≥ 2).
+  const personalSectionComplete = useMemo(
+    () =>
+      z
+        .object({
+          fullName: z.string().trim().min(2).max(100),
+          gender: z.string().min(1),
+          parentName: z.string().trim().min(2).max(100),
+          contact: z.string().regex(/^[6-9]\d{9}$/),
+          email: z.string().email().max(255),
+        })
+        .safeParse({ fullName, gender, parentName, contact, email }).success,
+    [fullName, gender, parentName, contact, email]
+  );
+
+  const academicSectionComplete = useMemo(() => {
+    if (isBeuFlow) {
+      return Boolean(universityId && collegeId && beuDetailsCompleted);
+    }
+    return Boolean(
+      universityId &&
+        collegeId &&
+        degree &&
+        departmentName &&
+        classSem &&
+        session &&
+        rollNo &&
+        course
+    );
+  }, [
+    isBeuFlow,
+    universityId,
+    collegeId,
+    beuDetailsCompleted,
+    degree,
+    departmentName,
+    classSem,
+    session,
+    rollNo,
+    course,
+  ]);
+
+  const emergencySectionComplete = useMemo(() => {
+    if (rosterStatus === "matched" && !isAdminVariant) return true;
+    const hasAny = emName.trim() || emPhone.trim() || emRel;
+    if (!hasAny) return true;
+    return z
+      .object({
+        emName: z.string().trim().min(2).max(100),
+        emPhone: z.string().regex(/^[6-9]\d{9}$/),
+        emRel: z.string().min(1),
+      })
+      .safeParse({ emName, emPhone, emRel }).success;
+  }, [rosterStatus, isAdminVariant, emName, emPhone, emRel]);
+
+  const securitySectionComplete = useMemo(
+    () => !validateRegistrationPassword(password, confirmPw) && agree,
+    [password, confirmPw, agree]
+  );
+
+  const consentSectionComplete = useMemo(() => {
+    if (!showConsentStep) return true;
+    if (!consentLetterFile) return true;
+    return (
+      consentLetterFile.size <= CONSENT_MAX_BYTES &&
+      isAllowedConsentLetterFile(consentLetterFile)
+    );
+  }, [showConsentStep, consentLetterFile]);
+
+  const sectionCompleteFlags = useMemo(() => {
+    const base = [
+      personalSectionComplete,
+      academicSectionComplete,
+      emergencySectionComplete,
+      securitySectionComplete,
+    ];
+    return showConsentStep ? [...base, consentSectionComplete] : base;
+  }, [
+    personalSectionComplete,
+    academicSectionComplete,
+    emergencySectionComplete,
+    securitySectionComplete,
+    consentSectionComplete,
+    showConsentStep,
+  ]);
+
+  const derivedStep = useMemo((): Step => {
+    if (!personalSectionComplete) return 1;
+    if (!academicSectionComplete) return 2;
+    if (!emergencySectionComplete) return 3;
+    if (!securitySectionComplete) return 4;
+    if (showConsentStep && !consentSectionComplete) return 5;
+    return showConsentStep ? 5 : 4;
+  }, [
+    personalSectionComplete,
+    academicSectionComplete,
+    emergencySectionComplete,
+    securitySectionComplete,
+    consentSectionComplete,
+    showConsentStep,
+  ]);
+
   useEffect(() => {
-    if (isAdminVariant || step < 2 || skipRegistrationLeadsRef.current) return;
+    derivedStepRef.current = derivedStep;
+  }, [derivedStep]);
+
+  // Save incomplete registrations as leads (public flow only; after personal details).
+  useEffect(() => {
+    if (isAdminVariant || skipRegistrationLeadsRef.current) return;
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail.includes("@")) return;
+    const personalReady =
+      fullName.trim().length >= 2 &&
+      gender &&
+      parentName.trim().length >= 2 &&
+      /^[6-9]\d{9}$/.test(contact) &&
+      z.string().email().safeParse(normalizedEmail).success;
+    if (!personalReady) return;
 
     const t = window.setTimeout(async () => {
       try {
@@ -357,7 +468,7 @@ export const RegistrationForm = ({
         const { ok, error } = await upsertRegistrationLead(supabase, {
           email: normalizedEmail,
           phone: contact,
-          step,
+          step: derivedStepRef.current,
           payload,
           cybercafe_shop_name: cyberData.shop_name || null,
           cybercafe_email: cyberData.email || null,
@@ -383,7 +494,6 @@ export const RegistrationForm = ({
     return () => window.clearTimeout(t);
   }, [
     isAdminVariant,
-    step,
     fullName,
     gender,
     parentName,
@@ -465,10 +575,22 @@ export const RegistrationForm = ({
   }, [isAdminVariant]);
 
   useEffect(() => {
-    if (!isAdminVariant && step >= 3) {
+    if (!isAdminVariant && derivedStepRef.current >= 3) {
       prefetchRegistrationCheckout();
     }
-  }, [step, isAdminVariant]);
+  }, [
+    isAdminVariant,
+    universityId,
+    collegeId,
+    degree,
+    departmentName,
+    classSem,
+    session,
+    rollNo,
+    course,
+    beuDetailsCompleted,
+    isBeuFlow,
+  ]);
 
   useEffect(() => {
     if (!isBeuFlow) {
@@ -592,60 +714,70 @@ export const RegistrationForm = ({
     }
   };
 
-  const validateStep = (): boolean => {
-    if (step === 1) {
-      const s = z.object({
+  const validateAllSections = (): boolean => {
+    const personal = z
+      .object({
         fullName: z.string().trim().min(2, "Full name is required").max(100),
         gender: z.string().min(1, "Select gender"),
         parentName: z.string().trim().min(2, "Parent/Guardian name is required").max(100),
         contact: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number"),
         email: z.string().email("Enter a valid email").max(255),
-      }).safeParse({ fullName, gender, parentName, contact, email });
-      if (!s.success) { toast.error(s.error.issues[0].message); return false; }
+      })
+      .safeParse({ fullName, gender, parentName, contact, email });
+    if (!personal.success) {
+      toast.error(personal.error.issues[0].message);
+      return false;
     }
-    if (step === 2) {
-      if (isBeuFlow) {
-        if (!universityId || !collegeId) {
-          toast.error("Select university and college for engineering registration");
-          return false;
-        }
-      } else if (
-        !universityId ||
-        !collegeId ||
-        !degree ||
-        !departmentName ||
-        !classSem ||
-        !session ||
-        !rollNo ||
-        !course
-      ) {
-        toast.error("Please fill all required academic fields");
+
+    if (isBeuFlow) {
+      if (!universityId || !collegeId) {
+        toast.error("Select university and college for engineering registration");
         return false;
       }
+      if (!beuDetailsCompleted) {
+        toast.error("Complete the engineering form before submitting");
+        return false;
+      }
+    } else if (
+      !universityId ||
+      !collegeId ||
+      !degree ||
+      !departmentName ||
+      !classSem ||
+      !session ||
+      !rollNo ||
+      !course
+    ) {
+      toast.error("Please fill all required academic fields");
+      return false;
     }
-    if (step === 3) {
-      const hasAny = emName.trim() || emPhone.trim() || emRel;
-      if (hasAny) {
-        const s = z.object({
+
+    const hasAnyEmergency = emName.trim() || emPhone.trim() || emRel;
+    if (hasAnyEmergency) {
+      const emergency = z
+        .object({
           emName: z.string().trim().min(2).max(100),
           emPhone: z.string().regex(/^[6-9]\d{9}$/, "Enter a valid 10-digit emergency number"),
           emRel: z.string().min(1, "Select relationship"),
-        }).safeParse({ emName, emPhone, emRel });
-        if (!s.success) {
-          toast.error(s.error.issues[0].message);
-          return false;
-        }
-      }
-    }
-    if (step === 4) {
-      const pwErr = validateRegistrationPassword(password, confirmPw);
-      if (pwErr) {
-        toast.error(pwErr);
+        })
+        .safeParse({ emName, emPhone, emRel });
+      if (!emergency.success) {
+        toast.error(emergency.error.issues[0].message);
         return false;
       }
-      if (!agree) { toast.error("Please accept the Terms & Privacy Policy"); return false; }
     }
-    if (step === 5 && consentLetterFile) {
+
+    const pwErr = validateRegistrationPassword(password, confirmPw);
+    if (pwErr) {
+      toast.error(pwErr);
+      return false;
+    }
+    if (!agree) {
+      toast.error("Please accept the Terms & Privacy Policy");
+      return false;
+    }
+
+    if (showConsentStep && consentLetterFile) {
       if (consentLetterFile.size > CONSENT_MAX_BYTES) {
         toast.error(
           isEngineeringFlow
@@ -659,6 +791,7 @@ export const RegistrationForm = ({
         return false;
       }
     }
+
     return true;
   };
 
@@ -684,13 +817,6 @@ export const RegistrationForm = ({
       });
       setBeuModalOpen(false);
       toast.success("Engineering details saved successfully");
-      setStep((s) => {
-        const candidate = Math.min(showConsentStep ? 5 : 4, s + 1) as Step;
-        if (candidate === 3 && rosterStatus === "matched" && !isAdminVariant) {
-          return 4;
-        }
-        return candidate;
-      });
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Could not save engineering details");
     } finally {
@@ -698,47 +824,14 @@ export const RegistrationForm = ({
     }
   };
 
-  const next = async () => {
-    if (!validateStep()) return;
-    if (step === 1) {
-      const ok = await ensureRegistrationIdentityAvailable();
-      if (!ok) return;
-    }
-    if (step === 2 && isBeuFlow && !beuDetailsCompleted) {
-      await saveRegistrationLeadDraft();
-      setBeuModalOpen(true);
+  const openEngineeringForm = async () => {
+    if (!universityId || !collegeId) {
+      toast.error("Select university and college first");
       return;
     }
-    if (step === 2 && isBeuFlow && beuDetailsCompleted) {
-      setStep((s) => {
-        const candidate = Math.min(showConsentStep ? 5 : 4, s + 1) as Step;
-        if (candidate === 3 && rosterStatus === "matched" && !isAdminVariant) {
-          return 4;
-        }
-        return candidate;
-      });
-      return;
-    }
-    setStep((s) => {
-      const cap = showConsentStep ? 5 : 4;
-      const candidate = Math.min(cap, s + 1) as Step;
-      // Roster-matched students skip Step 3 (emergency contacts, which are
-      // optional anyway) and land straight on the payment step.
-      if (candidate === 3 && rosterStatus === "matched" && !isAdminVariant) {
-        return 4;
-      }
-      return candidate;
-    });
+    await saveRegistrationLeadDraft();
+    setBeuModalOpen(true);
   };
-  const back = () =>
-    setStep((s) => {
-      const candidate = Math.max(1, s - 1) as Step;
-      // Mirror the skip on the way back too, so they don't see Step 3.
-      if (candidate === 3 && rosterStatus === "matched" && !isAdminVariant) {
-        return 2;
-      }
-      return candidate;
-    });
 
   const handlePayment = async (
     settings: NonNullable<typeof paymentSettings>
@@ -827,7 +920,9 @@ export const RegistrationForm = ({
       setBeuModalOpen(true);
       return;
     }
-    if (!validateStep()) return;
+    if (!validateAllSections()) return;
+    const identityOk = await ensureRegistrationIdentityAvailable();
+    if (!identityOk) return;
     if (isAdminVariant) {
       await performAdminSubmit();
       return;
@@ -978,7 +1073,7 @@ export const RegistrationForm = ({
     let paymentCaptured = false;
     let consentUpload: Promise<string | null> | null = null;
 
-    if (showConsentStep && step === 5 && consentLetterFile) {
+    if (showConsentStep && consentLetterFile) {
       const docKind = isEngineeringFlow ? "noc" : "consent";
       const docLabel = isEngineeringFlow ? "NoC" : "Consent letter";
       consentUpload = uploadConsentLetterToStorage(
@@ -1495,15 +1590,16 @@ export const RegistrationForm = ({
   const progressSubtitle = isCyberCafeVariant
     ? "Register a student on behalf of your cyber café"
     : isAdminVariant
-      ? "Multi-step form matching the public registration flow"
+      ? "Full registration form matching the public flow"
       : "UGC-mandated internship programme";
 
   return (
-    <div className="max-w-2xl mx-auto p-2">
+    <div className="mx-auto w-full max-w-4xl p-2">
       <RegistrationProgressHeader
-        step={step}
+        step={derivedStep}
         maxStep={maxProgressStep}
         stepLabels={stepLabels}
+        sectionComplete={sectionCompleteFlags}
         loading={catalogLoading}
         showLogo={variant === "public"}
         title={progressTitle}
@@ -1511,11 +1607,23 @@ export const RegistrationForm = ({
       />
 
       {!catalogLoading ? (
-        <>
-      {step === 1 && (
-        <div className="space-y-4 animate-fade-in">
+        <div className="space-y-6">
+      <section
+        id="registration-personal"
+        className="rounded-2xl border border-border/80 bg-card/80 shadow-sm overflow-hidden"
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Personal details</h3>
+            <p className="text-[11px] text-muted-foreground">Name, contact, and email</p>
+          </div>
+          {personalSectionComplete ? (
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-600" aria-hidden />
+          ) : null}
+        </div>
+        <div className="space-y-4 p-4 sm:p-5">
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5"><Label className="text-xs">Full Name *</Label><Input value={fullName} onChange={(e) => setFullName(e.target.value)} className="h-8 text-sm" /></div>
+            <div className="space-y-1.5"><Label className="text-xs">Full Name *</Label><Input value={fullName} onChange={(e) => setFullName(e.target.value)} className="h-9 text-sm" /></div>
             <div className="space-y-1.5">
               <Label className="text-xs">Gender *</Label>
               <RadioGroup value={gender} onValueChange={setGender} className="flex gap-4 pt-1">
@@ -1558,17 +1666,29 @@ export const RegistrationForm = ({
             </div>
           </div>
         </div>
-      )}
+      </section>
 
-      {step === 2 && (
-        <div className="space-y-4 animate-fade-in">
+      <section
+        id="registration-academic"
+        className="rounded-2xl border border-border/80 bg-card/80 shadow-sm overflow-hidden"
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Academic details</h3>
+            <p className="text-[11px] text-muted-foreground">University, college, and internship info</p>
+          </div>
+          {academicSectionComplete ? (
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-600" aria-hidden />
+          ) : null}
+        </div>
+        <div className="space-y-4 p-4 sm:p-5">
           {isEngineeringFlow && (
             <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-4 text-sm">
               <p className="font-bold text-primary">
                 {selectedUni?.name || "Engineering university"} registration
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Select your university and college, then click Next to open the engineering form for course,
+                Select your university and college, then use the button below to open the engineering form for course,
                 branch, specialization, and internship details configured for your institution.
               </p>
               {beuDetailsCompleted && beuFormData ? (
@@ -1698,11 +1818,28 @@ export const RegistrationForm = ({
               </>
             )}
           </div>
+          {isBeuFlow && universityId && collegeId && !beuDetailsCompleted ? (
+            <Button type="button" variant="outline" className="w-full sm:w-auto font-bold" onClick={() => void openEngineeringForm()}>
+              Open engineering registration form
+            </Button>
+          ) : null}
         </div>
-      )}
+      </section>
 
-      {step === 3 && (
-        <div className="space-y-4 animate-fade-in">
+      <section
+        id="registration-emergency"
+        className="rounded-2xl border border-border/80 bg-card/80 shadow-sm overflow-hidden"
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Emergency contact</h3>
+            <p className="text-[11px] text-muted-foreground">Optional — fill all three if you add any</p>
+          </div>
+          {emergencySectionComplete ? (
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-600" aria-hidden />
+          ) : null}
+        </div>
+        <div className="space-y-4 p-4 sm:p-5">
           <p className="text-[11px] text-muted-foreground">Emergency details are optional. If you fill any field, complete all three.</p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5"><Label className="text-xs">Emergency contact person name</Label><Input value={emName} onChange={(e) => setEmName(e.target.value)} /></div>
@@ -1710,52 +1847,22 @@ export const RegistrationForm = ({
             <div className="sm:col-span-2 space-y-1.5"><Label className="text-xs">Relationship</Label><Select value={emRel} onValueChange={setEmRel}><SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Optional" /></SelectTrigger><SelectContent>{["Father", "Mother", "Guardian", "Other"].map((r) => (<SelectItem key={r} value={r}>{r}</SelectItem>))}</SelectContent></Select></div>
           </div>
         </div>
-      )}
+      </section>
 
-      {step === 5 && showConsentStep && (
-        <div className="space-y-4 animate-fade-in">
-          <div className="rounded-xl border-2 border-primary/20 bg-muted/30 p-4 space-y-3">
-            <div className="flex items-start gap-2">
-              <FileText className="size-5 text-primary shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-bold text-foreground">
-                  {isEngineeringFlow ? "NoC upload" : "Consent letter"}{" "}
-                  <span className="font-normal text-muted-foreground">(optional)</span>
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
-                  {isEngineeringFlow
-                    ? "Upload your No Objection Certificate (NoC) if available. Accepted formats: PDF, PNG, JPEG, WebP, or GIF (max 10 MB)."
-                    : "Not required. Accepted formats: PDF, PNG, JPEG, WebP, or GIF (max 10 MB)."}
-                </p>
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-xs">{isEngineeringFlow ? "NoC document" : "Consent letter"}</Label>
-              <label className="flex flex-col sm:flex-row sm:items-center gap-2 cursor-pointer">
-                <Input
-                  type="file"
-                  accept=".pdf,application/pdf,image/png,image/jpeg,image/webp,image/gif"
-                  className="h-9 text-xs cursor-pointer"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    setConsentLetterFile(f ?? null);
-                  }}
-                />
-                {consentLetterFile && (
-                  <span className="text-[10px] text-muted-foreground truncate">{consentLetterFile.name}</span>
-                )}
-              </label>
-            </div>
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
-              <Upload className="size-3.5 shrink-0" />
-              You can skip this upload and continue to payment.
-            </p>
+      <section
+        id="registration-security"
+        className="rounded-2xl border border-border/80 bg-card/80 shadow-sm overflow-hidden"
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Account & payment</h3>
+            <p className="text-[11px] text-muted-foreground">Password, terms, and fee summary</p>
           </div>
+          {securitySectionComplete ? (
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-600" aria-hidden />
+          ) : null}
         </div>
-      )}
-
-      {step === 4 && (
-        <div className="space-y-4 animate-fade-in">
+        <div className="space-y-4 p-4 sm:p-5">
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs">Password *</Label>
@@ -1832,29 +1939,79 @@ export const RegistrationForm = ({
             <span className="text-[10px] text-muted-foreground leading-tight">I agree to the Terms & Privacy Policy and internship terms.</span>
           </label>
         </div>
-      )}
+      </section>
 
-      <div className="flex items-center justify-between mt-8 pt-4 border-t">
-        <Button variant="ghost" size="sm" onClick={back} disabled={step === 1}><ChevronLeft className="size-4 mr-1" /> Back</Button>
-        {step < 4 || (step === 4 && showConsentStep) ? (
-          <Button size="sm" onClick={() => void next()} disabled={checkingRegistration}>
-            {checkingRegistration ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <>
-                Next <ChevronRight className="size-4 ml-1" />
-              </>
-            )}
-          </Button>
-        ) : (
-          <Button size="sm" variant="hero" onClick={() => void submit()} disabled={submitting}>
-            {submitting && <Loader2 className="size-4 animate-spin mr-2" />}
-            {isAdminVariant ? "Create student (no payment)" : "Complete Registration"}
-          </Button>
-        )}
+      {showConsentStep ? (
+      <section
+        id="registration-consent"
+        className="rounded-2xl border border-border/80 bg-card/80 shadow-sm overflow-hidden"
+      >
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 bg-muted/30 px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-bold text-foreground">
+              {isEngineeringFlow ? "NoC upload" : "Consent letter"}
+            </h3>
+            <p className="text-[11px] text-muted-foreground">Optional document upload</p>
+          </div>
+          {consentSectionComplete ? (
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-600" aria-hidden />
+          ) : null}
+        </div>
+        <div className="space-y-4 p-4 sm:p-5">
+          <div className="rounded-xl border-2 border-primary/20 bg-muted/30 p-4 space-y-3">
+            <div className="flex items-start gap-2">
+              <FileText className="size-5 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-foreground">
+                  {isEngineeringFlow ? "NoC upload" : "Consent letter"}{" "}
+                  <span className="font-normal text-muted-foreground">(optional)</span>
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-1 leading-snug">
+                  {isEngineeringFlow
+                    ? "Upload your No Objection Certificate (NoC) if available. Accepted formats: PDF, PNG, JPEG, WebP, or GIF (max 10 MB)."
+                    : "Not required. Accepted formats: PDF, PNG, JPEG, WebP, or GIF (max 10 MB)."}
+                </p>
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">{isEngineeringFlow ? "NoC document" : "Consent letter"}</Label>
+              <label className="flex flex-col sm:flex-row sm:items-center gap-2 cursor-pointer">
+                <Input
+                  type="file"
+                  accept=".pdf,application/pdf,image/png,image/jpeg,image/webp,image/gif"
+                  className="h-9 text-xs cursor-pointer"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    setConsentLetterFile(f ?? null);
+                  }}
+                />
+                {consentLetterFile && (
+                  <span className="text-[10px] text-muted-foreground truncate">{consentLetterFile.name}</span>
+                )}
+              </label>
+            </div>
+            <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+              <Upload className="size-3.5 shrink-0" />
+              You can skip this upload and submit when ready.
+            </p>
+          </div>
+        </div>
+      </section>
+      ) : null}
+
+      <div className="sticky bottom-0 z-10 -mx-2 border-t border-border/80 bg-background/95 px-2 py-4 backdrop-blur-sm sm:static sm:border-0 sm:bg-transparent sm:py-0 sm:backdrop-blur-none">
+        <Button
+          size="lg"
+          variant="hero"
+          className="w-full font-bold sm:max-w-md sm:ml-auto sm:flex"
+          onClick={() => void submit()}
+          disabled={submitting || checkingRegistration}
+        >
+          {(submitting || checkingRegistration) && <Loader2 className="size-4 animate-spin mr-2" />}
+          {isAdminVariant ? "Create student (no payment)" : "Complete Registration"}
+        </Button>
       </div>
-
-        </>
+        </div>
       ) : null}
 
       <BeuRegistrationModal
