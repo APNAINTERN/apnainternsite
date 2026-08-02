@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,18 @@ import { Label } from "@/components/ui/label";
 import { MapPin, Phone, Mail, Send, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { fetchSiteSettings, parseContactPhones, phoneToTelHref } from "@/lib/siteSettings";
 
 const Contact = () => {
   const [loading, setLoading] = useState(false);
+  const [supportPhones, setSupportPhones] = useState<string[]>([]);
+
+  useEffect(() => {
+    void fetchSiteSettings().then((settings) => {
+      const fromAdmin = parseContactPhones(settings?.contact_support_phones);
+      setSupportPhones(fromAdmin);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,10 +90,21 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="text-xs font-black uppercase tracking-widest text-slate-400 mb-1">Call Support</p>
-                      <div className="flex flex-col gap-1">
-                        <a href="tel:9341143791" className="text-slate-700 font-bold hover:text-primary transition-colors">9341143791</a>
-                        <a href="tel:7858967071" className="text-slate-700 font-bold hover:text-primary transition-colors">7858967071</a>
-                      </div>
+                      {supportPhones.length > 0 ? (
+                        <div className="flex flex-col gap-1">
+                          {supportPhones.map((phone) => (
+                            <a
+                              key={phone}
+                              href={phoneToTelHref(phone)}
+                              className="text-slate-700 font-bold hover:text-primary transition-colors"
+                            >
+                              {phone}
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-slate-500 text-sm">Reach us by email or the form — phone numbers can be added from the admin panel.</p>
+                      )}
                     </div>
                   </div>
 

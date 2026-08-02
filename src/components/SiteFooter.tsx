@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Phone, Mail, MapPin, Instagram, Youtube, Linkedin, Facebook, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,23 @@ import {
 } from "@/lib/brand";
 import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
+import { fetchSiteSettings, phoneToTelHref } from "@/lib/siteSettings";
 
-export const SiteFooter = () => (
+export const SiteFooter = () => {
+  const [footerPhone, setFooterPhone] = useState<string | null>(null);
+
+  useEffect(() => {
+    void fetchSiteSettings().then((settings) => {
+      if (
+        settings?.show_support_phone_on_footer &&
+        settings.support_phone?.trim()
+      ) {
+        setFooterPhone(settings.support_phone.trim());
+      }
+    });
+  }, []);
+
+  return (
   <footer id="footer" className="relative border-t border-slate-800 bg-slate-950 text-slate-400">
     <div className="home-shimmer-line absolute inset-x-0 top-0 h-px opacity-40" aria-hidden />
 
@@ -96,10 +112,14 @@ export const SiteFooter = () => (
               <MapPin className="mt-0.5 size-5 shrink-0 text-primary" />
               <span>Arfabad Colony, East Nahar Road, Bajrangpuri, Patna - 800007, Bihar</span>
             </li>
-            <li className="flex items-center gap-3">
-              <Phone className="size-5 shrink-0 text-primary" />
-              <a href="tel:+917050936593" className="transition-colors hover:text-white">+91 70509 36593</a>
-            </li>
+            {footerPhone ? (
+              <li className="flex items-center gap-3">
+                <Phone className="size-5 shrink-0 text-primary" />
+                <a href={phoneToTelHref(footerPhone)} className="transition-colors hover:text-white">
+                  {footerPhone}
+                </a>
+              </li>
+            ) : null}
             <li className="flex items-center gap-3">
               <Mail className="size-5 shrink-0 text-primary" />
               <div className="flex flex-col">
@@ -120,4 +140,5 @@ export const SiteFooter = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};

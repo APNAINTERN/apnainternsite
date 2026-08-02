@@ -95,7 +95,7 @@ import {
   isAllowedConsentLetterFile,
   uploadConsentLetterToStorage,
 } from "@/lib/studentDocuments";
-import { Eye, EyeOff, Loader2, CheckCircle2, ChevronLeft, ChevronRight, MessageSquare, Info, Upload, FileText } from "lucide-react";
+import { Eye, EyeOff, Loader2, CheckCircle2, ChevronLeft, ChevronRight, Info, Upload, FileText } from "lucide-react";
 import { z } from "zod";
 import {
   Dialog,
@@ -105,10 +105,6 @@ import {
   DialogDescription,
   DialogFooter
 } from "@/components/ui/dialog";
-
-const REGISTRATION_HELP_WHATSAPP_URL = "https://whatsapp.com/channel/0029VbC9lvi3bbV8TS7TbB00";
-const REGISTRATION_HELP_PHONE_E164 = "+917050936593";
-const REGISTRATION_HELP_PHONE_DISPLAY = "+91 70509 36593";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -1854,37 +1850,6 @@ export const RegistrationForm = ({
 
         </>
       ) : null}
-
-      {!isAdminVariant && (
-        <div className="mt-5 rounded-lg border-2 border-emerald-600/30 bg-emerald-50/95 dark:bg-emerald-950/40 dark:border-emerald-700/50 p-3 sm:p-4 space-y-3 shadow-sm">
-          <p className="text-xs sm:text-sm font-bold text-emerald-950 dark:text-emerald-50 text-center sm:text-left leading-snug">
-            Call us:{" "}
-            <a
-              href={`tel:${REGISTRATION_HELP_PHONE_E164.replace(/\s/g, "")}`}
-              className="underline decoration-emerald-700 underline-offset-2 font-bold text-emerald-900 dark:text-emerald-100 hover:text-emerald-700"
-            >
-              {REGISTRATION_HELP_PHONE_DISPLAY}
-            </a>
-          </p>
-          <p className="text-[11px] text-emerald-900/90 dark:text-emerald-200/90 font-semibold text-center sm:text-left leading-snug">
-            Updates, deadlines & certificate info — join our WhatsApp channel for alerts.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="w-full font-bold bg-[#25D366] hover:bg-[#20bd5a] text-white border-0 shadow-md h-11 text-sm sm:text-base"
-          >
-            <a href={REGISTRATION_HELP_WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-              <MessageSquare className="size-4 mr-2 shrink-0" aria-hidden />
-              Join WhatsApp channel
-            </a>
-          </Button>
-          <p className="text-[10px] text-emerald-900/85 dark:text-emerald-200/90 font-semibold text-center border-t border-emerald-600/20 pt-3">
-            Instant support & important alerts — internship से जुड़ी मदद और updates के लिए।
-          </p>
-        </div>
-      )}
-
 
       <BeuRegistrationModal
         open={beuModalOpen}

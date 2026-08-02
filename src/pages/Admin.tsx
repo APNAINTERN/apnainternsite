@@ -60,6 +60,7 @@ import { AdminAddRegistrationPanel } from "@/components/AdminAddRegistrationPane
 import { StudentDataUploadPanel } from "@/components/admin/StudentDataUploadPanel";
 import { GalleryManagementPanel } from "@/components/admin/GalleryManagementPanel";
 import { HomeCmsManagementPanel } from "@/components/admin/HomeCmsManagementPanel";
+import { SiteContactSettingsPanel } from "@/components/admin/SiteContactSettingsPanel";
 import { ConsultLetterManagementPanel } from "@/components/admin/ConsultLetterManagementPanel";
 import { LeadAssignmentPanel } from "@/components/admin/LeadAssignmentPanel";
 import { BulkUploadStudentBadge } from "@/components/BulkUploadStudentBadge";
@@ -4555,6 +4556,8 @@ Apna Intern Team`;
                     </div>
                   </div>
                 </Card>
+
+                <SiteContactSettingsPanel />
               </div>
             </TabsContent>
 

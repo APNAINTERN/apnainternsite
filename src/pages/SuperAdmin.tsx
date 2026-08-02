@@ -57,6 +57,7 @@ import {
   sendBulkCustomMail,
 } from "@/lib/bulkCustomMailSend";
 import { FeesManagementPanel } from "@/components/admin/FeesManagementPanel";
+import { SiteContactSettingsPanel } from "@/components/admin/SiteContactSettingsPanel";
 import { BulkUploadStudentBadge } from "@/components/BulkUploadStudentBadge";
 import { fetchAllSupabaseRows } from "@/lib/fetchAllSupabaseRows";
 import {
@@ -3725,43 +3726,6 @@ const SuperAdmin = () => {
                       <p className="text-[9px] text-muted-foreground italic font-medium">Adds a random loading delay between steps (set to 0 to disable)</p>
                     </div>
 
-                    <div className="space-y-3 pt-3 border-t border-slate-100">
-                      <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50">
-                        <div>
-                          <Label className="text-xs font-black uppercase tracking-tight flex items-center gap-1.5 text-slate-800">
-                            <span className="inline-block size-2 rounded-full bg-[#25D366]"></span>
-                            WhatsApp Join Option
-                          </Label>
-                          <p className="text-[10px] text-muted-foreground">Show join channel button in popup</p>
-                        </div>
-                        <Checkbox 
-                          checked={siteSettings.whatsapp_link_enabled} 
-                          onCheckedChange={(checked) => setSiteSettings({...siteSettings, whatsapp_link_enabled: !!checked})} 
-                        />
-                      </div>
-
-                      {siteSettings.whatsapp_link_enabled && (
-                        <div className="space-y-1.5">
-                          <Label className="text-[10px] text-slate-500 uppercase font-black tracking-tight">WhatsApp Channel Link</Label>
-                          <Input 
-                            value={siteSettings.whatsapp_link_url || ''} 
-                            onChange={(e) => setSiteSettings({...siteSettings, whatsapp_link_url: e.target.value})} 
-                            placeholder="https://whatsapp.com/channel/..."
-                            className="bg-slate-50 border-none h-10 text-xs" 
-                          />
-                        </div>
-                      )}
-
-                      {!hasWhatsappColumn && (
-                        <div className="p-3 rounded-xl bg-amber-50 border border-amber-100 text-[10px] text-amber-800 leading-normal">
-                          <p className="font-bold flex items-center gap-1">
-                            ⚠️ SQL Migration Needed
-                          </p>
-                          <p className="mt-0.5">Please execute the SQL migration script (available in <code>supabase/add_whatsapp_link_to_settings.sql</code>) in your Supabase SQL Editor to save this setting to the database.</p>
-                        </div>
-                      )}
-                    </div>
-
                     <Button 
                       className="w-full h-11 bg-primary hover:bg-primary/90 font-black" 
                       onClick={handleUpdateSiteSettings}
@@ -3771,6 +3735,8 @@ const SuperAdmin = () => {
                     </Button>
                   </div>
                 </Card>
+
+                <SiteContactSettingsPanel className="md:col-span-2 lg:col-span-1" onSaved={loadAll} />
               </div>
             </TabsContent>
 

@@ -15,6 +15,9 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
   reg_max_delay INTEGER DEFAULT 0,
   whatsapp_link_enabled BOOLEAN DEFAULT true,
   whatsapp_link_url TEXT DEFAULT 'https://whatsapp.com/channel/0029VbC9lvi3bbV8TS7TbB00',
+  support_phone TEXT DEFAULT '',
+  show_support_phone_on_footer BOOLEAN DEFAULT false,
+  contact_support_phones TEXT DEFAULT '',
   updated_at TIMESTAMPTZ DEFAULT now(),
   CONSTRAINT site_settings_one_row CHECK (id = 1)
 );
@@ -32,11 +35,12 @@ DROP POLICY IF EXISTS "Anyone can view settings" ON public.site_settings;
 CREATE POLICY "Anyone can view settings" ON public.site_settings FOR SELECT USING (true);
 
 DROP POLICY IF EXISTS "Super admins manage settings" ON public.site_settings;
-CREATE POLICY "Super admins manage settings" ON public.site_settings FOR ALL USING (
+DROP POLICY IF EXISTS "Admins manage settings" ON public.site_settings;
+CREATE POLICY "Admins manage settings" ON public.site_settings FOR ALL USING (
   EXISTS (
     SELECT 1 FROM public.user_roles
     WHERE user_roles.user_id = auth.uid()
-    AND role = 'super_admin'
+    AND role IN ('admin', 'super_admin')
   )
 );
 
