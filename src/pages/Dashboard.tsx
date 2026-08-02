@@ -38,6 +38,8 @@ import {
   hasRequiredCertificateIdentityFields,
 } from "@/lib/certificateFormat";
 import { downloadCertificatePdf } from "@/lib/certificatePdf";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import {
   hasInternshipAccess,
   internshipUpgradePaymentPath,
@@ -112,6 +114,10 @@ const Dashboard = () => {
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [payment, setPayment] = useState<any>(null);
   const [generating, setGenerating] = useState(false);
+
+  useGlobalLoadingEffect(loading, loadingMessage("loadingDashboard"));
+  useGlobalLoadingEffect(generating, loadingMessage("generatingCertificate"));
+
   const [liveClasses, setLiveClasses] = useState<any[]>([]);
   const [systemSettings, setSystemSettings] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");

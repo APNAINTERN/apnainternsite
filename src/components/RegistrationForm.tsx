@@ -96,6 +96,8 @@ import {
   uploadConsentLetterToStorage,
 } from "@/lib/studentDocuments";
 import { Eye, EyeOff, Loader2, CheckCircle2, ChevronLeft, ChevronRight, Info, Upload, FileText } from "lucide-react";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { z } from "zod";
 import {
   Dialog,
@@ -152,6 +154,10 @@ export const RegistrationForm = ({
     phone?: string;
   }>({});
   const [checkingRegistration, setCheckingRegistration] = useState(false);
+
+  useGlobalLoadingEffect(catalogLoading, loadingMessage("fetching"));
+  useGlobalLoadingEffect(submitting, loadingMessage("registering"));
+  useGlobalLoadingEffect(checkingRegistration, loadingMessage("verifying"));
 
   // Step 2
   const [unis, setUnis] = useState<University[]>([]);

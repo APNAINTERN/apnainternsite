@@ -10,10 +10,14 @@ import { MapPin, Phone, Mail, Send, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
 import { fetchSiteSettings, parseContactPhones, phoneToTelHref } from "@/lib/siteSettings";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 
 const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [supportPhones, setSupportPhones] = useState<string[]>([]);
+
+  useGlobalLoadingEffect(loading, loadingMessage("processing"));
 
   useEffect(() => {
     void fetchSiteSettings().then((settings) => {

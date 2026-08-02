@@ -1,9 +1,11 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { CreditCard, Loader2, Lock } from "lucide-react";
+import { CreditCard, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { BrandLoadingSpinner } from "@/components/BrandLoadingSpinner";
+import { loadingMessage } from "@/lib/loadingMessages";
 import {
   canAccessStudentDashboard,
   STUDENT_PAYMENT_REQUIRED_PATH,
@@ -61,14 +63,10 @@ export function StudentDashboardGate({ children }: { children: ReactNode }) {
 
   if ((authLoading || checking) && verifiedUserIdRef.current !== user?.id) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <Loader2 className="size-10 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-            Verifying enrollment...
-          </p>
-        </div>
-      </div>
+      <BrandLoadingSpinner
+        fullScreen
+        message={loadingMessage("verifying")}
+      />
     );
   }
 

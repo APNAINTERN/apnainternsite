@@ -1,7 +1,8 @@
 import { ReactNode, useMemo } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth, UserRole } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { BrandLoadingSpinner } from "@/components/BrandLoadingSpinner";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { isAdminAreaPath, isCollegeAreaPath, isReferralAreaPath, loginPathForProtectedRoute } from "@/lib/authRoutes";
 import { isAdminPortalSessionActive } from "@/lib/adminAuthSession";
 import { isStudentPortalSessionActive } from "@/lib/studentAuthSession";
@@ -34,14 +35,10 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
 
   if (showAuthLoader) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <Loader2 className="size-10 animate-spin text-primary mx-auto mb-4" />
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-            Verifying Identity...
-          </p>
-        </div>
-      </div>
+      <BrandLoadingSpinner
+        fullScreen
+        message={loadingMessage("verifying")}
+      />
     );
   }
 
@@ -57,14 +54,10 @@ export const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) 
   if (allowedRoles && allowedRoles.length > 0) {
     if (!effectiveRoles.length && user) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50">
-          <div className="text-center">
-            <Loader2 className="size-10 animate-spin text-primary mx-auto mb-4" />
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest animate-pulse">
-              Loading permissions...
-            </p>
-          </div>
-        </div>
+        <BrandLoadingSpinner
+          fullScreen
+          message={loadingMessage("loadingPermissions")}
+        />
       );
     }
 

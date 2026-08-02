@@ -61,6 +61,8 @@ import { StudentDataUploadPanel } from "@/components/admin/StudentDataUploadPane
 import { GalleryManagementPanel } from "@/components/admin/GalleryManagementPanel";
 import { HomeCmsManagementPanel } from "@/components/admin/HomeCmsManagementPanel";
 import { SiteContactSettingsPanel } from "@/components/admin/SiteContactSettingsPanel";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { ConsultLetterManagementPanel } from "@/components/admin/ConsultLetterManagementPanel";
 import { LeadAssignmentPanel } from "@/components/admin/LeadAssignmentPanel";
 import { BulkUploadStudentBadge } from "@/components/BulkUploadStudentBadge";
@@ -313,6 +315,9 @@ export default function Admin() {
   const [engineeringUniNames, setEngineeringUniNames] = useState<string[]>([]);
   const [engCatalog, setEngCatalog] = useState(() => aggregateEngineeringCatalogOptions([]));
   const [processing, setProcessing] = useState(false);
+
+  useGlobalLoadingEffect(processing, loadingMessage("processing"));
+  useGlobalLoadingEffect(isStudentsLoading, loadingMessage("fetching"));
 
   // Form States
   const [staffEmail, setStaffEmail] = useState("");

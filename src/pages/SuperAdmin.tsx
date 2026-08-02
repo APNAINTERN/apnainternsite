@@ -58,6 +58,8 @@ import {
 } from "@/lib/bulkCustomMailSend";
 import { FeesManagementPanel } from "@/components/admin/FeesManagementPanel";
 import { SiteContactSettingsPanel } from "@/components/admin/SiteContactSettingsPanel";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { BulkUploadStudentBadge } from "@/components/BulkUploadStudentBadge";
 import { fetchAllSupabaseRows } from "@/lib/fetchAllSupabaseRows";
 import {
@@ -213,6 +215,11 @@ const SuperAdmin = () => {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [editData, setEditData] = useState<any>(null);
   const [processing, setProcessing] = useState(false);
+
+  useGlobalLoadingEffect(processing, loadingMessage("processing"));
+  useGlobalLoadingEffect(isStudentsLoading, loadingMessage("fetching"));
+  useGlobalLoadingEffect(isSiteSettingsLoading, loadingMessage("saving"));
+
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [resetConfirmText, setResetConfirmText] = useState("");
   const [resetOptions, setResetOptions] = useState({

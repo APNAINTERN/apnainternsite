@@ -44,6 +44,8 @@ import {
 import { PASSWORD_RESETS_SCHEMA_HINT, passwordResetInsertRow } from "@/lib/passwordResetRow";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { NoticePopup } from "@/components/NoticePopup";
 import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
 import { BrandWordmark } from "@/components/brand/BrandWordmark";
@@ -129,6 +131,10 @@ const Login = () => {
   const [resetOtp, setResetOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
+
+  const showAuthLoader =
+    loginLoading || resetLoading || adminOtpSending || studentOtpSending || loading;
+  useGlobalLoadingEffect(showAuthLoader, loadingMessage("signingIn"));
 
   // Credential emails link with ?portal=student: sign out so admin/staff session does not steal the student login page.
   // Otherwise any existing session skips the form and redirects to that user's dashboard.
