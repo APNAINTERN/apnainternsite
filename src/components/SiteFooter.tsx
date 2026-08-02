@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import {
   BRAND_CONTACT_EMAIL,
   BRAND_SUPPORT_EMAIL,
-  BRAND_TAGLINE,
 } from "@/lib/brand";
+import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 
 export const SiteFooter = () => (
   <footer id="footer" className="relative border-t border-slate-800 bg-slate-950 text-slate-400">
@@ -35,18 +36,10 @@ export const SiteFooter = () => (
       <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-6">
           <div className="flex flex-col gap-4">
-            <Link to="/" className="inline-block w-fit">
-              <div className="rounded-2xl bg-white p-3 shadow-lg ring-1 ring-white/10">
-                <img
-                  src="/logo-full.png"
-                  alt="Apna Intern"
-                  className="h-20 w-auto object-contain"
-                />
-              </div>
+            <Link to="/" className="inline-flex w-fit items-center gap-3">
+              <BrandLogoMark size="md" />
+              <BrandWordmark size="md" variant="light" showTagline taglineClassName="text-slate-500" />
             </Link>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-              {BRAND_TAGLINE}
-            </p>
           </div>
           <p className="text-sm leading-relaxed text-slate-400">
             India&apos;s trusted platform for UGC-compliant internship programmes, digital certification, and academic credit tracking.

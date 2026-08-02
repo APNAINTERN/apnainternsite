@@ -1622,9 +1622,9 @@ const Dashboard = () => {
                       <div className="size-12 md:size-14 rounded-[10px] md:rounded-[12px] bg-[#5AA3E6] flex items-center justify-center shadow-sm">
                         <span className="text-white font-black text-2xl md:text-3xl tracking-tighter leading-none mt-0.5 md:mt-1">AI</span>
                       </div>
-                      <div className="flex items-center text-[1.8rem] md:text-[2.2rem] tracking-tight leading-none mt-0.5 md:mt-1">
-                        <span className="font-bold text-[#5AA3E6]">Apna</span>
-                        <span className="font-bold text-slate-900"> Intern</span>
+                      <div className="flex items-center text-[1.8rem] md:text-[2.2rem] tracking-tight leading-none mt-0.5 md:mt-1 font-display font-extrabold">
+                        <span className="brand-wordmark-apna">Apna</span>
+                        <span className="brand-wordmark-intern"> Intern</span>
                       </div>
                     </div>
                     

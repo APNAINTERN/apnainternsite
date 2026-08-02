@@ -45,6 +45,8 @@ import { PASSWORD_RESETS_SCHEMA_HINT, passwordResetInsertRow } from "@/lib/passw
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
 import { NoticePopup } from "@/components/NoticePopup";
+import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import {
   Dialog,
   DialogContent,
@@ -844,12 +846,9 @@ const Login = () => {
             }
           >
             <div className="flex justify-center mb-8">
-              <Link to="/" className="block">
-                <img
-                  src="/logo-full.png"
-                  alt="Apna Intern"
-                  className="h-28 w-auto object-contain"
-                />
+              <Link to="/" className="flex flex-col items-center gap-3">
+                <BrandLogoMark size="lg" />
+                <BrandWordmark size="lg" showTagline />
               </Link>
             </div>
             <div className="text-center mb-8">

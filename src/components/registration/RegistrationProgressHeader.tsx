@@ -1,5 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import { cn } from "@/lib/utils";
 
 export type RegistrationProgressHeaderProps = {
@@ -29,26 +31,10 @@ export function RegistrationProgressHeader({
     <div className={cn("mb-6 space-y-4", className)}>
       {showLogo ? (
         <div className="flex flex-col items-center text-center gap-3">
-          <div className="relative">
-            <div
-              className="absolute inset-0 rounded-full bg-primary/15 blur-md scale-110"
-              aria-hidden
-            />
-            <div className="relative size-[4.5rem] sm:size-24 rounded-full border-[3px] border-white bg-white shadow-md overflow-hidden ring-2 ring-primary/25">
-              <img
-                src="/logo-icon.png"
-                alt="Apna Intern"
-                className="size-full object-cover"
-                width={96}
-                height={96}
-              />
-            </div>
-          </div>
-          <div className="space-y-0.5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/80">
-              Apna Intern
-            </p>
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">{title}</h2>
+          <BrandLogoMark size="xl" className="mx-auto" />
+          <div className="space-y-1">
+            <BrandWordmark size="lg" className="mx-auto" />
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">{title}</h2>
             {subtitle ? (
               <p className="text-xs sm:text-sm text-muted-foreground max-w-md mx-auto leading-snug">
                 {subtitle}

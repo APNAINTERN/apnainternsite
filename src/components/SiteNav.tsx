@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchRolesForUser } from "@/lib/portalAuth";
-import { BRAND_TAGLINE } from "@/lib/brand";
+import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 
 const navLinkClass =
   "relative shrink-0 whitespace-nowrap text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900 after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all hover:after:w-full xl:text-[14px]";
@@ -185,21 +186,9 @@ export const SiteNav = () => {
       }`}
     >
       <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8">
-        <Link to="/" className="flex min-w-0 shrink items-start gap-2.5 sm:gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white p-1 shadow-md ring-2 ring-primary/15 sm:size-11">
-            <img src="/logo-icon.png" alt="Apna Intern" className="size-full object-contain" />
-          </div>
-          <div className="min-w-0 leading-tight">
-            <div className="font-display text-[18px] font-bold tracking-tight text-slate-900 sm:text-[20px]">
-              <span className="text-primary">Apna</span> Intern
-            </div>
-            <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-              {BRAND_TAGLINE}
-            </div>
-            <div className="mt-0.5 text-[8px] font-semibold uppercase leading-snug tracking-[0.04em] text-slate-400 sm:text-[9px]">
-              Apna Intern
-            </div>
-          </div>
+        <Link to="/" className="flex min-w-0 shrink items-center gap-2.5 sm:gap-3">
+          <BrandLogoMark size="sm" />
+          <BrandWordmark size="sm" showTagline className="min-w-0" />
         </Link>
 
         <div className="hidden min-w-0 flex-1 items-center justify-center gap-x-2.5 xl:flex xl:gap-x-4 2xl:gap-x-5">

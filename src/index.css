@@ -46,6 +46,11 @@
     --gradient-soft: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(208 40% 98%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(28 92% 55%) 100%);
 
+    --brand-blue: #5AA3E6;
+    --brand-blue-dark: #2B7CD3;
+    --brand-orange: #F7941D;
+    --brand-orange-dark: #E87800;
+
     --shadow-elegant: 0 10px 40px -10px hsl(224 76% 33% / 0.18);
     --shadow-soft: 0 4px 20px -4px hsl(224 76% 33% / 0.1);
     --shadow-glow: 0 0 60px hsl(224 80% 55% / 0.25);
@@ -155,7 +160,28 @@
   }
 
   .home-gradient-text {
-    @apply bg-gradient-to-r from-sky-600 via-primary to-teal-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-[var(--brand-blue-dark)] via-primary to-[var(--brand-orange)] bg-clip-text text-transparent;
+  }
+
+  .brand-wordmark-apna {
+    @apply font-display font-extrabold;
+    background: linear-gradient(135deg, var(--brand-blue-dark) 0%, var(--brand-blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .brand-wordmark-apna-light {
+    @apply font-display font-extrabold text-[var(--brand-blue)];
+    text-shadow: 0 1px 12px rgb(90 163 230 / 0.35);
+  }
+
+  .brand-wordmark-intern {
+    @apply font-display font-extrabold text-[var(--brand-orange-dark)];
+  }
+
+  .brand-wordmark-intern-light {
+    @apply font-display font-extrabold text-[var(--brand-orange)];
   }
 
   .home-shimmer-line {
