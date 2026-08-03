@@ -92,7 +92,7 @@ async function allocateNextRegistrationId(client: SupabaseClient): Promise<strin
   }
 
   const currentYear = new Date().getFullYear();
-  return `EZY/${currentYear}/INT/${nextSeq}`;
+  return `API/${currentYear}/INT/${nextSeq}`;
 }
 
 /**
@@ -173,7 +173,7 @@ export async function transferLeadToStudentDirectory(
         const parts = regId.split("/");
         const seq = parts.length === 4 ? parseInt(parts[3], 10) : 10001;
         const year = parts.length === 4 ? parts[1] : String(new Date().getFullYear());
-        regId = `EZY/${year}/INT/${(isNaN(seq) ? 10001 : seq) + 1}`;
+        regId = `API/${year}/INT/${(isNaN(seq) ? 10001 : seq) + 1}`;
         retryCount++;
         continue;
       }

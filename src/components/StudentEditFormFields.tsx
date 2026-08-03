@@ -619,7 +619,7 @@ export function StudentEditFormFields({
             <Input
               value={editData.registration_id || ""}
               onChange={(e) => setEditData({ ...editData, registration_id: e.target.value })}
-              placeholder="e.g. EZY/2026/INT/10001"
+              placeholder="e.g. API/2026/INT/10001"
             />
           </div>
           {isEngineeringEdit ? (

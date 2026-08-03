@@ -54,7 +54,7 @@ const MOCK_PREVIEW_ROW: Record<string, unknown> = {
   contact_number: "9876543210",
   university_name: "Bihar Engineering University (BEU)",
   college_name: "Government Engineering College, Patna",
-  registration_id: "EZY/2026/INT/99001",
+  registration_id: "API/2026/INT/99001",
   roll_number: "BEU-CSE-2024-1042",
   created_at: new Date().toISOString(),
   status: "Active",

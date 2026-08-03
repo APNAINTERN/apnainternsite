@@ -169,7 +169,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             if (!isNaN(lastNum)) nextSeq = lastNum + 1;
           }
         }
-        const regId = `EZY/${new Date().getFullYear()}/INT/${nextSeq}`;
+        const regId = `API/${new Date().getFullYear()}/INT/${nextSeq}`;
 
         await db.from('students').insert({
           id: authUserId,

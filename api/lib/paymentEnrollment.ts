@@ -216,7 +216,7 @@ export async function fulfillPaidOrder(
       }
     }
     const currentYear = new Date().getFullYear();
-    regId = `EZY/${currentYear}/INT/${nextSeq}`;
+    regId = `API/${currentYear}/INT/${nextSeq}`;
   }
 
   const selectedDuration = String(
@@ -316,7 +316,7 @@ export async function fulfillPaidOrder(
     ) {
       const parts = String(studentPayload.registration_id).split('/');
       const lastNum = parts.length === 4 ? parseInt(parts[3], 10) : 10001;
-      studentPayload.registration_id = `EZY/${currentYear}/INT/${(isNaN(lastNum) ? 10001 : lastNum) + 1}`;
+      studentPayload.registration_id = `API/${currentYear}/INT/${(isNaN(lastNum) ? 10001 : lastNum) + 1}`;
       retryCount++;
       continue;
     }

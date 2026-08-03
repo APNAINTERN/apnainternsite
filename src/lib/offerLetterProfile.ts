@@ -79,7 +79,7 @@ export type OfferLetterResolved = {
   letterRefNo: string;
   applicationDateIso: string | null;
   fullName: string;
-  /** University / college roll no. from registration (not EZY letter ref). */
+  /** University / college roll no. from registration (not API letter ref). */
   registrationNo: string;
   /** BNMU university roll no. (separate profile field). */
   universityRollNo: string;
@@ -109,14 +109,14 @@ export function fmtOfferLetterDate(iso?: string | null, fallback = "—"): strin
   }
 }
 
-/** Official EZY letter reference (EZY/{year}/INT/{seq}) — not university roll number. */
+/** Official API letter reference (API/{year}/INT/{seq}) — not university roll number. */
 export function letterRefFromProfile(profile: Record<string, unknown> | null | undefined): string {
   const regId = String(profile?.registration_id ?? "").trim();
   if (regId && !isPlaceholderRegistrationId(regId)) return regId;
   return "";
 }
 
-/** Letter ref. for LNMU students: auto-generated EZY registration id at enrolment. */
+/** Letter ref. for LNMU students: auto-generated API registration id at enrolment. */
 export function lnmuLetterRefNo(profile: Record<string, unknown> | null | undefined): string {
   const fromReg = letterRefFromProfile(profile);
   if (fromReg) return fromReg;
@@ -128,7 +128,7 @@ export function lnmuLetterRefNo(profile: Record<string, unknown> | null | undefi
     .replace(/[^a-z0-9]/gi, "")
     .toUpperCase();
   const tail = raw ? raw.slice(-6) : Date.now().toString().slice(-6);
-  return `EZY/LNMU/${yr}/${tail}`;
+  return `API/LNMU/${yr}/${tail}`;
 }
 
 function formatSemesterLabel(raw: string): string {
@@ -259,7 +259,7 @@ export function resolveOfferLetterFields(
       isLnmu: false,
       isBnmu: false,
       issueDate,
-      letterRefNo: String(p.registration_id || "EZY/2026/INT/PENDING"),
+      letterRefNo: String(p.registration_id || "API/2026/INT/PENDING"),
       applicationDateIso: appIso,
       fullName: String(p.full_name || "—").trim() || "—",
       registrationNo: rollRegistrationNo(p, m),
@@ -285,7 +285,7 @@ export function resolveOfferLetterFields(
     isLnmu: false,
     isBnmu: false,
     issueDate,
-    letterRefNo: String(p.registration_id || "EZY/2026/INT/PENDING"),
+    letterRefNo: String(p.registration_id || "API/2026/INT/PENDING"),
     applicationDateIso: appIso,
     fullName: String(p.full_name || "—").trim() || "—",
     registrationNo: rollRegistrationNo(p, m),

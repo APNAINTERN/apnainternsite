@@ -516,7 +516,7 @@ export function NotificationManagementPanel({
                 <Input
                   value={specificStudentId}
                   onChange={(e) => setSpecificStudentId(e.target.value)}
-                  placeholder="e.g. EZY-..."
+                  placeholder="e.g. API-..."
                 />
               </div>
             )}

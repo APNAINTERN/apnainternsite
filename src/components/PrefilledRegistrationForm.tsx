@@ -703,7 +703,7 @@ export const PrefilledRegistrationForm = ({
         if (seqs.length > 0) nextSeq = Math.max(...seqs) + 1;
       }
       const currentYear = new Date().getFullYear();
-      let regId = `EZY/${currentYear}/INT/${nextSeq}`;
+      let regId = `API/${currentYear}/INT/${nextSeq}`;
 
       const studentData = {
         ...prePayStudentData,
@@ -756,7 +756,7 @@ export const PrefilledRegistrationForm = ({
           const pg = err as { code?: string; message?: string };
           if (String(pg.message || "").includes("registration_id")) {
             nextSeq++;
-            regId = `EZY/${currentYear}/INT/${nextSeq}`;
+            regId = `API/${currentYear}/INT/${nextSeq}`;
             retryCount++;
             continue;
           }

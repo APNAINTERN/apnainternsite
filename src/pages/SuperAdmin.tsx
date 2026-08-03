@@ -978,7 +978,7 @@ const SuperAdmin = () => {
     try {
       const issues = selectedStudents.map(id => {
         const s = students.find(x => x.id === id);
-        const certId = s.registration_id || `EZY-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+        const certId = s.registration_id || `API-${new Date().getFullYear()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
         return {
           user_id: id,
           student_name: s.full_name,
@@ -4403,7 +4403,7 @@ const SuperAdmin = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">
                       <Label className="text-xs">Intern ID (Registration ID)</Label>
-                      <Input value={editData.registration_id || ""} onChange={e => setEditData({...editData, registration_id: e.target.value})} placeholder="e.g. EZY/2026/INT/10001" />
+                      <Input value={editData.registration_id || ""} onChange={e => setEditData({...editData, registration_id: e.target.value})} placeholder="e.g. API/2026/INT/10001" />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Internship Duration</Label>

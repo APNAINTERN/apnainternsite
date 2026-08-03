@@ -118,7 +118,7 @@ export function certificateVerifyUrl(certificateId: string): string {
 export function isApnaInternRegistrationId(value: string | null | undefined): boolean {
   const v = String(value ?? "").trim();
   if (!v) return false;
-  return /^EZY\/\d{4}\/INT\//i.test(v) || isPlaceholderRegistrationId(v);
+  return /^API\/\d{4}\/INT\//i.test(v) || isPlaceholderRegistrationId(v);
 }
 
 export function isValidUniversityRollNo(value: string | null | undefined): boolean {

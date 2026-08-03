@@ -1,10 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-/** True for empty, EZY/PENDING/{uuid}, or EZY/{year}/INT/PENDING placeholders. */
+/** True for empty, API/PENDING/{uuid}, or API/{year}/INT/PENDING placeholders. */
 export function isPlaceholderRegistrationId(regId: string | null | undefined): boolean {
   const r = String(regId ?? "").trim();
   if (!r) return true;
-  return /^EZY\/PENDING\//i.test(r) || /\/INT\/PENDING$/i.test(r);
+  return /^API\/PENDING\//i.test(r) || /\/INT\/PENDING$/i.test(r);
 }
 
 /** Letter / dashboard display — never show PENDING placeholders. */
@@ -15,10 +15,10 @@ export function displayRegistrationId(
   const r = String(regId ?? "").trim();
   if (r && !isPlaceholderRegistrationId(r)) return r;
   const yr = createdAt ? new Date(createdAt).getFullYear() : new Date().getFullYear();
-  return `EZY/${yr}/INT/—`;
+  return `API/${yr}/INT/—`;
 }
 
-/** Next EZY/{year}/INT/{seq} — prefers SECURITY DEFINER RPC (avoids RLS 500 on students list). */
+/** Next API/{year}/INT/{seq} — prefers SECURITY DEFINER RPC (avoids RLS 500 on students list). */
 export async function allocateNextRegistrationId(
   client: SupabaseClient,
   year?: number
@@ -50,7 +50,7 @@ export async function allocateNextRegistrationId(
       .map((row) => {
         const reg = String(row.registration_id || "").trim();
         const parts = reg.split("/");
-        return parts.length === 4 && parts[0] === "EZY" && parts[1] === String(currentYear)
+        return parts.length === 4 && parts[0] === "API" && parts[1] === String(currentYear)
           ? parseInt(parts[3], 10)
           : 0;
       })
@@ -60,5 +60,5 @@ export async function allocateNextRegistrationId(
     console.warn("[registration_id] lookup:", error.message);
   }
 
-  return `EZY/${currentYear}/INT/${nextSeq}`;
+  return `API/${currentYear}/INT/${nextSeq}`;
 }

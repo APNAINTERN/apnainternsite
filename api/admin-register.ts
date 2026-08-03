@@ -148,7 +148,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     };
 
-    let regId = `EZY/${currentYear}/INT/${nextSeq}`;
+    let regId = `API/${currentYear}/INT/${nextSeq}`;
     let retryCount = 0;
     while (retryCount < 10) {
       insertPayload.registration_id = regId;
@@ -156,7 +156,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (insertError) {
         if (insertError.code === '23505' && insertError.message.includes('registration_id')) {
           nextSeq++;
-          regId = `EZY/${currentYear}/INT/${nextSeq}`;
+          regId = `API/${currentYear}/INT/${nextSeq}`;
           retryCount++;
           continue;
         }

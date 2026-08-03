@@ -1102,7 +1102,7 @@ const Login = () => {
                       isReferralLoginRoute
                         ? "you@example.com"
                         : isStudentLoginRoute
-                          ? "Email, mobile, EZY/2026/INT/… or roll no."
+                          ? "Email, mobile, API/2026/INT/… or roll no."
                           : "Email or 10-digit phone"
                     }
                     className="h-12 bg-slate-50 border-none shadow-inner rounded-xl pl-4"
@@ -1254,7 +1254,7 @@ const Login = () => {
                     type="text"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    placeholder="Email, mobile, EZY/… or roll no."
+                    placeholder="Email, mobile, API/… or roll no."
                     required
                   />
                 </div>

@@ -100,7 +100,7 @@ serve(async (req) => {
           if (!isNaN(lastNum)) nextSeq = lastNum + 1;
         }
       }
-      const regId = `EZY/${new Date().getFullYear()}/INT/${nextSeq}`;
+      const regId = `API/${new Date().getFullYear()}/INT/${nextSeq}`;
 
       // Create Student Record
       const { error: studentError } = await supabase.from("students").insert({
@@ -284,7 +284,7 @@ serve(async (req) => {
             if (!isNaN(lastNum)) nextSeq = lastNum + 1;
           }
         }
-        const regId = `EZY/${new Date().getFullYear()}/INT/${nextSeq}`;
+        const regId = `API/${new Date().getFullYear()}/INT/${nextSeq}`;
         
         await supabase.from("students").insert({
           id: authUserId,

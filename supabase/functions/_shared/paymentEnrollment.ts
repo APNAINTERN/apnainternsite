@@ -204,7 +204,7 @@ export async function fulfillPaidOrder(
 
     let studentError: unknown = null;
     let retryCount = 0;
-    let currentRegId = `EZY/${currentYear}/INT/${nextSeq}`;
+    let currentRegId = `API/${currentYear}/INT/${nextSeq}`;
 
     while (retryCount < 5) {
       studentData.registration_id = currentRegId;
@@ -212,7 +212,7 @@ export async function fulfillPaidOrder(
       if (error) {
         if (error.code === '23505' && error.message.includes('registration_id')) {
           nextSeq++;
-          currentRegId = `EZY/${currentYear}/INT/${nextSeq}`;
+          currentRegId = `API/${currentYear}/INT/${nextSeq}`;
           retryCount++;
           continue;
         }
