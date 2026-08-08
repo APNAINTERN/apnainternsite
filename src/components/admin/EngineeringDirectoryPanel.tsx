@@ -50,7 +50,7 @@ const PAGE_SIZE = 50;
 const MOCK_PREVIEW_ROW: Record<string, unknown> = {
   id: "00000000-0000-4000-8000-00000000beu1",
   full_name: "Arjun Kumar (Sample Preview)",
-  email: "arjun.kumar.mock@beu-demo.ezyintern.in",
+  email: "arjun.kumar.mock@beu-demo.apnaintern.in",
   contact_number: "9876543210",
   university_name: "Bihar Engineering University (BEU)",
   college_name: "Government Engineering College, Patna",
