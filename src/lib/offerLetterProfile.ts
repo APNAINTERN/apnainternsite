@@ -15,7 +15,7 @@ import {
   LNMU_INTERNSHIP_START,
 } from "@/lib/internshipProgramme";
 import { normalizeInternshipMode } from "@/lib/collegeRoster";
-import { isPlaceholderRegistrationId } from "@/lib/registrationId";
+import { isPlaceholderRegistrationId, pendingRegistrationPlaceholder } from "@/lib/registrationId";
 import {
   enrichStudentProfileForDisplay,
   resolveSelectedInternshipDuration,
@@ -109,7 +109,7 @@ export function fmtOfferLetterDate(iso?: string | null, fallback = "—"): strin
   }
 }
 
-/** Official API letter reference (API/{year}/INT/{seq}) — not university roll number. */
+/** Official API letter reference (API/INT/{year}/{seq}) — not university roll number. */
 export function letterRefFromProfile(profile: Record<string, unknown> | null | undefined): string {
   const regId = String(profile?.registration_id ?? "").trim();
   if (regId && !isPlaceholderRegistrationId(regId)) return regId;
@@ -259,7 +259,7 @@ export function resolveOfferLetterFields(
       isLnmu: false,
       isBnmu: false,
       issueDate,
-      letterRefNo: String(p.registration_id || "API/2026/INT/PENDING"),
+      letterRefNo: String(p.registration_id || pendingRegistrationPlaceholder()),
       applicationDateIso: appIso,
       fullName: String(p.full_name || "—").trim() || "—",
       registrationNo: rollRegistrationNo(p, m),
@@ -285,7 +285,7 @@ export function resolveOfferLetterFields(
     isLnmu: false,
     isBnmu: false,
     issueDate,
-    letterRefNo: String(p.registration_id || "API/2026/INT/PENDING"),
+    letterRefNo: String(p.registration_id || pendingRegistrationPlaceholder()),
     applicationDateIso: appIso,
     fullName: String(p.full_name || "—").trim() || "—",
     registrationNo: rollRegistrationNo(p, m),

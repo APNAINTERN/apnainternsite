@@ -6,6 +6,7 @@ import {
   getSmtpCredentials,
   resolveMailFrom,
 } from "../_shared/smtpConfig.ts";
+import { nextRegistrationIdFromRows } from "../_shared/registrationId.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -84,23 +85,17 @@ serve(async (req) => {
       });
 
       // Generate Registration ID
-      const { data: lastStudent } = await supabase
+      const { data: recentStudents } = await supabase
         .from("students")
         .select("registration_id")
         .not("registration_id", "is", null)
         .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .limit(50);
 
-      let nextSeq = 10001;
-      if (lastStudent?.registration_id) {
-        const parts = lastStudent.registration_id.split('/');
-        if (parts.length === 4) {
-          const lastNum = parseInt(parts[3], 10);
-          if (!isNaN(lastNum)) nextSeq = lastNum + 1;
-        }
-      }
-      const regId = `API/${new Date().getFullYear()}/INT/${nextSeq}`;
+      const regId = nextRegistrationIdFromRows(
+        recentStudents ?? [],
+        new Date().getFullYear()
+      );
 
       // Create Student Record
       const { error: studentError } = await supabase.from("students").insert({
@@ -268,23 +263,17 @@ serve(async (req) => {
         
         await supabase.from("user_roles").insert({ user_id: authUserId, role: "student" });
         
-        const { data: lastStudent } = await supabase
+        const { data: recentStudents } = await supabase
           .from("students")
           .select("registration_id")
           .not("registration_id", "is", null)
           .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .limit(50);
 
-        let nextSeq = 10001;
-        if (lastStudent?.registration_id) {
-          const parts = lastStudent.registration_id.split('/');
-          if (parts.length === 4) {
-            const lastNum = parseInt(parts[3], 10);
-            if (!isNaN(lastNum)) nextSeq = lastNum + 1;
-          }
-        }
-        const regId = `API/${new Date().getFullYear()}/INT/${nextSeq}`;
+        const regId = nextRegistrationIdFromRows(
+          recentStudents ?? [],
+          new Date().getFullYear()
+        );
         
         await supabase.from("students").insert({
           id: authUserId,

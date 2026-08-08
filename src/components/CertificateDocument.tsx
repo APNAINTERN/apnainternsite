@@ -352,7 +352,7 @@ function CertificateFooter({
               />
               <img
                 src={CERTIFICATE_SIGNATURE_SRC}
-                alt="Signature of Raushan Kumar"
+                alt={`Signature of ${CERTIFICATE_CEO}`}
                 className="relative z-10 h-[21mm] w-auto max-w-[52mm] object-contain object-bottom mr-[10mm]"
                 crossOrigin="anonymous"
               />

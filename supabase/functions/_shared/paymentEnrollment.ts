@@ -1,6 +1,10 @@
 import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { type RazorpayCreds, ensurePaymentCaptured } from './razorpay.ts';
 import { assertStudentRegistrationAvailableServer } from './registrationAvailability.ts';
+import {
+  bumpRegistrationId,
+  nextRegistrationIdFromRows,
+} from './registrationId.ts';
 
 export type PaymentOrderRow = {
   order_id: string;
@@ -116,23 +120,15 @@ export async function fulfillPaidOrder(
     .maybeSingle();
 
   if (!existingStudent) {
-    const { data: lastStudent } = await supabase
+    const { data: recentStudents } = await supabase
       .from('students')
       .select('registration_id')
       .not('registration_id', 'is', null)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(50);
 
-    let nextSeq = 10001;
-    if (lastStudent?.registration_id) {
-      const parts = lastStudent.registration_id.split('/');
-      if (parts.length === 4) {
-        const lastNum = parseInt(parts[3], 10);
-        if (!isNaN(lastNum)) nextSeq = lastNum + 1;
-      }
-    }
     const currentYear = new Date().getFullYear();
+    let currentRegId = nextRegistrationIdFromRows(recentStudents ?? [], currentYear);
 
     const metaCopy = { ...metadata };
     const plainPw = String(metaCopy.password || password || '').trim();
@@ -204,15 +200,13 @@ export async function fulfillPaidOrder(
 
     let studentError: unknown = null;
     let retryCount = 0;
-    let currentRegId = `API/${currentYear}/INT/${nextSeq}`;
 
     while (retryCount < 5) {
       studentData.registration_id = currentRegId;
       const { error } = await supabase.from('students').insert(studentData);
       if (error) {
         if (error.code === '23505' && error.message.includes('registration_id')) {
-          nextSeq++;
-          currentRegId = `API/${currentYear}/INT/${nextSeq}`;
+          currentRegId = bumpRegistrationId(currentRegId);
           retryCount++;
           continue;
         }

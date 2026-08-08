@@ -9,6 +9,7 @@ import {
 } from "@/lib/leadTransferPayload";
 import { completeStudentDirectoryRegistration } from "@/lib/registerStudentDirectory";
 import { signUpStudentWithChosenPassword } from "@/lib/registrationPassword";
+import { allocateNextRegistrationId, bumpRegistrationId } from "@/lib/registrationId";
 import { getSendMailApiUrl } from "@/lib/sendMailApi";
 import { markLeadCrmConvertedByEmail } from "@/lib/leadAssignment";
 
@@ -68,31 +69,6 @@ export async function ensureAuthUserIdForEmail(
   throw new Error(
     "Auth account was not found after signup. In Supabase Auth, disable “Confirm email” for new signups, or confirm the account, then retry."
   );
-}
-
-async function allocateNextRegistrationId(client: SupabaseClient): Promise<string> {
-  const { data: latestStudents } = await client
-    .from("students")
-    .select("registration_id")
-    .not("registration_id", "is", null)
-    .order("created_at", { ascending: false })
-    .limit(10);
-
-  let nextSeq = 10001;
-  if (latestStudents && latestStudents.length > 0) {
-    const seqs = latestStudents
-      .map((s) => {
-        const parts = String(s.registration_id || "").split("/");
-        return parts.length === 4 ? parseInt(parts[3], 10) : 0;
-      })
-      .filter((n) => !isNaN(n));
-    if (seqs.length > 0) {
-      nextSeq = Math.max(...seqs) + 1;
-    }
-  }
-
-  const currentYear = new Date().getFullYear();
-  return `API/${currentYear}/INT/${nextSeq}`;
 }
 
 /**
@@ -170,10 +146,7 @@ export async function transferLeadToStudentDirectory(
       break;
     } catch (err) {
       if (isRegistrationIdCollision(err)) {
-        const parts = regId.split("/");
-        const seq = parts.length === 4 ? parseInt(parts[3], 10) : 10001;
-        const year = parts.length === 4 ? parts[1] : String(new Date().getFullYear());
-        regId = `API/${year}/INT/${(isNaN(seq) ? 10001 : seq) + 1}`;
+        regId = bumpRegistrationId(regId);
         retryCount++;
         continue;
       }

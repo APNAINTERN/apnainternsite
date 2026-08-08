@@ -7,7 +7,12 @@ import {
   OFFER_LETTER_PADDING_PX,
 } from "@/lib/offerLetterPdf";
 import { ACCREDITATION_LOGOS } from "@/lib/documentLogos";
-import { CERTIFICATE_COMPANY, CERTIFICATE_SIGNATURE_SRC } from "@/lib/certificateFormat";
+import {
+  CERTIFICATE_CEO,
+  CERTIFICATE_CEO_TITLE,
+  CERTIFICATE_COMPANY,
+  CERTIFICATE_SIGNATURE_SRC,
+} from "@/lib/certificateFormat";
 
 interface OfferLetterProps {
   profile: any;
@@ -172,7 +177,7 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
           <div className="flex justify-end items-end gap-2 mb-2">
             <img
               src={CERTIFICATE_SIGNATURE_SRC}
-              alt="Signature of Raushan Kumar"
+              alt={`Signature of ${CERTIFICATE_CEO}`}
               className="h-[48px] w-auto max-w-[170px] object-contain"
               crossOrigin="anonymous"
             />
@@ -184,8 +189,8 @@ export const OfferLetter = forwardRef<HTMLDivElement, OfferLetterProps>(({ profi
             />
           </div>
           <div className="text-right mb-3">
-            <p className="text-[11px] font-bold text-slate-900">Raushan Kumar</p>
-            <p className="text-[10px] font-semibold text-slate-700">Founder &amp; CEO</p>
+            <p className="text-[11px] font-bold text-slate-900">{CERTIFICATE_CEO}</p>
+            <p className="text-[10px] font-semibold text-slate-700">{CERTIFICATE_CEO_TITLE}</p>
             <p className="text-[9px] font-bold text-sky-600 uppercase tracking-wide leading-tight">
               {CERTIFICATE_COMPANY}
             </p>

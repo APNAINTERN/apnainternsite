@@ -509,7 +509,7 @@ export function buildCertificateInsertRows(
     duration: CERTIFICATE_INTERNSHIP_PERIOD,
     certificate_id:
       s.registration_id ||
-      `API/${year}/INT/${s.id.slice(0, 8).toUpperCase()}`,
+      `API/INT/${year}/${s.id.slice(0, 8).toUpperCase()}`,
     status: "Active",
   }));
 }

@@ -27,11 +27,11 @@ export const CERTIFICATE_VERIFY_URL = "https://www.ezyintern.in/verify";
 
 export const CERTIFICATE_COMPANY = "Apna Intern";
 
-export const CERTIFICATE_CEO = "Raushan Kumar";
+export const CERTIFICATE_CEO = "Ajeet Kumar";
 
 export const CERTIFICATE_CEO_TITLE = "Founder & CEO";
 
-/** Official scanned signature asset (Raushan Kumar). */
+/** Official scanned signature asset (Ajeet Kumar). */
 export const CERTIFICATE_SIGNATURE_SRC = "/certificate/signature.png?v=7";
 
 export const CERTIFICATE_ASSESSMENT_CRITERIA = [
@@ -118,7 +118,12 @@ export function certificateVerifyUrl(certificateId: string): string {
 export function isApnaInternRegistrationId(value: string | null | undefined): boolean {
   const v = String(value ?? "").trim();
   if (!v) return false;
-  return /^API\/\d{4}\/INT\//i.test(v) || isPlaceholderRegistrationId(v);
+  return (
+    /^API\/INT\/\d{4}\/\d+/i.test(v) ||
+    /^API\/\d{4}\/INT\//i.test(v) ||
+    /^EZY\/\d{4}\/INT\//i.test(v) ||
+    isPlaceholderRegistrationId(v)
+  );
 }
 
 export function isValidUniversityRollNo(value: string | null | undefined): boolean {

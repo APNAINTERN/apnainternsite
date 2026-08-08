@@ -6,6 +6,10 @@ import {
   createStudentAuthWithChosenPassword,
 } from './registrationPassword';
 import { ensurePaymentSuccessLog } from './recordPaymentSuccess';
+import {
+  bumpRegistrationId,
+  nextRegistrationIdFromRows,
+} from './registrationId';
 
 export type PaymentOrderRow = {
   order_id: string;
@@ -199,24 +203,14 @@ export async function fulfillPaidOrder(
     ? String(existingStudentRow.registration_id)
     : '';
   if (!regId) {
-    const { data: lastStudent } = await supabase
+    const currentYear = new Date().getFullYear();
+    const { data: recentStudents } = await supabase
       .from('students')
       .select('registration_id')
       .not('registration_id', 'is', null)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    let nextSeq = 10001;
-    if (lastStudent?.registration_id) {
-      const parts = String(lastStudent.registration_id).split('/');
-      if (parts.length === 4) {
-        const lastNum = parseInt(parts[3], 10);
-        if (!isNaN(lastNum)) nextSeq = lastNum + 1;
-      }
-    }
-    const currentYear = new Date().getFullYear();
-    regId = `API/${currentYear}/INT/${nextSeq}`;
+      .limit(50);
+    regId = nextRegistrationIdFromRows(recentStudents ?? [], currentYear);
   }
 
   const selectedDuration = String(
@@ -299,7 +293,6 @@ export async function fulfillPaidOrder(
 
   let enrollError: { message?: string; code?: string } | null = null;
   let retryCount = 0;
-  const currentYear = new Date().getFullYear();
 
   while (retryCount < 5) {
     const { error: rpcErr } = await supabase.rpc('complete_student_registration', {
@@ -314,9 +307,9 @@ export async function fulfillPaidOrder(
       rpcErr.code === '23505' &&
       String(rpcErr.message || '').includes('registration_id')
     ) {
-      const parts = String(studentPayload.registration_id).split('/');
-      const lastNum = parts.length === 4 ? parseInt(parts[3], 10) : 10001;
-      studentPayload.registration_id = `API/${currentYear}/INT/${(isNaN(lastNum) ? 10001 : lastNum) + 1}`;
+      studentPayload.registration_id = bumpRegistrationId(
+        String(studentPayload.registration_id)
+      );
       retryCount++;
       continue;
     }

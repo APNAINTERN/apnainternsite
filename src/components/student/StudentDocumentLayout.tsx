@@ -1,7 +1,12 @@
 import { forwardRef } from "react";
 import { Globe, Mail, MapPin, Phone } from "lucide-react";
 import { ACCREDITATION_LOGOS } from "@/lib/documentLogos";
-import { CERTIFICATE_COMPANY, CERTIFICATE_SIGNATURE_SRC } from "@/lib/certificateFormat";
+import {
+  CERTIFICATE_CEO,
+  CERTIFICATE_CEO_TITLE,
+  CERTIFICATE_COMPANY,
+  CERTIFICATE_SIGNATURE_SRC,
+} from "@/lib/certificateFormat";
 import { ACCEPTANCE_LETTER_ISSUE_DATE } from "@/lib/offerLetterProfile";
 
 export const DOCUMENT_PAGE = {
@@ -123,7 +128,7 @@ export function DocumentFooter({
               <div className="flex justify-end items-end gap-2 mb-0.5">
                 <img
                   src={CERTIFICATE_SIGNATURE_SRC}
-                  alt="Signature of Raushan Kumar"
+                  alt={`Signature of ${CERTIFICATE_CEO}`}
                   className="h-[48px] w-auto max-w-[170px] object-contain"
                   crossOrigin="anonymous"
                 />
@@ -134,8 +139,8 @@ export function DocumentFooter({
                   crossOrigin="anonymous"
                 />
               </div>
-              <p className="text-[10px] font-bold text-slate-900">Raushan Kumar</p>
-              <p className="text-[9px] font-semibold text-slate-700">Founder &amp; CEO</p>
+              <p className="text-[10px] font-bold text-slate-900">{CERTIFICATE_CEO}</p>
+              <p className="text-[9px] font-semibold text-slate-700">{CERTIFICATE_CEO_TITLE}</p>
               <p className="text-[9px] font-bold text-[#5AA3E6] uppercase tracking-wide leading-tight">
                 {CERTIFICATE_COMPANY}
               </p>

@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getServerDb } from './lib/getServerDb';
+import { nextRegistrationIdFromRows } from './lib/registrationId';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -152,24 +153,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
         await db.from('user_roles').insert({ user_id: authUserId, role: 'student' });
 
-        const { data: lastStudent } = await db
+        const { data: recentStudents } = await db
           .from('students')
           .select('registration_id')
           .not('registration_id', 'is', null)
           .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+          .limit(50);
 
-        let nextSeq = 10001;
-        const lastReg = lastStudent as { registration_id?: string } | null;
-        if (lastReg?.registration_id) {
-          const parts = String(lastReg.registration_id).split('/');
-          if (parts.length === 4) {
-            const lastNum = parseInt(parts[3], 10);
-            if (!isNaN(lastNum)) nextSeq = lastNum + 1;
-          }
-        }
-        const regId = `API/${new Date().getFullYear()}/INT/${nextSeq}`;
+        const regId = nextRegistrationIdFromRows(
+          recentStudents ?? [],
+          new Date().getFullYear()
+        );
 
         await db.from('students').insert({
           id: authUserId,

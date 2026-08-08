@@ -402,14 +402,14 @@ export function CertificateManagementPanel({
           return clean;
         }
         for (let attempt = 0; attempt < 10; attempt++) {
-          const generated = `API/${year}/INT/${makeRandomId(8)}`;
+          const generated = `API/INT/${year}/${makeRandomId(8)}`;
           if (!usedIds.has(generated)) {
             usedIds.add(generated);
             return generated;
           }
         }
         // extremely unlikely fallback
-        const fallback = `API/${year}/INT/${Date.now()}`;
+        const fallback = `API/INT/${year}/${Date.now()}`;
         usedIds.add(fallback);
         return fallback;
       };

@@ -4403,7 +4403,7 @@ const SuperAdmin = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-1">
                       <Label className="text-xs">Intern ID (Registration ID)</Label>
-                      <Input value={editData.registration_id || ""} onChange={e => setEditData({...editData, registration_id: e.target.value})} placeholder="e.g. API/2026/INT/10001" />
+                      <Input value={editData.registration_id || ""} onChange={e => setEditData({...editData, registration_id: e.target.value})} placeholder="e.g. API/INT/2026/00001" />
                     </div>
                     <div className="space-y-1">
                       <Label className="text-xs">Internship Duration</Label>

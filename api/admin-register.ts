@@ -4,6 +4,10 @@ import { assertStudentRegistrationAvailableServer } from './lib/registrationAvai
 import { createStudentAuthWithChosenPassword } from './lib/registrationPassword';
 import { createSmtpTransporter, getSmtpCredentials, sesMailHeaders } from './lib/smtpTransport';
 import { getServerDb } from './lib/getServerDb';
+import {
+  bumpRegistrationId,
+  nextRegistrationIdFromRows,
+} from './lib/registrationId';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS Setup
@@ -95,17 +99,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .select("registration_id")
       .not("registration_id", "is", null)
       .order("created_at", { ascending: false })
-      .limit(10);
+      .limit(50);
 
-    let nextSeq = 10001;
-    if (latestStudents && latestStudents.length > 0) {
-      const seqs = latestStudents.map(s => {
-        const parts = s.registration_id.split('/');
-        return parts.length === 4 ? parseInt(parts[3], 10) : 0;
-      }).filter(n => !isNaN(n));
-      if (seqs.length > 0) nextSeq = Math.max(...seqs) + 1;
-    }
     const currentYear = new Date().getFullYear();
+    let regId = nextRegistrationIdFromRows(latestStudents ?? [], currentYear);
 
     // 5. Insert Student Record
     const insertPayload: any = {
@@ -148,15 +145,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
     };
 
-    let regId = `API/${currentYear}/INT/${nextSeq}`;
     let retryCount = 0;
     while (retryCount < 10) {
       insertPayload.registration_id = regId;
       const { error: insertError } = await db.from("students").insert(insertPayload);
       if (insertError) {
         if (insertError.code === '23505' && insertError.message.includes('registration_id')) {
-          nextSeq++;
-          regId = `API/${currentYear}/INT/${nextSeq}`;
+          regId = bumpRegistrationId(regId);
           retryCount++;
           continue;
         }

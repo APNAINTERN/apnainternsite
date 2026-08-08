@@ -279,7 +279,7 @@ function EngineeringCertificatePage({
               />
               <img
                 src={SIGNATURE_SRC}
-                alt="Signature of Raushan Kumar"
+                alt={`Signature of ${CERTIFICATE_CEO}`}
                 className="relative z-10 object-contain object-bottom"
                 style={{
                   height: "18mm",

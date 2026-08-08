@@ -33,6 +33,7 @@ import {
   validateRegistrationPassword,
 } from "@/lib/registrationPassword";
 import { completeStudentDirectoryRegistration } from "@/lib/registerStudentDirectory";
+import { allocateNextRegistrationId, bumpRegistrationId } from "@/lib/registrationId";
 import { signInStudentWithPassword } from "@/lib/studentAuthLogin";
 import { defaultPasswordForCollege } from "@/lib/collegeDefaultPassword";
 import { ensurePaymentSuccessLog } from "@/lib/recordPaymentSuccess";
@@ -685,25 +686,7 @@ export const PrefilledRegistrationForm = ({
         fullName,
       });
 
-      const { data: latestStudents } = await supabase
-        .from("students")
-        .select("registration_id")
-        .not("registration_id", "is", null)
-        .order("created_at", { ascending: false })
-        .limit(10);
-
-      let nextSeq = 10001;
-      if (latestStudents && latestStudents.length > 0) {
-        const seqs = latestStudents
-          .map((s) => {
-            const parts = s.registration_id.split("/");
-            return parts.length === 4 ? parseInt(parts[3], 10) : 0;
-          })
-          .filter((n) => !isNaN(n));
-        if (seqs.length > 0) nextSeq = Math.max(...seqs) + 1;
-      }
-      const currentYear = new Date().getFullYear();
-      let regId = `API/${currentYear}/INT/${nextSeq}`;
+      let regId = await allocateNextRegistrationId(supabase);
 
       const studentData = {
         ...prePayStudentData,
@@ -755,8 +738,7 @@ export const PrefilledRegistrationForm = ({
         } catch (err: unknown) {
           const pg = err as { code?: string; message?: string };
           if (String(pg.message || "").includes("registration_id")) {
-            nextSeq++;
-            regId = `API/${currentYear}/INT/${nextSeq}`;
+            regId = bumpRegistrationId(regId);
             retryCount++;
             continue;
           }

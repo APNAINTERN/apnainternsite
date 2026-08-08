@@ -1102,7 +1102,7 @@ const Login = () => {
                       isReferralLoginRoute
                         ? "you@example.com"
                         : isStudentLoginRoute
-                          ? "Email, mobile, API/2026/INT/… or roll no."
+                          ? "Email, mobile, API/INT/2026/… or roll no."
                           : "Email or 10-digit phone"
                     }
                     className="h-12 bg-slate-50 border-none shadow-inner rounded-xl pl-4"
