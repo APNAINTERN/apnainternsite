@@ -16,7 +16,7 @@ async function sendTestEmail() {
   const pass = process.env.SMTP_PASS;
   const from =
     process.env.MAIL_FROM ||
-    `"Apna Intern" <${process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in'}>`;
+    `"Apna Intern" <${process.env.MAIL_FROM_ADDRESS || 'admin@apnaintern.in'}>`;
 
   if (!user || !pass) {
     console.error('SMTP_USER and SMTP_PASS must be set');

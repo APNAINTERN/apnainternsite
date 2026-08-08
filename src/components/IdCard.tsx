@@ -53,12 +53,12 @@ export const IdCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }, ref) =>
       style={cardStyle}
       className="flex flex-col bg-white text-slate-800 justify-between select-none"
     >
-      {/* Background Watermark (Light EI Logo) */}
+      {/* Background Watermark */}
       <div 
         className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none"
         style={{ opacity: 0.025 }}
       >
-        <img src="/logo.png" alt="Watermark" className="w-[450px] h-[450px] object-contain" crossOrigin="anonymous" />
+        <img src="/logo-icon.png" alt="Watermark" className="w-[450px] h-[450px] object-contain" crossOrigin="anonymous" />
       </div>
 
       {/* Header Background Decoration */}
@@ -70,7 +70,7 @@ export const IdCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }, ref) =>
       {/* Main Content Area */}
       <div className="relative z-10 flex flex-col items-center pt-8 px-8 flex-grow">
         {/* Logo Section */}
-        <div className="bg-white p-3 rounded-2xl shadow-md mb-6 border border-slate-100 flex items-center justify-center w-40 h-14">
+        <div className="bg-white px-3 py-2 rounded-2xl shadow-md mb-6 border border-slate-100 flex items-center justify-center w-44 h-16">
           <img src="/logo.png" alt="Apna Intern" className="h-full w-full object-contain" crossOrigin="anonymous" />
         </div>
 
@@ -167,17 +167,17 @@ export const IdCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }, ref) =>
       <div className="relative z-10 w-full shrink-0">
         <div className="bg-slate-900 text-slate-300 text-[10px] font-semibold py-3 px-6 flex justify-between items-center w-full">
           <div className="flex items-center gap-1">
-            <Globe className="w-3 h-3 text-blue-400" /> ezyintern.in
+            <Globe className="w-3 h-3 text-blue-400" /> apnaintern.in
           </div>
           <div className="flex items-center gap-1">
-            <Mail className="w-3 h-3 text-blue-400" /> support@ezyintern.in
+            <Mail className="w-3 h-3 text-blue-400" /> support@apnaintern.in
           </div>
           <div className="flex items-center gap-1">
             <Phone className="w-3 h-3 text-blue-400" /> +91 70509 36593
           </div>
         </div>
         <div className="bg-[#1E40AF] text-white text-[11px] font-black text-center py-2 tracking-[0.25em] uppercase">
-          Apna Intern SDP Technology Pvt Ltd
+          Apna Intern
         </div>
       </div>
     </div>

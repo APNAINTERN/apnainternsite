@@ -804,7 +804,7 @@ export default function Admin() {
                   fullName: fullName,
                   regId: regId,
                   password: pwd,
-                  loginLink: "https://www.ezyintern.in/login?portal=student",
+                  loginLink: "https://www.apnaintern.in/login?portal=student",
                 },
               }),
             });

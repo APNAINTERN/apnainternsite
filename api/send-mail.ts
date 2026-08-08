@@ -22,7 +22,7 @@ function resolveMailFromAddress(): string {
   const angle = explicit.match(/<([^>]+)>/);
   if (angle) return angle[1].trim();
   if (explicit.includes('@')) return explicit;
-  return process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in';
+  return process.env.MAIL_FROM_ADDRESS || 'admin@apnaintern.in';
 }
 
 function resolveMailFrom(label = 'Apna Intern'): MailFrom {
@@ -367,7 +367,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </div>
 
           <div style="text-align: center; margin: 28px 0;">
-            <a href="${data.loginLink || 'https://www.ezyintern.in/login?portal=student'}" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
+            <a href="${data.loginLink || 'https://www.apnaintern.in/login?portal=student'}" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
           </div>
 
           <div style="background: #f1f5f9; padding: 16px 18px; border-radius: 4px; margin-top: 24px; border-left: 3px solid #4F46E5; font-family: system-ui, sans-serif;">
@@ -407,7 +407,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </div>
 
           <div style="text-align: center; margin: 28px 0;">
-            <a href="${data.loginLink || 'https://www.ezyintern.in/login?portal=student'}" style="display:inline-block; padding: 14px 28px; background: #c2410c; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in</a>
+            <a href="${data.loginLink || 'https://www.apnaintern.in/login?portal=student'}" style="display:inline-block; padding: 14px 28px; background: #c2410c; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in</a>
           </div>
 
           <div style="background: #f8fafc; padding: 16px 18px; border-radius: 4px; border-left: 3px solid #334155; font-family: system-ui, sans-serif;">
@@ -432,11 +432,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           <div style="background: #f0fdf4; padding: 20px; border-radius: 12px; margin: 20px 0;">
             <p><strong>Certificate ID:</strong> ${data.certificateId}</p>
           </div>
-          <a href="https://www.ezyintern.com/dashboard" style="display:inline-block; padding: 12px 24px; background: #059669; color: white; text-decoration: none; border-radius: 8px;">Download Certificate</a>
+          <a href="https://www.apnaintern.in/dashboard" style="display:inline-block; padding: 12px 24px; background: #059669; color: white; text-decoration: none; border-radius: 8px;">Download Certificate</a>
         </div>
       `;
     } else if (normalizedAction === 'college_admin_welcome') {
-      const loginLink = String(data.loginLink || '').trim() || 'https://ezyintern.in/college/login';
+      const loginLink = String(data.loginLink || '').trim() || 'https://www.apnaintern.in/college/login';
       const collegeAdminId = String(data.collegeAdminId || '').trim();
       const fullName = String(data.fullName || data.full_name || name || 'College administrator').trim();
       const toAddr = String(to || email || '').trim();
@@ -478,7 +478,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       (String(message || '').trim() || String(name || '').trim())
     ) {
       Object.assign(mailOptions, sesMailHeaders('Apna Intern Contact'));
-      mailOptions.to = 'noreply@ezyintern.in';
+      mailOptions.to = 'noreply@apnaintern.in';
       mailOptions.subject = `New Contact Request from ${name || 'User'}`;
       mailOptions.html = `<h3>Message from ${name} (${email}):</h3><p>${message}</p>`;
 

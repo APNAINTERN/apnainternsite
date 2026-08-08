@@ -66,9 +66,11 @@ const Register = () => {
         <div className="container mx-auto px-4">
           <Card className="max-w-3xl mx-auto p-6 md:p-10 shadow-elegant animate-fade-in-up">
             <div className="text-center mb-6">
-              <div className="inline-flex size-14 items-center justify-center rounded-xl overflow-hidden mb-3 shadow-soft">
-                <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
-              </div>
+              <img
+                src="/logo-full.png"
+                alt="Apna Intern"
+                className="mx-auto mb-4 h-24 w-auto object-contain"
+              />
               <h1 className="text-3xl md:text-4xl font-bold mb-1">
                 {showPayPanel ? payTitle : "Student Registration"}
               </h1>

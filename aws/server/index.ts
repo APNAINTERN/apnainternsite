@@ -8,7 +8,7 @@ const PORT = Number(process.env.PORT || 3000);
 createApp()
   .then((app) => {
     app.listen(PORT, "0.0.0.0", () => {
-      console.log(`\n✅ EzyIntern API (local) http://0.0.0.0:${PORT}`);
+      console.log(`\n✅ Apna Intern API (local) http://0.0.0.0:${PORT}`);
       console.log(`   Health: GET /api/health\n`);
     });
   })
