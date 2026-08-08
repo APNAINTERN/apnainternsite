@@ -49,7 +49,7 @@ import {
   getStudentDirectoryPassword,
 } from "@/lib/studentCredentials";
 import { adminUpsertStudentProfile } from "@/lib/adminProfileUpsert";
-import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { assertSendMailOk, postSendMail } from "@/lib/sendMailApi";
 import { siteApiUrl } from "@/lib/siteApi";
 import {
   estimateBulkMailSeconds,
@@ -414,20 +414,16 @@ const SuperAdmin = () => {
       const toEmail = String(latestData.email || student.email || "").trim();
       if (!toEmail) throw new Error("Student has no email address — update their profile first.");
 
-      const res = await fetch(getSendMailApiUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: toEmail,
-          email: toEmail,
-          action: "registration_success",
-          data: {
-            fullName: latestData.full_name || student.full_name,
-            regId: finalRegId || "",
-            password: finalPassword,
-            loginLink: buildStudentCredentialLoginLink(),
-          },
-        }),
+      const res = await postSendMail({
+        to: toEmail,
+        email: toEmail,
+        action: "registration_success",
+        data: {
+          fullName: latestData.full_name || student.full_name,
+          regId: finalRegId || "",
+          password: finalPassword,
+          loginLink: buildStudentCredentialLoginLink(),
+        },
       });
       await assertSendMailOk(res);
       toast.success("Credentials sent successfully!");
@@ -1667,7 +1663,7 @@ const SuperAdmin = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-8 rounded-lg overflow-hidden bg-white border border-slate-100">
-              <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
+              <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain p-0.5" />
             </div>
             <span className="font-bold text-slate-900 hidden sm:block">Super Portal</span>
           </div>
@@ -2400,15 +2396,11 @@ const SuperAdmin = () => {
                     onClick={async () => {
                       setIsSendingTestMail(true);
                       try {
-                        const response = await fetch(getSendMailApiUrl(), {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            action: 'test_mail',
-                            to: testMailTo,
-                            subject: testMailSubject,
-                            message: testMailBody
-                          })
+                        const response = await postSendMail({
+                          action: 'test_mail',
+                          to: testMailTo,
+                          subject: testMailSubject,
+                          message: testMailBody
                         });
                         
                         const result = await response.json();
@@ -4141,7 +4133,7 @@ const SuperAdmin = () => {
           <div className="p-8 space-y-6">
             <div className="space-y-2">
               <Label className="text-xs font-black uppercase text-slate-500">Authorized Email Address</Label>
-              <Input value={staffEmail} onChange={e => setStaffEmail(e.target.value)} placeholder="admin@ezyintern.com" className="h-12 bg-slate-50 border-none shadow-inner" />
+              <Input value={staffEmail} onChange={e => setStaffEmail(e.target.value)} placeholder="admin@apnaintern.in" className="h-12 bg-slate-50 border-none shadow-inner" />
             </div>
             <div className="flex flex-col gap-2">
               <Button onClick={handleAddStaff} className="h-12 font-black shadow-glow">Finalize Appointment</Button>

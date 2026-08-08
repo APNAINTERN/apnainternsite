@@ -1,3 +1,5 @@
+import { BRAND_ADMIN_EMAIL, BRAND_NAME } from "./brand.ts";
+
 type SmtpConnectOpts = {
   hostname: string;
   port: number;
@@ -26,10 +28,10 @@ export function resolveSmtpPort(): number {
 }
 
 /** Verified SES identity — not the SMTP username (AKIA…). */
-export function resolveMailFrom(label = "Apna Intern"): string {
+export function resolveMailFrom(label = BRAND_NAME): string {
   const explicit = Deno.env.get("MAIL_FROM") ?? Deno.env.get("SMTP_FROM");
   if (explicit?.trim()) return explicit.trim();
-  const addr = Deno.env.get("MAIL_FROM_ADDRESS") ?? "admin@ezyintern.in";
+  const addr = Deno.env.get("MAIL_FROM_ADDRESS") ?? BRAND_ADMIN_EMAIL;
   return `${label} <${addr}>`;
 }
 

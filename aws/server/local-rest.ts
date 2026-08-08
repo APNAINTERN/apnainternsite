@@ -4,7 +4,8 @@
  * POST /rest/v1/rpc/:name
  */
 import type { Request, Response } from "express";
-import { callRpcAuto, query } from "./db";
+import type { QueryResult, QueryResultRow } from "pg";
+import { callRpcAuto, query, withJwtSession } from "./db";
 import { getRpcDef } from "./rpc-registry";
 import { callRpc } from "./db";
 import { verifyToken } from "./local-jwt";
@@ -335,68 +336,79 @@ function tableName(param: string): string {
   return param;
 }
 
+type RestQueryFn = <T extends QueryResultRow = QueryResultRow>(
+  text: string,
+  params?: unknown[]
+) => Promise<QueryResult<T>>;
+
+/** Run REST SQL with JWT claims when Authorization is present (RLS / auth.uid()). */
+async function withRestDb<T>(req: Request, fn: (q: RestQueryFn) => Promise<T>): Promise<T> {
+  const jwt = jwtFromRequest(req);
+  if (!jwt?.sub) return fn(query);
+  return withJwtSession(jwt, (client) => fn((text, params) => client.query(text, params)));
+}
+
 export async function restGet(req: Request, res: Response) {
   try {
-    const table = tableName(String(req.params.table));
-    const { sql: where, params } = buildWhere(req.query as Record<string, unknown>);
+    await withRestDb(req, async (q) => {
+      const table = tableName(String(req.params.table));
+      const { sql: where, params } = buildWhere(req.query as Record<string, unknown>);
 
-    // PostgREST HEAD + count=exact (used by supabase .select('*', { count: 'exact', head: true }))
-    if (req.method === "HEAD") {
-      let countSql = `SELECT count(*)::int AS c FROM public."${table}"`;
-      if (where) countSql += ` WHERE ${where}`;
-      const { rows: countRows } = await query(countSql, params);
-      const total = Number(countRows[0]?.c ?? 0);
-      res.setHeader("Content-Range", `0-0/${total}`);
-      res.status(200).end();
-      return;
-    }
-
-    const cols = parseSelect(req.query.select);
-    const order = parseOrder(req.query.order);
-    const limit = Math.min(Number(req.query.limit) || 1000, 5000);
-    const offset = Math.max(Number(req.query.offset) || 0, 0);
-    const prefer = String(req.headers.prefer || "");
-    const wantCount = /count=exact/i.test(prefer);
-
-    let total: number | null = null;
-    if (wantCount) {
-      let countSql = `SELECT count(*)::int AS c FROM public."${table}"`;
-      if (where) countSql += ` WHERE ${where}`;
-      const { rows: countRows } = await query(countSql, params);
-      total = Number(countRows[0]?.c ?? 0);
-    }
-
-    let sql = `SELECT ${cols} FROM public."${table}"`;
-    if (where) sql += ` WHERE ${where}`;
-    sql += order;
-    sql += ` LIMIT ${limit} OFFSET ${offset}`;
-
-    const { rows } = await query(sql, params);
-
-    // PostgREST: Accept headers / Prefer count — skip for now
-    // single object when Accept prefers or limit=1 with maybeSingle client — client handles arrays
-    // supabase .maybeSingle() / .single() set Accept: application/vnd.pgrst.object+json
-    const accept = String(req.headers.accept || "");
-    if (/vnd\.pgrst\.object/.test(accept)) {
-      if (!rows.length) {
-        res.status(406).json({
-          code: "PGRST116",
-          details: "The result contains 0 rows",
-          hint: null,
-          message: "JSON object requested, multiple (or no) rows returned",
-        });
+      // PostgREST HEAD + count=exact (used by supabase .select('*', { count: 'exact', head: true }))
+      if (req.method === "HEAD") {
+        let countSql = `SELECT count(*)::int AS c FROM public."${table}"`;
+        if (where) countSql += ` WHERE ${where}`;
+        const { rows: countRows } = await q(countSql, params);
+        const total = Number(countRows[0]?.c ?? 0);
+        res.setHeader("Content-Range", `0-0/${total}`);
+        res.status(200).end();
         return;
       }
-      res.json(rows[0]);
-      return;
-    }
 
-    const rangeTotal = total ?? rows.length;
-    const start = rows.length ? offset : 0;
-    const end = rows.length ? offset + rows.length - 1 : 0;
-    res.setHeader("Content-Range", `${start}-${end}/${rangeTotal}`);
-    if (wantCount) res.setHeader("Prefer-Count", "exact");
-    res.json(rows);
+      const cols = parseSelect(req.query.select);
+      const order = parseOrder(req.query.order);
+      const limit = Math.min(Number(req.query.limit) || 1000, 5000);
+      const offset = Math.max(Number(req.query.offset) || 0, 0);
+      const prefer = String(req.headers.prefer || "");
+      const wantCount = /count=exact/i.test(prefer);
+
+      let total: number | null = null;
+      if (wantCount) {
+        let countSql = `SELECT count(*)::int AS c FROM public."${table}"`;
+        if (where) countSql += ` WHERE ${where}`;
+        const { rows: countRows } = await q(countSql, params);
+        total = Number(countRows[0]?.c ?? 0);
+      }
+
+      let sql = `SELECT ${cols} FROM public."${table}"`;
+      if (where) sql += ` WHERE ${where}`;
+      sql += order;
+      sql += ` LIMIT ${limit} OFFSET ${offset}`;
+
+      const { rows } = await q(sql, params);
+
+      const accept = String(req.headers.accept || "");
+      if (/vnd\.pgrst\.object/.test(accept)) {
+        if (!rows.length) {
+          res.status(406).json({
+            code: "PGRST116",
+            details: "The result contains 0 rows",
+            hint: null,
+            message: "JSON object requested, multiple (or no) rows returned",
+          });
+          return;
+        }
+        res.json(rows[0]);
+        return;
+      }
+
+      const rangeTotal = total ?? rows.length;
+      const start = rows.length ? offset : 0;
+      const end = rows.length ? offset + rows.length - 1 : 0;
+      res.setHeader("Content-Range", `${start}-${end}/${rangeTotal}`);
+      if (wantCount) res.setHeader("Prefer-Count", "exact");
+      res.json(rows);
+    });
   } catch (err) {
     console.error("[rest/GET]", err);
     res.status(400).json(pgErrorPayload(err));
@@ -405,73 +417,75 @@ export async function restGet(req: Request, res: Response) {
 
 export async function restPost(req: Request, res: Response) {
   try {
-    const table = tableName(String(req.params.table));
-    const body = req.body;
-    const rowsIn = Array.isArray(body) ? body : [body];
-    if (!rowsIn.length || typeof rowsIn[0] !== "object") {
-      res.status(400).json({ message: "Invalid body" });
-      return;
-    }
-
-    const prefer = String(req.headers.prefer || "");
-    const upsert =
-      /resolution=merge-duplicates/i.test(prefer) ||
-      /resolution=ignore-duplicates/i.test(prefer) ||
-      Boolean(String(req.query.on_conflict || "").trim());
-    const ignoreDuplicates = /resolution=ignore-duplicates/i.test(prefer);
-    const onConflict = String(req.query.on_conflict || "").trim();
-
-    const cols = Object.keys(rowsIn[0] as object).filter((k) => IDENT.test(k));
-    if (!cols.length) {
-      res.status(400).json({ message: "No columns" });
-      return;
-    }
-
-    const values: unknown[] = [];
-    const valueSql: string[] = [];
-    rowsIn.forEach((row) => {
-      const placeholders: string[] = [];
-      for (const c of cols) {
-        const bound = bindWriteValue((row as Record<string, unknown>)[c], values.length + 1);
-        values.push(bound.value);
-        placeholders.push(bound.placeholder);
-      }
-      valueSql.push(`(${placeholders.join(",")})`);
-    });
-
-    let sql = `INSERT INTO public."${table}" (${cols.map((c) => `"${c}"`).join(",")}) VALUES ${valueSql.join(",")}`;
-    if (upsert && onConflict) {
-      const conflictCols = onConflict
-        .split(",")
-        .map((c) => c.trim())
-        .filter((c) => IDENT.test(c));
-      if (conflictCols.length) {
-        if (ignoreDuplicates) {
-          sql += ` ON CONFLICT (${conflictCols.map((c) => `"${c}"`).join(",")}) DO NOTHING`;
-        } else {
-          const updates = cols
-            .filter((c) => !conflictCols.includes(c))
-            .map((c) => `"${c}" = EXCLUDED."${c}"`)
-            .join(", ");
-          sql += ` ON CONFLICT (${conflictCols.map((c) => `"${c}"`).join(",")}) DO UPDATE SET ${updates || `"${conflictCols[0]}" = EXCLUDED."${conflictCols[0]}"`}`;
-        }
-      }
-    }
-    if (preferReturn(req)) {
-      sql += ` RETURNING *`;
-    }
-
-    const result = await query(sql, values);
-    if (preferReturn(req)) {
-      const accept = String(req.headers.accept || "");
-      if (/vnd\.pgrst\.object/.test(accept) || !Array.isArray(body)) {
-        res.status(201).json(result.rows[0] ?? null);
+    await withRestDb(req, async (q) => {
+      const table = tableName(String(req.params.table));
+      const body = req.body;
+      const rowsIn = Array.isArray(body) ? body : [body];
+      if (!rowsIn.length || typeof rowsIn[0] !== "object") {
+        res.status(400).json({ message: "Invalid body" });
         return;
       }
-      res.status(201).json(result.rows);
-      return;
-    }
-    res.status(201).json(null);
+
+      const prefer = String(req.headers.prefer || "");
+      const upsert =
+        /resolution=merge-duplicates/i.test(prefer) ||
+        /resolution=ignore-duplicates/i.test(prefer) ||
+        Boolean(String(req.query.on_conflict || "").trim());
+      const ignoreDuplicates = /resolution=ignore-duplicates/i.test(prefer);
+      const onConflict = String(req.query.on_conflict || "").trim();
+
+      const cols = Object.keys(rowsIn[0] as object).filter((k) => IDENT.test(k));
+      if (!cols.length) {
+        res.status(400).json({ message: "No columns" });
+        return;
+      }
+
+      const values: unknown[] = [];
+      const valueSql: string[] = [];
+      rowsIn.forEach((row) => {
+        const placeholders: string[] = [];
+        for (const c of cols) {
+          const bound = bindWriteValue((row as Record<string, unknown>)[c], values.length + 1);
+          values.push(bound.value);
+          placeholders.push(bound.placeholder);
+        }
+        valueSql.push(`(${placeholders.join(",")})`);
+      });
+
+      let sql = `INSERT INTO public."${table}" (${cols.map((c) => `"${c}"`).join(",")}) VALUES ${valueSql.join(",")}`;
+      if (upsert && onConflict) {
+        const conflictCols = onConflict
+          .split(",")
+          .map((c) => c.trim())
+          .filter((c) => IDENT.test(c));
+        if (conflictCols.length) {
+          if (ignoreDuplicates) {
+            sql += ` ON CONFLICT (${conflictCols.map((c) => `"${c}"`).join(",")}) DO NOTHING`;
+          } else {
+            const updates = cols
+              .filter((c) => !conflictCols.includes(c))
+              .map((c) => `"${c}" = EXCLUDED."${c}"`)
+              .join(", ");
+            sql += ` ON CONFLICT (${conflictCols.map((c) => `"${c}"`).join(",")}) DO UPDATE SET ${updates || `"${conflictCols[0]}" = EXCLUDED."${conflictCols[0]}"`}`;
+          }
+        }
+      }
+      if (preferReturn(req)) {
+        sql += ` RETURNING *`;
+      }
+
+      const result = await q(sql, values);
+      if (preferReturn(req)) {
+        const accept = String(req.headers.accept || "");
+        if (/vnd\.pgrst\.object/.test(accept) || !Array.isArray(body)) {
+          res.status(201).json(result.rows[0] ?? null);
+          return;
+        }
+        res.status(201).json(result.rows);
+        return;
+      }
+      res.status(201).json(null);
+    });
   } catch (err) {
     console.error("[rest/POST]", err);
     res.status(400).json(pgErrorPayload(err));
@@ -480,39 +494,41 @@ export async function restPost(req: Request, res: Response) {
 
 export async function restPatch(req: Request, res: Response) {
   try {
-    const table = tableName(String(req.params.table));
-    const patch = req.body && typeof req.body === "object" ? req.body : {};
-    const cols = Object.keys(patch).filter((k) => IDENT.test(k));
-    if (!cols.length) {
-      res.status(400).json({ message: "No columns to update" });
-      return;
-    }
-    const { sql: where, params } = buildWhere(req.query as Record<string, unknown>);
-    if (!where) {
-      res.status(400).json({ message: "PATCH requires filters" });
-      return;
-    }
-    const sets: string[] = [];
-    const values: unknown[] = [];
-    for (const c of cols) {
-      const bound = bindWriteValue((patch as Record<string, unknown>)[c], values.length + 1);
-      values.push(bound.value);
-      sets.push(`"${c}" = ${bound.placeholder}`);
-    }
-    const whereShifted = where.replace(/\$(\d+)/g, (_, n) => `$${Number(n) + values.length}`);
-    let sql = `UPDATE public."${table}" SET ${sets.join(", ")} WHERE ${whereShifted}`;
-    if (preferReturn(req)) sql += ` RETURNING *`;
-    const result = await query(sql, [...values, ...params]);
-    if (preferReturn(req)) {
-      const accept = String(req.headers.accept || "");
-      if (/vnd\.pgrst\.object/.test(accept)) {
-        res.json(result.rows[0] ?? null);
+    await withRestDb(req, async (q) => {
+      const table = tableName(String(req.params.table));
+      const patch = req.body && typeof req.body === "object" ? req.body : {};
+      const cols = Object.keys(patch).filter((k) => IDENT.test(k));
+      if (!cols.length) {
+        res.status(400).json({ message: "No columns to update" });
         return;
       }
-      res.json(result.rows);
-      return;
-    }
-    res.status(204).end();
+      const { sql: where, params } = buildWhere(req.query as Record<string, unknown>);
+      if (!where) {
+        res.status(400).json({ message: "PATCH requires filters" });
+        return;
+      }
+      const sets: string[] = [];
+      const values: unknown[] = [];
+      for (const c of cols) {
+        const bound = bindWriteValue((patch as Record<string, unknown>)[c], values.length + 1);
+        values.push(bound.value);
+        sets.push(`"${c}" = ${bound.placeholder}`);
+      }
+      const whereShifted = where.replace(/\$(\d+)/g, (_, n) => `$${Number(n) + values.length}`);
+      let sql = `UPDATE public."${table}" SET ${sets.join(", ")} WHERE ${whereShifted}`;
+      if (preferReturn(req)) sql += ` RETURNING *`;
+      const result = await q(sql, [...values, ...params]);
+      if (preferReturn(req)) {
+        const accept = String(req.headers.accept || "");
+        if (/vnd\.pgrst\.object/.test(accept)) {
+          res.json(result.rows[0] ?? null);
+          return;
+        }
+        res.json(result.rows);
+        return;
+      }
+      res.status(204).end();
+    });
   } catch (err) {
     console.error("[rest/PATCH]", err);
     res.status(400).json(pgErrorPayload(err));
@@ -521,20 +537,22 @@ export async function restPatch(req: Request, res: Response) {
 
 export async function restDelete(req: Request, res: Response) {
   try {
-    const table = tableName(String(req.params.table));
-    const { sql: where, params } = buildWhere(req.query as Record<string, unknown>);
-    if (!where) {
-      res.status(400).json({ message: "DELETE requires filters" });
-      return;
-    }
-    let sql = `DELETE FROM public."${table}" WHERE ${where}`;
-    if (preferReturn(req)) sql += ` RETURNING *`;
-    const result = await query(sql, params);
-    if (preferReturn(req)) {
-      res.json(result.rows);
-      return;
-    }
-    res.status(204).end();
+    await withRestDb(req, async (q) => {
+      const table = tableName(String(req.params.table));
+      const { sql: where, params } = buildWhere(req.query as Record<string, unknown>);
+      if (!where) {
+        res.status(400).json({ message: "DELETE requires filters" });
+        return;
+      }
+      let sql = `DELETE FROM public."${table}" WHERE ${where}`;
+      if (preferReturn(req)) sql += ` RETURNING *`;
+      const result = await q(sql, params);
+      if (preferReturn(req)) {
+        res.json(result.rows);
+        return;
+      }
+      res.status(204).end();
+    });
   } catch (err) {
     console.error("[rest/DELETE]", err);
     res.status(400).json(pgErrorPayload(err));

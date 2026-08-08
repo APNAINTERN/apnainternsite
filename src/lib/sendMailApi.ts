@@ -1,3 +1,4 @@
+import { supabase } from "@/integrations/supabase/client";
 import { siteApiUrl } from "@/lib/siteApi";
 
 /**
@@ -9,6 +10,26 @@ export function getSendMailApiUrl(): string {
   const fromEnv = import.meta.env.VITE_SEND_MAIL_API_URL as string | undefined;
   if (fromEnv?.trim()) return fromEnv.trim();
   return siteApiUrl("/api/send-mail");
+}
+
+/** POST to send-mail with session Bearer token when the user is signed in (required for admin mail actions). */
+export async function postSendMail(body: Record<string, unknown>): Promise<Response> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  try {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session?.access_token) {
+      headers.Authorization = `Bearer ${session.access_token}`;
+    }
+  } catch {
+    /* optional session */
+  }
+  return fetch(getSendMailApiUrl(), {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
 }
 
 export async function assertSendMailOk(res: Response): Promise<void> {

@@ -4,16 +4,11 @@ import { assertStudentRegistrationAvailableServer } from './lib/registrationAvai
 import { createStudentAuthWithChosenPassword } from './lib/registrationPassword';
 import { createSmtpTransporter, getSmtpCredentials, sesMailHeaders } from './lib/smtpTransport';
 import { getServerDb } from './lib/getServerDb';
+import { applyCorsHeaders, applySecurityHeaders, authenticateRequest, hasAdminRole } from './lib/apiSecurity';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS Setup
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  applyCorsHeaders(req, res);
+  applySecurityHeaders(res);
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -27,6 +22,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!admin_id || !student_data || !student_data.email) {
     return res.status(400).json({ success: false, message: 'Missing required details' });
+  }
+
+  const caller = await authenticateRequest(req);
+  if (!caller) {
+    return res.status(401).json({ success: false, message: 'Authorization required' });
+  }
+  if (caller.id !== String(admin_id)) {
+    return res.status(403).json({ success: false, message: 'admin_id does not match authenticated user' });
   }
 
   let db;
@@ -50,8 +53,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(403).json({ success: false, message: 'Unauthorized. Admin privileges required.' });
     }
 
-    const hasAdminRole = adminRoles.some(r => r.role === 'admin' || r.role === 'super_admin');
-    if (!hasAdminRole) {
+    const hasAdminRoleFromDb = adminRoles.some(r => r.role === 'admin' || r.role === 'super_admin');
+    if (!hasAdminRoleFromDb || !hasAdminRole(caller.roles)) {
       return res.status(403).json({ success: false, message: 'Unauthorized. Admin privileges required.' });
     }
 
@@ -221,7 +224,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               <p style="margin: 8px 0; font-size: 14px;"><strong>Password:</strong> ${passwordToUse}</p>
             </div>
             <div style="text-align: center; margin: 28px 0;">
-              <a href="https://www.ezyintern.in/login?portal=student" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
+              <a href="https://www.apnaintern.in/login?portal=student" style="display:inline-block; padding: 14px 28px; background: #4F46E5; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: 600; font-size: 14px; font-family: system-ui, sans-serif;">Sign in to dashboard</a>
             </div>
             <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 32px; font-family: system-ui, sans-serif;">
               © 2026 Apna Intern. All rights reserved.

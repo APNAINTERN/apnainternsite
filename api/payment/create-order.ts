@@ -2,16 +2,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Razorpay from 'razorpay';
 import { assertStudentRegistrationAvailableServer } from '../lib/registrationAvailability';
 import { getServerDb } from '../lib/getServerDb';
+import { assertOrderAmountValid } from '../lib/validateOrderAmount';
+import { applyCorsHeaders, applySecurityHeaders } from '../lib/apiSecurity';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const reqId = `co_${Date.now()}`;
 
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST');
-  res.setHeader('Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
+  applyCorsHeaders(req, res);
+  applySecurityHeaders(res);
 
   try {
     console.log(`[${reqId}] ▶ create-order called | method=${req.method}`);
@@ -57,6 +55,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const msg = availErr instanceof Error ? availErr.message : 'Email or mobile already registered.';
         return res.status(400).json({ success: false, message: msg });
       }
+    }
+
+    try {
+      await assertOrderAmountValid(db, parsedAmount, studentData as Record<string, unknown>);
+    } catch (amountErr: unknown) {
+      const msg = amountErr instanceof Error ? amountErr.message : 'Invalid payment amount';
+      return res.status(400).json({ success: false, message: msg });
     }
 
     const { data: config, error: configError } = await db

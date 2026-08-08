@@ -69,6 +69,8 @@ export async function requestAdminLoginOtp(
     };
   }
 
+  let mailPayload: { devOtp?: string; warning?: string; error?: string; message?: string } = {};
+
   try {
     const response = await fetch(getSendMailApiUrl(), {
       method: "POST",
@@ -80,7 +82,20 @@ export async function requestAdminLoginOtp(
         email,
       }),
     });
-    await assertSendMailOk(response);
+    const raw = await response.text();
+    try {
+      mailPayload = JSON.parse(raw) as typeof mailPayload;
+    } catch {
+      /* ignore */
+    }
+    if (!response.ok) {
+      throw new Error(
+        mailPayload.error ||
+          mailPayload.message ||
+          raw.slice(0, 280) ||
+          `Email request failed (${response.status})`
+      );
+    }
   } catch (mailErr: unknown) {
     if (localDev) {
       markAdminLoginOtpSent(email);
@@ -91,7 +106,12 @@ export async function requestAdminLoginOtp(
   }
 
   markAdminLoginOtpSent(email);
-  return { ok: true, email, devOtp: localDev ? generatedOtp : undefined };
+  const apiDevOtp = mailPayload.devOtp?.trim();
+  return {
+    ok: true,
+    email,
+    devOtp: localDev ? generatedOtp : apiDevOtp || undefined,
+  };
 }
 
 export async function verifyAdminLoginOtp(

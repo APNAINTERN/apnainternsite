@@ -12,15 +12,15 @@ export function HomeOutcomesSection({ outcomes }: HomeOutcomesSectionProps) {
     <section id="outcomes" className="border-t border-slate-200/80 bg-white py-20 md:py-24">
       <div className="mx-auto max-w-6xl px-6 lg:px-8">
         <HomeSectionHeader
-          pill="Student outcomes"
+          pill="Success stories"
           title="What graduates take away from the programme"
           description="Real experiences from students balancing internships alongside semester schedules."
         />
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="reveal-stagger grid gap-5 md:grid-cols-3">
           {outcomes.map((o, i) => (
             <blockquote
               key={i}
-              className="reveal-on-scroll rounded-3xl border border-slate-200/80 bg-slate-50/50 p-7 shadow-soft"
+              className="reveal-on-scroll home-card-hover rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white to-slate-50/80 p-7 shadow-soft"
             >
               <Quote className="mb-4 size-8 text-sky-300" />
               <p className="text-sm leading-relaxed text-slate-700">&ldquo;{o.quote}&rdquo;</p>
