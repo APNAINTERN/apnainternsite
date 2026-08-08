@@ -50,7 +50,7 @@ function mailFromAddress() {
   const m = explicit.match(/<([^>]+)>/);
   if (m) return m[1].trim();
   if (explicit.includes('@')) return explicit;
-  return process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in';
+  return process.env.MAIL_FROM_ADDRESS || 'admin@apnaintern.in';
 }
 
 function mailFrom() {
@@ -258,7 +258,7 @@ async function handleSendMail(req, res) {
     console.error('send-mail error:', err);
     const msg = err.message || String(err);
     const hint = msg.includes('501') || msg.includes('MAIL FROM')
-      ? 'Check MAIL_FROM=admin@ezyintern.in in .env (must be SES-verified).'
+      ? 'Check MAIL_FROM=admin@apnaintern.in in .env (must be SES-verified).'
       : msg.includes('535') || msg.includes('authentication')
         ? 'Check SMTP_USER/SMTP_PASS in .env (SES SMTP credentials).'
         : undefined;

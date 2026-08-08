@@ -234,6 +234,9 @@ const Login = () => {
         (typeof window !== "undefined" ? window.sessionStorage.getItem("admin_login_otp") : null);
       setAdminDevOtp(devCode);
       setAdminOtpSent(true);
+      if (sent.devOtp) {
+        toast.info(`Verification code: ${sent.devOtp}`, { duration: 30000 });
+      }
       toast.success(`Verification code sent to ${sent.email}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to send verification code";
@@ -841,11 +844,12 @@ const Login = () => {
             }
           >
             <div className="flex justify-center mb-8">
-              <Link to="/" className="flex items-center gap-3">
-                <div className="size-12 rounded-xl overflow-hidden shadow-elegant">
-                  <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
-                </div>
-                <span className="text-2xl font-bold tracking-tighter text-slate-900">Apna Intern</span>
+              <Link to="/" className="block">
+                <img
+                  src="/logo-full.png"
+                  alt="Apna Intern"
+                  className="h-28 w-auto object-contain"
+                />
               </Link>
             </div>
             <div className="text-center mb-8">
@@ -890,10 +894,10 @@ const Login = () => {
                     <> Sending verification code…</>
                   )}
                 </div>
-                {isLocalDev && adminDevOtp ? (
+                {adminDevOtp ? (
                   <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
                     <p className="font-bold text-xs uppercase tracking-wide text-amber-800 mb-1">
-                      Local testing only
+                      {isLocalDev ? "Local testing only" : "Email pending — use code below"}
                     </p>
                     <p>
                       Your verification code:{" "}
@@ -1169,7 +1173,7 @@ const Login = () => {
                     {verifyingCaptcha ? "Verifying..." : captchaVerified ? "Success!" : "Verify you are human"}
                   </span>
                   <div className="ml-auto opacity-30 flex items-center gap-1">
-                    <img src="/logo.png" alt="Security" className="w-5 h-5 grayscale object-contain" />
+                    <img src="/logo-icon.png" alt="Security" className="w-5 h-5 grayscale object-contain" />
                     <span className="text-[10px] font-bold uppercase">Protected</span>
                   </div>
                 </div>

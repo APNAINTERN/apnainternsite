@@ -84,6 +84,9 @@ import {
 import { CollegeAdminCollegePicker } from "@/components/admin/CollegeAdminCollegePicker";
 import { displayCollegeName } from "@/lib/collegeDisplay";
 import { collegesForUniversity, fetchAllCollegesCatalog } from "@/lib/institutionCatalog";
+import { fetchAdminCoreBootstrap } from "@/lib/portalAuth";
+import { isAwsLambdaApiUrl } from "@/lib/awsFetchThrottle";
+import { resolveSupabaseUrl } from "@/lib/supabaseEnv";
 import { adminUpsertStudentProfile } from "@/lib/adminProfileUpsert";
 import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
 import { DatabaseBackup, ArrowUpRight, UploadCloud, AlertTriangle, Check } from "lucide-react";
@@ -804,7 +807,7 @@ export default function Admin() {
                   fullName: fullName,
                   regId: regId,
                   password: pwd,
-                  loginLink: "https://www.ezyintern.in/login?portal=student",
+                  loginLink: "https://www.apnaintern.in/login?portal=student",
                 },
               }),
             });
@@ -1325,6 +1328,62 @@ export default function Admin() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return false;
     setCurrentUserId(session.user.id);
+
+    if (isAwsLambdaApiUrl(resolveSupabaseUrl())) {
+      try {
+        const boot = await fetchAdminCoreBootstrap(session.access_token, session.user.id);
+        setStaff((boot.admin_staff as any[]) || []);
+        setUnis((boot.universities as any[]) || []);
+
+        try {
+          const collegeList = (boot.colleges as any[]) || [];
+          const collegeAdmins = await fetchCollegeAdminDirectory(supabase, collegeList);
+          setCollegeAdmins(collegeAdmins);
+        } catch (err: any) {
+          console.error("Exception fetching college admin assignments:", err);
+          setCollegeAdmins([]);
+        }
+
+        setColleges((boot.colleges as any[]) || []);
+        setCerts((boot.certificates as any[]) || []);
+        setDomains((boot.internship_domains as any[]) || []);
+        setClassesList((boot.classes as any[]) || []);
+        setSystemSettings((boot.system_settings as any[]) || []);
+
+        let finalPermissions = boot.admin_permissions as any;
+        const staffRows = (boot.admin_staff as any[]) || [];
+        if (!finalPermissions && session.user.email) {
+          const staffEntry = staffRows.find((s) => s.email === session.user.email);
+          if (staffEntry) finalPermissions = staffEntry.permissions;
+        }
+        setMyPermissions(finalPermissions);
+
+        try {
+          const rows = await fetchAdminNotifications(supabase, 100);
+          setNotifications(rows);
+        } catch (err: any) {
+          console.error("Error loading notifications:", err);
+          setNotifications([]);
+        }
+
+        setAssignments((boot.assignments as any[]) || []);
+        setCyberCafes((boot.cybercafe_profiles as any[]) || []);
+
+        try {
+          const visitStats = await fetchAdminSiteVisitStats(supabase);
+          setVisitorCount(visitStats.totalVisits);
+          setUniqueVisitorCount(visitStats.uniqueVisitors);
+        } catch (visitErr) {
+          console.warn("site_visits stats:", visitErr);
+        }
+
+        adminDataLoadedRef.current.core = true;
+        return true;
+      } catch (err: any) {
+        console.error("AWS admin bootstrap failed, falling back to parallel load:", err);
+        toast.error("Slow connection — loading admin data in smaller batches…");
+      }
+    }
 
     const [u, c, ce, dm, cl, ss, ap, notifs, asgnResult, cyber, customStaff] =
       await Promise.all([
@@ -1989,8 +2048,11 @@ export default function Admin() {
         return;
       }
 
-      const { fetchRolesForUser } = await import("@/lib/portalAuth");
-      const rolesList = await fetchRolesForUser(supabase, active.user.id);
+      const { fetchRolesForUser, readRolesFromUser } = await import("@/lib/portalAuth");
+      const fromMeta = readRolesFromUser(active.user, active.user.id);
+      const rolesList = fromMeta?.length
+        ? fromMeta
+        : await fetchRolesForUser(supabase, active.user.id);
       if (!mounted) return;
 
       const ok = rolesList.includes("admin") || rolesList.includes("super_admin");
@@ -2000,6 +2062,8 @@ export default function Admin() {
         if (!adminInitDoneRef.current) {
           adminInitDoneRef.current = true;
           await runInitialAdminLoad();
+        } else {
+          setLoading(false);
         }
       } else {
         setLoading(false);

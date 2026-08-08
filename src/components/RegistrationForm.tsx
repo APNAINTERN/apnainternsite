@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
+import { RegistrationProgressHeader } from "@/components/registration/RegistrationProgressHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { withStoredDirectoryPassword } from "@/lib/studentCredentials";
@@ -88,6 +88,10 @@ import {
   type NonEngineeringUniversityConfig,
 } from "@/lib/nonEngineeringConfig";
 import {
+  departmentsForNonTechDegree,
+  filterNonEngineeringCoursesForDegree,
+} from "@/lib/studentTrack";
+import {
   isAllowedConsentLetterFile,
   uploadConsentLetterToStorage,
 } from "@/lib/studentDocuments";
@@ -139,6 +143,7 @@ export const RegistrationForm = ({
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [paymentSettings, setPaymentSettings] = useState<any>(null);
+  const [catalogLoading, setCatalogLoading] = useState(true);
 
   // Step 1
   const [fullName, setFullName] = useState(initialData?.fullName || "");
@@ -218,6 +223,12 @@ export const RegistrationForm = ({
     () => resolveNonEngineeringOptions(activeNonTechConfig),
     [activeNonTechConfig]
   );
+  const departmentOptions = useMemo(() => {
+    if (activeNonTechConfig) {
+      return filterNonEngineeringCoursesForDegree(degree, nonTechOptions.courses);
+    }
+    return departmentsForNonTechDegree(degree);
+  }, [activeNonTechConfig, degree, nonTechOptions.courses]);
   const isEngineeringFlow = Boolean(activeEngineeringConfig) || isBeuStudent(selectedUni?.name);
   const isBeuFlow = isEngineeringFlow;
 
@@ -392,27 +403,63 @@ export const RegistrationForm = ({
   ]);
 
   useEffect(() => {
-    fetchRegistrationUniversities(supabase)
-      .then(setUnis)
-      .catch((e) => toast.error(e instanceof Error ? e.message : "Failed to load universities"));
-    supabase.from("internship_domains").select("*").order("name").then(({ data }) => setDomains(data || []));
-    fetchEngineeringConfigMap(supabase)
-      .then(setEngineeringConfigByUniId)
-      .catch(() => setEngineeringConfigByUniId(new Map()));
-    fetchNonEngineeringConfigMap(supabase)
-      .then(setNonTechConfigByUniId)
-      .catch(() => setNonTechConfigByUniId(new Map()));
+    let cancelled = false;
+    setCatalogLoading(true);
 
-    fetchPublicPaymentConfig(supabase).then((data) => setPaymentSettings(data));
+    void (async () => {
+      const [universityResult, domainsResult, engineeringResult, nonTechResult, paymentResult] =
+        await Promise.allSettled([
+          fetchRegistrationUniversities(supabase),
+          supabase.from("internship_domains").select("*").order("name"),
+          fetchEngineeringConfigMap(supabase),
+          fetchNonEngineeringConfigMap(supabase),
+          fetchPublicPaymentConfig(supabase),
+        ]);
+
+      if (cancelled) return;
+
+      if (universityResult.status === "fulfilled") {
+        setUnis(universityResult.value);
+      } else {
+        const message =
+          universityResult.reason instanceof Error
+            ? universityResult.reason.message
+            : "Failed to load universities";
+        toast.error(message);
+      }
+
+      if (domainsResult.status === "fulfilled") {
+        setDomains(domainsResult.value.data || []);
+      }
+
+      if (engineeringResult.status === "fulfilled") {
+        setEngineeringConfigByUniId(engineeringResult.value);
+      } else {
+        setEngineeringConfigByUniId(new Map());
+      }
+
+      if (nonTechResult.status === "fulfilled") {
+        setNonTechConfigByUniId(nonTechResult.value);
+      } else {
+        setNonTechConfigByUniId(new Map());
+      }
+
+      if (paymentResult.status === "fulfilled") {
+        setPaymentSettings(paymentResult.value);
+      }
+
+      setCatalogLoading(false);
+    })();
 
     if (!isAdminVariant) {
       captureReferralFromUrl();
       logReferralClickFromUrl(supabase);
-    }
-
-    if (!isAdminVariant) {
       prefetchRegistrationCheckout();
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [isAdminVariant]);
 
   useEffect(() => {
@@ -442,6 +489,7 @@ export const RegistrationForm = ({
   useEffect(() => {
     setDepartmentName("");
     setSubject("");
+    setCourse("");
   }, [degree]);
 
   // ── College Roster auto-fill ────────────────────────────────────────────────
@@ -559,8 +607,18 @@ export const RegistrationForm = ({
           toast.error("Select university and college for engineering registration");
           return false;
         }
-      } else if (!universityId || !collegeId || !degree || !classSem || !session || !rollNo || !course) {
-        toast.error("Please fill all required academic fields"); return false;
+      } else if (
+        !universityId ||
+        !collegeId ||
+        !degree ||
+        !departmentName ||
+        !classSem ||
+        !session ||
+        !rollNo ||
+        !course
+      ) {
+        toast.error("Please fill all required academic fields");
+        return false;
       }
     }
     if (step === 3) {
@@ -1421,27 +1479,36 @@ export const RegistrationForm = ({
   }
 
   const maxProgressStep = showConsentStep ? 5 : 4;
-  const progress = (step / maxProgressStep) * 100;
   const stepLabels = showConsentStep
     ? isEngineeringFlow
       ? (["Personal", "Academic", "Emergency", "Security", "NoC"] as const)
       : (["Personal", "Academic", "Emergency", "Security", "Consent letter"] as const)
     : (["Personal", "Academic", "Emergency", "Security"] as const);
+  const progressTitle = isCyberCafeVariant
+    ? "New student registration"
+    : isAdminVariant
+      ? "Add student"
+      : "Student Registration";
+  const progressSubtitle = isCyberCafeVariant
+    ? "Register a student on behalf of your cyber café"
+    : isAdminVariant
+      ? "Multi-step form matching the public registration flow"
+      : "UGC-mandated internship programme";
 
   return (
     <div className="max-w-2xl mx-auto p-2">
-      <div className="mb-6">
-        <Progress value={progress} className="h-2 mb-3" />
-        <div className="flex justify-between text-[10px] sm:text-xs">
-          {stepLabels.map((l, i) => (
-            <div key={l} className={`flex items-center gap-1 ${step >= i + 1 ? "text-primary font-semibold" : "text-muted-foreground"}`}>
-              <span className={`flex size-4 items-center justify-center rounded-full text-[9px] ${step > i + 1 ? "bg-primary text-primary-foreground" : step === i + 1 ? "bg-primary/15 border border-primary text-primary" : "bg-muted text-muted-foreground"}`}>{step > i + 1 ? "✓" : i + 1}</span>
-              <span>{l}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      <RegistrationProgressHeader
+        step={step}
+        maxStep={maxProgressStep}
+        stepLabels={stepLabels}
+        loading={catalogLoading}
+        showLogo={variant === "public"}
+        title={progressTitle}
+        subtitle={progressSubtitle}
+      />
 
+      {!catalogLoading ? (
+        <>
       {step === 1 && (
         <div className="space-y-4 animate-fade-in">
           <div className="grid sm:grid-cols-2 gap-4">
@@ -1549,35 +1616,27 @@ export const RegistrationForm = ({
             {!isBeuFlow && (
               <>
             <div className="space-y-1"><Label className="text-xs">Degree *</Label>
-              <RadioGroup value={degree} onValueChange={setDegree} className="flex gap-4 pt-1">
+              <RadioGroup
+                value={degree}
+                onValueChange={setDegree}
+                className="flex gap-4 pt-1"
+              >
                 {["UG", "PG"].map((d) => (<label key={d} className="flex items-center gap-1.5 cursor-pointer text-xs"><RadioGroupItem value={d} id={`d-${d}`} />{d}</label>))}
               </RadioGroup>
             </div>
             <div className="space-y-1"><Label className="text-xs">Department *</Label>
-              <Select value={departmentName} onValueChange={(val) => { setDepartmentName(val); setSubject(""); setCourse(""); }} disabled={!degree && !activeNonTechConfig}>
-                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder="Select dept" /></SelectTrigger>
+              <Select
+                value={departmentName}
+                onValueChange={(val) => { setDepartmentName(val); setSubject(""); setCourse(""); }}
+                disabled={!degree}
+              >
+                <SelectTrigger className="h-9 text-xs"><SelectValue placeholder={degree ? "Select dept" : "Select degree first"} /></SelectTrigger>
                 <SelectContent>
-                  {activeNonTechConfig ? (
-                    nonTechOptions.courses
-                      .filter((c) => c !== "Other")
-                      .map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))
-                  ) : degree === "UG" ? (
-                    <>
-                      <SelectItem value="B.A.">B.A.</SelectItem>
-                      <SelectItem value="B.Sc">B.Sc</SelectItem>
-                      <SelectItem value="B.Com">B.Com</SelectItem>
-                    </>
-                  ) : (
-                    <>
-                      <SelectItem value="M.A.">M.A.</SelectItem>
-                      <SelectItem value="M.Sc">M.Sc</SelectItem>
-                      <SelectItem value="M.Com">M.Com</SelectItem>
-                    </>
-                  )}
+                  {departmentOptions.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -1791,6 +1850,9 @@ export const RegistrationForm = ({
           </Button>
         )}
       </div>
+
+        </>
+      ) : null}
 
       {!isAdminVariant && (
         <div className="mt-5 rounded-lg border-2 border-emerald-600/30 bg-emerald-50/95 dark:bg-emerald-950/40 dark:border-emerald-700/50 p-3 sm:p-4 space-y-3 shadow-sm">

@@ -571,7 +571,7 @@ export function StudentHomeView({
       </section>
 
       <footer className="text-center text-[11px] text-slate-400 pb-4">
-        Apna Intern · SDP Technology Pvt Ltd · Patna, Bihar · CIN U85500BR2024PTC072653
+        Apna Intern · Patna, Bihar · CIN U85500BR2024PTC072653
       </footer>
     </div>
   );

@@ -225,7 +225,7 @@ function EngineeringCertificatePage({
             <p className="mt-1 leading-tight" style={{ fontSize: "8.5px", color: TEAL }}>
               Online Certificate Verification Available on:
               <br />
-              www.ezyintern.com/certificate-verification/
+              www.apnaintern.in/certificate-verification/
             </p>
           </div>
         </div>

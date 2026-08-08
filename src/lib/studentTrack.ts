@@ -9,6 +9,48 @@ export const NON_TECH_DEPARTMENTS_UG = ["B.A.", "B.Sc", "B.Com"] as const;
 /** Non-technical PG programmes. */
 export const NON_TECH_DEPARTMENTS_PG = ["M.A.", "M.Sc", "M.Com"] as const;
 
+export type NonTechDegree = "UG" | "PG";
+
+export function normalizeNonTechDegree(raw: string | null | undefined): NonTechDegree | "" {
+  const d = String(raw || "").trim().toUpperCase();
+  return d === "UG" || d === "PG" ? d : "";
+}
+
+/** Standard B.A./B.Sc/B.Com or M.A./M.Sc/M.Com lists for registration forms. */
+export function departmentsForNonTechDegree(degree: string | null | undefined): string[] {
+  const d = normalizeNonTechDegree(degree);
+  if (d === "UG") return [...NON_TECH_DEPARTMENTS_UG];
+  if (d === "PG") return [...NON_TECH_DEPARTMENTS_PG];
+  return [];
+}
+
+/** Filter configured non-tech courses (B.A., M.Sc, …) to match UG or PG selection. */
+export function filterNonEngineeringCoursesForDegree(
+  degree: string | null | undefined,
+  courses: string[]
+): string[] {
+  const d = normalizeNonTechDegree(degree);
+  if (!d) return [];
+  const allowed = new Set(departmentsForNonTechDegree(d));
+  return courses.filter((c) => {
+    const name = String(c || "").trim();
+    if (!name || name === "Other") return false;
+    if (allowed.has(name)) return true;
+    if (d === "UG") return /^b[\s.]/i.test(name);
+    return /^m[\s.]/i.test(name);
+  });
+}
+
+export function departmentMatchesNonTechDegree(
+  degree: string | null | undefined,
+  department: string | null | undefined
+): boolean {
+  const d = normalizeNonTechDegree(degree);
+  const dept = String(department || "").trim();
+  if (!d || !dept) return !dept;
+  return filterNonEngineeringCoursesForDegree(d, [dept]).length > 0;
+}
+
 export type StudentTrack = "engineering" | "non_tech";
 
 /**
