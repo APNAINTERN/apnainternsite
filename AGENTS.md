@@ -2,37 +2,45 @@
 
 Guidance for AI agents working in this repository.
 
-## Repository status
+## Stack
 
-**As of initial setup (2026-07-31):** This repository contains only `README.md` (`# apnainternsite`). There is no application source code, dependency manifests, Docker configuration, CI workflows, or runnable services.
+- **Frontend:** Vite + React + TypeScript (port 8080)
+- **Production:** Vercel (frontend + `api/*` serverless)
+- **Database (current):** Supabase PostgreSQL + Auth + RPC
+- **AWS (optional staging):** Lambda, RDS, S3, SES — see `aws/README.md`
+
+## Development commands
+
+| Command | Purpose |
+|---------|---------|
+| `npm ci` | Install dependencies |
+| `npm run dev` | Local API + frontend (RDS shim mode when `.env.awsrds.local` exists) |
+| `npm run dev:frontend` | Vite only on :8080 |
+| `npm run dev:aws` | Frontend → deployed AWS Lambda (needs `.env.aws.local`) |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npm test` | Vitest |
+
+## AWS setup (Apna Intern)
+
+Automated scripts for staging on AWS (`ap-south-1`):
+
+```bash
+cp .env.setup.example .env          # fill secrets (gitignored)
+bash scripts/install-aws-tools.sh   # AWS CLI + SAM CLI
+bash scripts/setup-apnaintern-aws.sh check
+bash scripts/setup-apnaintern-aws.sh all   # S3 → RDS → export → import → Lambda
+```
+
+**Requires user-provided secrets in `.env`:** `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, Supabase URLs/keys, `SUPABASE_DB_URL`, `RDS_MASTER_PASSWORD`, Razorpay TEST keys, SES SMTP.
+
+**Cannot be automated in cloud agent:** AWS account creation, SES domain DNS verification, IAM access keys (user must create in AWS Console).
+
+Brand constants: `shared/brand.ts` (`BRAND_NAME`, `BRAND_TAGLINE`, `@apnaintern.in` emails).
 
 ## Cursor Cloud specific instructions
 
-### What exists today
-
-- Single file: `README.md`
-- No `package.json`, `requirements.txt`, `Dockerfile`, `docker-compose.yml`, `Makefile`, or `.devcontainer/` configuration
-- No lint, test, or build scripts
-
-### Services
-
-| Service | Status |
-|---------|--------|
-| *(none)* | No services are defined in this repository |
-
-### Development workflow (when code is added)
-
-Once application code and dependency manifests are committed, future agents should:
-
-1. **Install dependencies** using the project's lockfile and package manager (e.g. `npm ci`, `pnpm install`, `pip install -r requirements.txt`).
-2. **Start required backing services** (database, Redis, etc.) per `README.md` or `docker-compose.yml` if present.
-3. **Run the dev server** using the script documented in `package.json` or the README (e.g. `npm run dev`), not production build commands.
-4. **Lint and test** using project scripts (e.g. `npm run lint`, `npm test`).
-
-### Update script
-
-The VM update script is a no-op (`true`) until dependency manifests exist. After manifests are added, replace it with the appropriate install command (e.g. `npm ci`).
-
-### End-to-end verification
-
-E2E testing is not possible until an application is implemented. The minimum hello-world flow will depend on the chosen stack (e.g. load the homepage in a browser, hit a health endpoint).
+- VM update script: `npm ci`
+- No Docker required for default dev; AWS deploy needs AWS CLI + SAM (`npm run aws:tools:install`)
+- `.env`, `.env.*.local` are gitignored — never commit secrets
+- Production Supabase project ID default: `unqfphgjilxpbzajcdjl` (see `src/lib/supabaseEnv.ts` fallbacks)

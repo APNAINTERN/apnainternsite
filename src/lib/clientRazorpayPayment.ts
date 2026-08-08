@@ -27,12 +27,12 @@ export function razorpayCheckoutImageUrl(): string | undefined {
     ?.trim()
     .replace(/\/$/, "");
   if (envBase?.startsWith("https://") && !/localhost|127\.0\.0\.1/i.test(envBase)) {
-    return `${envBase}/logo.png`;
+    return `${envBase}/logo-icon.png`;
   }
   if (typeof window !== "undefined") {
     const origin = window.location.origin;
     if (origin.startsWith("https://") && !/localhost|127\.0\.0\.1/i.test(origin)) {
-      return `${origin}/logo.png`;
+      return `${origin}/logo-icon.png`;
     }
   }
   return undefined;

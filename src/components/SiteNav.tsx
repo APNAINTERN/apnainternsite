@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchRolesForUser } from "@/lib/portalAuth";
+import { BRAND_TAGLINE } from "@/lib/brand";
 
 const navLinkClass =
   "relative shrink-0 whitespace-nowrap text-[13px] font-medium text-slate-600 transition-colors hover:text-slate-900 xl:text-[14px]";
@@ -171,15 +172,15 @@ export const SiteNav = () => {
     <header className="relative sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md">
       <nav className="mx-auto flex max-w-[1400px] items-center gap-3 px-4 py-3 sm:px-6 lg:gap-4 lg:px-8">
         <Link to="/" className="flex min-w-0 shrink items-start gap-2.5 sm:gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-slate-900 shadow-sm sm:size-11">
-            <img src="/logo.png" alt="Apna Intern" className="size-full object-cover" />
+          <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white p-1 shadow-sm sm:size-11">
+            <img src="/logo-icon.png" alt="Apna Intern" className="size-full object-contain" />
           </div>
           <div className="min-w-0 leading-tight">
             <div className="font-display text-[18px] font-bold tracking-tight text-slate-900 sm:text-[20px]">
               <span className="text-primary">Apna</span> Intern
             </div>
             <div className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-              India&apos;s Trusted Internship Provider
+              {BRAND_TAGLINE}
             </div>
             <div className="mt-0.5 text-[8px] font-semibold uppercase leading-snug tracking-[0.04em] text-slate-400 sm:text-[9px]">
               Apna Intern
