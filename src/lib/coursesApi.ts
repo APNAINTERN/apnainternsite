@@ -1037,41 +1037,43 @@ export async function listWishlist(client: SupabaseClient, studentId: string): P
 // ── Dashboard & settings ───────────────────────────────────────────────────────
 
 export async function getCourseDashboardStats(client: SupabaseClient): Promise<CourseDashboardStats> {
-  const [
-    coursesRes,
-    publishedRes,
-    draftRes,
-    enrollRes,
-    activeEnrollRes,
-    completedEnrollRes,
-    leadsRes,
-    newLeadsRes,
-    pendingReviewsRes,
-    certsRes,
-  ] = await Promise.all([
-    client.from("courses").select("*", { count: "exact", head: true }),
-    client.from("courses").select("*", { count: "exact", head: true }).eq("status", "published"),
-    client.from("courses").select("*", { count: "exact", head: true }).eq("status", "draft"),
-    client.from("course_enrollments").select("*", { count: "exact", head: true }),
-    client.from("course_enrollments").select("*", { count: "exact", head: true }).eq("status", "active"),
-    client.from("course_enrollments").select("*", { count: "exact", head: true }).eq("status", "completed"),
-    client.from("course_leads").select("*", { count: "exact", head: true }),
-    client.from("course_leads").select("*", { count: "exact", head: true }).eq("status", "new"),
-    client.from("course_reviews").select("*", { count: "exact", head: true }).eq("status", "pending"),
-    client.from("course_certificates").select("*", { count: "exact", head: true }),
-  ]);
+  async function headCount(
+    table: string,
+    filters?: Record<string, string>
+  ): Promise<number> {
+    let q = client.from(table).select("*", { count: "exact", head: true });
+    if (filters) {
+      for (const [col, val] of Object.entries(filters)) {
+        q = q.eq(col, val);
+      }
+    }
+    const { count, error } = await q;
+    if (error) throw error;
+    return count ?? 0;
+  }
+
+  const totalCourses = await headCount("courses");
+  const publishedCourses = await headCount("courses", { status: "published" });
+  const draftCourses = await headCount("courses", { status: "draft" });
+  const totalEnrollments = await headCount("course_enrollments");
+  const activeEnrollments = await headCount("course_enrollments", { status: "active" });
+  const completedEnrollments = await headCount("course_enrollments", { status: "completed" });
+  const totalLeads = await headCount("course_leads");
+  const newLeads = await headCount("course_leads", { status: "new" });
+  const pendingReviews = await headCount("course_reviews", { status: "pending" });
+  const certificatesIssued = await headCount("course_certificates");
 
   return {
-    totalCourses: coursesRes.count ?? 0,
-    publishedCourses: publishedRes.count ?? 0,
-    draftCourses: draftRes.count ?? 0,
-    totalEnrollments: enrollRes.count ?? 0,
-    activeEnrollments: activeEnrollRes.count ?? 0,
-    completedEnrollments: completedEnrollRes.count ?? 0,
-    totalLeads: leadsRes.count ?? 0,
-    newLeads: newLeadsRes.count ?? 0,
-    pendingReviews: pendingReviewsRes.count ?? 0,
-    certificatesIssued: certsRes.count ?? 0,
+    totalCourses,
+    publishedCourses,
+    draftCourses,
+    totalEnrollments,
+    activeEnrollments,
+    completedEnrollments,
+    totalLeads,
+    newLeads,
+    pendingReviews,
+    certificatesIssued,
   };
 }
 

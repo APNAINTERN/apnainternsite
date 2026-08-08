@@ -34,8 +34,8 @@ export function getPool(): Pool {
 
   pool = new Pool({
     connectionString,
-    // Lambda: short-lived connections; keep pool tiny
-    max: process.env.AWS_LAMBDA_FUNCTION_NAME ? 2 : 10,
+    // Lambda: allow a few concurrent REST queries per warm container (admin UI bursts).
+    max: process.env.AWS_LAMBDA_FUNCTION_NAME ? 5 : 10,
     idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 15_000,
     ssl: useSsl ? { rejectUnauthorized: false } : undefined,
@@ -62,6 +62,42 @@ async function applyJwtClaims(client: import("pg").PoolClient, jwt: JwtClaims | 
   if (jwt.email) {
     await client.query(`SELECT set_config('request.jwt.claim.email', $1, true)`, [jwt.email]);
   }
+}
+
+/**
+ * Run queries in a transaction with request.jwt.claim.* set so auth.uid() and RLS
+ * policies work the same as Supabase PostgREST (used by REST shim + RPC).
+ */
+export async function withJwtSession<T>(
+  jwt: JwtClaims | null,
+  fn: (client: import("pg").PoolClient) => Promise<T>
+): Promise<T> {
+  if (!jwt?.sub) {
+    throw new Error("withJwtSession requires jwt.sub");
+  }
+  const pool = getPool();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await applyJwtClaims(client, jwt);
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+export async function queryAsJwt<T extends QueryResultRow = QueryResultRow>(
+  jwt: JwtClaims | null,
+  text: string,
+  params?: unknown[]
+) {
+  if (!jwt?.sub) return query<T>(text, params);
+  return withJwtSession(jwt, (client) => client.query<T>(text, params));
 }
 
 /**

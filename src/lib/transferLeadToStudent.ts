@@ -237,7 +237,7 @@ export async function transferLeadToStudentDirectory(
           email: normalizedEmail,
           registrationId: regId,
           password,
-          loginLink: "https://ezyintern.in/login?portal=student",
+          loginLink: "https://www.apnaintern.in/login?portal=student",
         },
       }),
     });

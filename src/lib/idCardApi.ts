@@ -50,7 +50,9 @@ export const CATEGORY_POSITION_DEFAULTS: Record<IdCardCategory, string> = {
 };
 
 /** Public verify URL encoded in ID-card QR codes. */
-export const ID_CARD_VERIFY_BASE_URL = "https://www.ezyintern.in/verify-id";
+import { BRAND_VERIFY_ID_PATH, BRAND_WEBSITE_URL } from "@/lib/brand";
+
+export const ID_CARD_VERIFY_BASE_URL = `${BRAND_WEBSITE_URL}${BRAND_VERIFY_ID_PATH}`;
 
 export function idCardVerifyUrl(cardNumber: string): string {
   const n = (cardNumber || "").trim();

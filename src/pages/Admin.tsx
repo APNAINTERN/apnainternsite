@@ -60,6 +60,7 @@ import { AdminAddRegistrationPanel } from "@/components/AdminAddRegistrationPane
 import { StudentDataUploadPanel } from "@/components/admin/StudentDataUploadPanel";
 import { GalleryManagementPanel } from "@/components/admin/GalleryManagementPanel";
 import { HomeCmsManagementPanel } from "@/components/admin/HomeCmsManagementPanel";
+import { SiteContactSettingsPanel } from "@/components/admin/SiteContactSettingsPanel";
 import { ConsultLetterManagementPanel } from "@/components/admin/ConsultLetterManagementPanel";
 import { LeadAssignmentPanel } from "@/components/admin/LeadAssignmentPanel";
 import { BulkUploadStudentBadge } from "@/components/BulkUploadStudentBadge";
@@ -84,8 +85,11 @@ import {
 import { CollegeAdminCollegePicker } from "@/components/admin/CollegeAdminCollegePicker";
 import { displayCollegeName } from "@/lib/collegeDisplay";
 import { collegesForUniversity, fetchAllCollegesCatalog } from "@/lib/institutionCatalog";
+import { fetchAdminCoreBootstrap } from "@/lib/portalAuth";
+import { isAwsLambdaApiUrl } from "@/lib/awsFetchThrottle";
+import { resolveSupabaseUrl } from "@/lib/supabaseEnv";
 import { adminUpsertStudentProfile } from "@/lib/adminProfileUpsert";
-import { assertSendMailOk, getSendMailApiUrl } from "@/lib/sendMailApi";
+import { assertSendMailOk, getSendMailApiUrl, postSendMail } from "@/lib/sendMailApi";
 import { DatabaseBackup, ArrowUpRight, UploadCloud, AlertTriangle, Check } from "lucide-react";
 import {
   estimateBulkMailSeconds,
@@ -715,8 +719,6 @@ export default function Admin() {
     let failedCount = 0;
     const errors: string[] = [];
 
-    const sendMailUrl = getSendMailApiUrl();
-
     for (let i = 0; i < totalToImport; i++) {
       const record = recordsToImport[i];
       try {
@@ -794,19 +796,15 @@ export default function Admin() {
 
           // 4. Send welcome email notification
           try {
-            const mailRes = await fetch(sendMailUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                action: "registration_success",
-                email: record.email,
-                data: {
-                  fullName: fullName,
-                  regId: regId,
-                  password: pwd,
-                  loginLink: "https://www.ezyintern.in/login?portal=student",
-                },
-              }),
+            const mailRes = await postSendMail({
+              action: "registration_success",
+              email: record.email,
+              data: {
+                fullName: fullName,
+                regId: regId,
+                password: pwd,
+                loginLink: "https://www.apnaintern.in/login?portal=student",
+              },
             });
             await assertSendMailOk(mailRes);
           } catch (e) {
@@ -1001,20 +999,16 @@ export default function Admin() {
       const toEmail = String(latestData.email || student.email || "").trim();
       if (!toEmail) throw new Error("Student has no email address — update their profile first.");
 
-      const res = await fetch(getSendMailApiUrl(), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: toEmail,
-          email: toEmail,
-          action: 'registration_success',
-          data: {
-            fullName: latestData.full_name || student.full_name,
-            regId: finalRegId || "",
-            password: finalPassword,
-            loginLink: buildStudentCredentialLoginLink(),
-          }
-        })
+      const res = await postSendMail({
+        to: toEmail,
+        email: toEmail,
+        action: 'registration_success',
+        data: {
+          fullName: latestData.full_name || student.full_name,
+          regId: finalRegId || "",
+          password: finalPassword,
+          loginLink: buildStudentCredentialLoginLink(),
+        }
       });
       await assertSendMailOk(res);
       toast.success("Credentials sent successfully!");
@@ -1055,19 +1049,15 @@ export default function Admin() {
       const resetEmail = String(resetPassUser.email || "").trim();
       if (resetEmail) {
         try {
-          const emailRes = await fetch(getSendMailApiUrl(), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              to: resetEmail,
-              email: resetEmail,
-              action: 'admin_password_reset',
-              data: {
-                fullName: resetPassUser.full_name,
-                password: newPassword,
-                loginLink: buildStudentCredentialLoginLink(),
-              }
-            })
+          const emailRes = await postSendMail({
+            to: resetEmail,
+            email: resetEmail,
+            action: 'admin_password_reset',
+            data: {
+              fullName: resetPassUser.full_name,
+              password: newPassword,
+              loginLink: buildStudentCredentialLoginLink(),
+            }
           });
           await assertSendMailOk(emailRes);
         } catch (mailErr: unknown) {
@@ -1325,6 +1315,62 @@ export default function Admin() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return false;
     setCurrentUserId(session.user.id);
+
+    if (isAwsLambdaApiUrl(resolveSupabaseUrl())) {
+      try {
+        const boot = await fetchAdminCoreBootstrap(session.access_token, session.user.id);
+        setStaff((boot.admin_staff as any[]) || []);
+        setUnis((boot.universities as any[]) || []);
+
+        try {
+          const collegeList = (boot.colleges as any[]) || [];
+          const collegeAdmins = await fetchCollegeAdminDirectory(supabase, collegeList);
+          setCollegeAdmins(collegeAdmins);
+        } catch (err: any) {
+          console.error("Exception fetching college admin assignments:", err);
+          setCollegeAdmins([]);
+        }
+
+        setColleges((boot.colleges as any[]) || []);
+        setCerts((boot.certificates as any[]) || []);
+        setDomains((boot.internship_domains as any[]) || []);
+        setClassesList((boot.classes as any[]) || []);
+        setSystemSettings((boot.system_settings as any[]) || []);
+
+        let finalPermissions = boot.admin_permissions as any;
+        const staffRows = (boot.admin_staff as any[]) || [];
+        if (!finalPermissions && session.user.email) {
+          const staffEntry = staffRows.find((s) => s.email === session.user.email);
+          if (staffEntry) finalPermissions = staffEntry.permissions;
+        }
+        setMyPermissions(finalPermissions);
+
+        try {
+          const rows = await fetchAdminNotifications(supabase, 100);
+          setNotifications(rows);
+        } catch (err: any) {
+          console.error("Error loading notifications:", err);
+          setNotifications([]);
+        }
+
+        setAssignments((boot.assignments as any[]) || []);
+        setCyberCafes((boot.cybercafe_profiles as any[]) || []);
+
+        try {
+          const visitStats = await fetchAdminSiteVisitStats(supabase);
+          setVisitorCount(visitStats.totalVisits);
+          setUniqueVisitorCount(visitStats.uniqueVisitors);
+        } catch (visitErr) {
+          console.warn("site_visits stats:", visitErr);
+        }
+
+        adminDataLoadedRef.current.core = true;
+        return true;
+      } catch (err: any) {
+        console.error("AWS admin bootstrap failed, falling back to parallel load:", err);
+        toast.error("Slow connection — loading admin data in smaller batches…");
+      }
+    }
 
     const [u, c, ce, dm, cl, ss, ap, notifs, asgnResult, cyber, customStaff] =
       await Promise.all([
@@ -1989,8 +2035,11 @@ export default function Admin() {
         return;
       }
 
-      const { fetchRolesForUser } = await import("@/lib/portalAuth");
-      const rolesList = await fetchRolesForUser(supabase, active.user.id);
+      const { fetchRolesForUser, readRolesFromUser } = await import("@/lib/portalAuth");
+      const fromMeta = readRolesFromUser(active.user, active.user.id);
+      const rolesList = fromMeta?.length
+        ? fromMeta
+        : await fetchRolesForUser(supabase, active.user.id);
       if (!mounted) return;
 
       const ok = rolesList.includes("admin") || rolesList.includes("super_admin");
@@ -2000,6 +2049,8 @@ export default function Admin() {
         if (!adminInitDoneRef.current) {
           adminInitDoneRef.current = true;
           await runInitialAdminLoad();
+        } else {
+          setLoading(false);
         }
       } else {
         setLoading(false);
@@ -2901,15 +2952,11 @@ Please keep your College Admin ID private. If you need help, contact your instit
 Thank you,
 Apna Intern Team`;
 
-      const emailRes = await fetch(getSendMailApiUrl(), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: toEmail,
-          action: "bulk_custom_mail",
-          subject: "Apna Intern — College portal access",
-          message,
-        }),
+      const emailRes = await postSendMail({
+        to: toEmail,
+        action: "bulk_custom_mail",
+        subject: "Apna Intern — College portal access",
+        message,
       });
       await assertSendMailOk(emailRes);
 
@@ -4509,6 +4556,8 @@ Apna Intern Team`;
                     </div>
                   </div>
                 </Card>
+
+                <SiteContactSettingsPanel />
               </div>
             </TabsContent>
 

@@ -3,10 +3,21 @@
  */
 import jwt from "jsonwebtoken";
 
-const SECRET = () =>
-  process.env.LOCAL_JWT_SECRET ||
-  process.env.JWT_SECRET ||
-  "ezyintern-local-dev-secret-change-me";
+const SECRET = () => {
+  const configured =
+    process.env.LOCAL_JWT_SECRET ||
+    process.env.JWT_SECRET ||
+    "";
+  const isProd = Boolean(
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+      process.env.AWS_EXECUTION_ENV ||
+      process.env.NODE_ENV === "production"
+  );
+  if (!configured.trim() && isProd) {
+    throw new Error("LOCAL_JWT_SECRET (or JWT_SECRET) must be set in production");
+  }
+  return configured.trim() || "ezyintern-local-dev-secret-change-me";
+};
 
 export type LocalJwtUser = {
   id: string;
