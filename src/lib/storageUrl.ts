@@ -1,6 +1,8 @@
 /**
  * Rewrite legacy Supabase Storage URLs to the local Express shim (→ S3) or direct S3.
  */
+import { resolveSupabaseUrl } from "@/lib/supabaseEnv";
+
 const STORAGE_PUBLIC_RE = /\/storage\/v1\/object\/public\/([^/?#]+)\/([^?#]+)/;
 
 /** App bucket name → S3 bucket (staging defaults; override via Vite env). */
@@ -59,7 +61,7 @@ export function resolveStorageUrl(url: string | null | undefined): string | null
     if (direct) return `${direct}${suffix}`;
 
     if (trimmed.includes("supabase.co")) {
-      const apiBase = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
+      const apiBase = resolveSupabaseUrl();
       if (apiBase && !apiBase.includes("supabase.co")) {
         return `${apiBase}/storage/v1/object/public/${bucket}/${path}${suffix}`;
       }
@@ -81,7 +83,7 @@ export function resolveStorageUrl(url: string | null | undefined): string | null
     /* keep raw */
   }
 
-  const apiBase = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
+  const apiBase = resolveSupabaseUrl();
   if (apiBase && !apiBase.includes("supabase.co")) {
     return `${apiBase}/storage/v1/object/public/${bucket}/${path}${suffix}`;
   }
@@ -99,7 +101,7 @@ export function publicStorageObjectUrl(appBucket: string, objectPath: string): s
   const cleanPath = objectPath.replace(/^\/+/, "").split(/[?#]/)[0];
   const direct = toDirectS3Url(appBucket, cleanPath);
   if (direct) return direct;
-  const apiBase = (import.meta.env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
+  const apiBase = resolveSupabaseUrl();
   if (apiBase) {
     return `${apiBase}/storage/v1/object/public/${appBucket}/${cleanPath}`;
   }

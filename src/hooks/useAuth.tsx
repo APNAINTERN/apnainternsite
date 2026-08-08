@@ -9,7 +9,7 @@ import {
   isAdminIntentionalLogout,
 } from '@/lib/adminAuthSession';
 import { isStudentPortalSessionActive } from '@/lib/studentAuthSession';
-import { fetchCybercafeExists, fetchRolesForUser } from '@/lib/portalAuth';
+import { fetchCybercafeExists, fetchRolesForUser, hasPortalRole, readRolesFromUser } from '@/lib/portalAuth';
 
 export type UserRole = 'super_admin' | 'admin' | 'staff' | 'student' | 'cybercafe' | 'college_admin' | 'referral_partner';
 
@@ -41,11 +41,12 @@ export const useAuth = () => {
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [loading, setLoading] = useState(true);
   const rolesRef = useRef<UserRole[]>([]);
+  const lastCheckUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    const checkAuth = async () => {
+    const checkAuth = async (opts?: { force?: boolean }) => {
       try {
         if (isAdminPortalSessionActive()) {
           await ensureAdminAuthSession(supabase);
@@ -58,32 +59,80 @@ export const useAuth = () => {
           setUser(null);
           setRoles([]);
           rolesRef.current = [];
+          lastCheckUserIdRef.current = null;
           setLoading(false);
           return;
         }
 
         setUser(session.user);
 
+        if (
+          !opts?.force &&
+          lastCheckUserIdRef.current === session.user.id &&
+          rolesRef.current.length > 0
+        ) {
+          setLoading(false);
+          return;
+        }
+
         let rolesList: UserRole[] = [];
-        try {
-          const roles = await fetchRolesForUser(supabase, session.user.id);
-          rolesList = roles as UserRole[];
-        } catch (rolesError) {
-          const msg = rolesError instanceof Error ? rolesError.message : String(rolesError);
-          console.error('[useAuth] user_roles:', msg);
+        const fromMeta = readRolesFromUser(session.user, session.user.id) as UserRole[] | null;
+        if (fromMeta?.length) {
+          rolesList = [...fromMeta];
+        } else {
           const cached = readCachedRoles(session.user.id);
           if (cached.length > 0) {
-            rolesRef.current = cached;
-            setRoles(cached);
-          } else if (rolesRef.current.length > 0) {
-            setRoles(rolesRef.current);
+            rolesList = [...cached];
           }
-          return;
+        }
+
+        if (!rolesList.length) {
+          try {
+            const { data: { user: freshUser } } = await supabase.auth.getUser();
+            const fromUser = readRolesFromUser(freshUser, session.user.id) as UserRole[] | null;
+            if (fromUser?.length) {
+              rolesList = [...fromUser];
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+
+        if (!rolesList.length) {
+          try {
+            const roles = await fetchRolesForUser(supabase, session.user.id);
+            rolesList = roles as UserRole[];
+          } catch (rolesError) {
+            const msg =
+              rolesError instanceof Error
+                ? rolesError.message
+                : typeof rolesError === "object" && rolesError && "message" in rolesError
+                  ? String((rolesError as { message: unknown }).message)
+                  : String(rolesError);
+            console.error('[useAuth] user_roles:', msg);
+            if (!rolesList.length) {
+              setLoading(false);
+              return;
+            }
+          }
         }
 
         if (cancelled) return;
 
-        const cybercafe = await fetchCybercafeExists(supabase, session.user.id);
+        // Apply roles before optional cybercafe lookup so a secondary failure cannot leave roles empty.
+        rolesRef.current = rolesList;
+        lastCheckUserIdRef.current = session.user.id;
+        setRoles(rolesList);
+
+        const needsCybercafeCheck = !hasPortalRole(rolesList);
+        let cybercafe = false;
+        if (needsCybercafeCheck) {
+          try {
+            cybercafe = await fetchCybercafeExists(supabase, session.user.id);
+          } catch (cyberErr) {
+            console.warn('[useAuth] cybercafe_profiles check skipped:', cyberErr);
+          }
+        }
 
         if (cancelled) return;
 
@@ -105,7 +154,7 @@ export const useAuth = () => {
       }
     };
 
-    void checkAuth();
+    void checkAuth({ force: true });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'TOKEN_REFRESHED') {
@@ -117,7 +166,7 @@ export const useAuth = () => {
         setUser(session.user);
         if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
           setLoading(true);
-          void checkAuth();
+          void checkAuth({ force: event === 'SIGNED_IN' });
         }
       } else if (event === 'SIGNED_OUT') {
         void (async () => {

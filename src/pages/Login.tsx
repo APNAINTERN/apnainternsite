@@ -44,7 +44,11 @@ import {
 import { PASSWORD_RESETS_SCHEMA_HINT, passwordResetInsertRow } from "@/lib/passwordResetRow";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, KeyRound } from "lucide-react";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { NoticePopup } from "@/components/NoticePopup";
+import { BrandLogoMark } from "@/components/brand/BrandLogoMark";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
 import {
   Dialog,
   DialogContent,
@@ -127,6 +131,10 @@ const Login = () => {
   const [resetOtp, setResetOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [resetLoading, setResetLoading] = useState(false);
+
+  const showAuthLoader =
+    loginLoading || resetLoading || adminOtpSending || studentOtpSending || loading;
+  useGlobalLoadingEffect(showAuthLoader, loadingMessage("signingIn"));
 
   // Credential emails link with ?portal=student: sign out so admin/staff session does not steal the student login page.
   // Otherwise any existing session skips the form and redirects to that user's dashboard.
@@ -234,6 +242,9 @@ const Login = () => {
         (typeof window !== "undefined" ? window.sessionStorage.getItem("admin_login_otp") : null);
       setAdminDevOtp(devCode);
       setAdminOtpSent(true);
+      if (sent.devOtp) {
+        toast.info(`Verification code: ${sent.devOtp}`, { duration: 30000 });
+      }
       toast.success(`Verification code sent to ${sent.email}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to send verification code";
@@ -841,11 +852,9 @@ const Login = () => {
             }
           >
             <div className="flex justify-center mb-8">
-              <Link to="/" className="flex items-center gap-3">
-                <div className="size-12 rounded-xl overflow-hidden shadow-elegant">
-                  <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
-                </div>
-                <span className="text-2xl font-bold tracking-tighter text-slate-900">Apna Intern</span>
+              <Link to="/" className="flex flex-col items-center gap-3">
+                <BrandLogoMark size="lg" />
+                <BrandWordmark size="lg" showTagline />
               </Link>
             </div>
             <div className="text-center mb-8">
@@ -890,10 +899,10 @@ const Login = () => {
                     <> Sending verification code…</>
                   )}
                 </div>
-                {isLocalDev && adminDevOtp ? (
+                {adminDevOtp ? (
                   <div className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
                     <p className="font-bold text-xs uppercase tracking-wide text-amber-800 mb-1">
-                      Local testing only
+                      {isLocalDev ? "Local testing only" : "Email pending — use code below"}
                     </p>
                     <p>
                       Your verification code:{" "}
@@ -1169,7 +1178,7 @@ const Login = () => {
                     {verifyingCaptcha ? "Verifying..." : captchaVerified ? "Success!" : "Verify you are human"}
                   </span>
                   <div className="ml-auto opacity-30 flex items-center gap-1">
-                    <img src="/logo.png" alt="Security" className="w-5 h-5 grayscale object-contain" />
+                    <img src="/logo-icon.png" alt="Security" className="w-5 h-5 grayscale object-contain" />
                     <span className="text-[10px] font-bold uppercase">Protected</span>
                   </div>
                 </div>

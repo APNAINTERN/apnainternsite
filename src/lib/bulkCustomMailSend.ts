@@ -1,4 +1,4 @@
-import { getSendMailApiUrl } from "@/lib/sendMailApi";
+import { getSendMailApiUrl, postSendMail } from "@/lib/sendMailApi";
 
 export type BulkCustomMailResult = {
   sent: number;
@@ -38,17 +38,13 @@ async function sendOneBulkMail(
   message: string
 ): Promise<{ ok: boolean; rateLimited: boolean; error?: string }> {
   try {
-    const response = await fetch(getSendMailApiUrl(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    const response = await postSendMail({
         action: "bulk_custom_mail",
         to,
         email: to,
         subject,
         message,
-      }),
-    });
+      });
     const result = (await response.json().catch(() => ({}))) as {
       success?: boolean;
       message?: string;
@@ -136,16 +132,12 @@ async function sendBatch(
 
   let response: Response;
   try {
-    response = await fetch(getSendMailApiUrl(), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    response = await postSendMail({
         action: "bulk_custom_mail_batch",
         recipients,
         subject,
         message,
-      }),
-    });
+      });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : String(e);
     if (recipients.length > 1 && msg.toLowerCase().includes("fetch")) {

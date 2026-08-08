@@ -30,6 +30,10 @@ import {
   resolveNonEngineeringOptions,
   type NonEngineeringUniversityConfig,
 } from "@/lib/nonEngineeringConfig";
+import {
+  departmentsForNonTechDegree,
+  filterNonEngineeringCoursesForDegree,
+} from "@/lib/studentTrack";
 import type { BeuFormData } from "@/lib/beuRegistration";
 import { BeuRegistrationModal } from "@/components/BeuRegistrationModal";
 
@@ -131,6 +135,12 @@ export function AdminRegistrationAcademicFields({
     () => resolveNonEngineeringOptions(activeNonTechConfig),
     [activeNonTechConfig]
   );
+  const departmentOptions = useMemo(() => {
+    if (activeNonTechConfig) {
+      return filterNonEngineeringCoursesForDegree(values.degree, nonTechOptions.courses);
+    }
+    return departmentsForNonTechDegree(values.degree);
+  }, [activeNonTechConfig, values.degree, nonTechOptions.courses]);
   const isEngineeringFlow =
     Boolean(activeEngineeringConfig) || isBeuStudent(selectedUni?.name);
   const beuDetailsCompleted = Boolean(values.beuFormData);
@@ -291,33 +301,17 @@ export function AdminRegistrationAcademicFields({
               <Select
                 value={values.department || undefined}
                 onValueChange={(department) => patch({ department, subject: "", course: "" })}
-                disabled={!values.degree && !activeNonTechConfig}
+                disabled={!values.degree}
               >
                 <SelectTrigger id={`${idPrefix}-dept`} className="h-9 text-xs bg-white">
-                  <SelectValue placeholder="Select department" />
+                  <SelectValue placeholder={values.degree ? "Select department" : "Select degree first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  {activeNonTechConfig ? (
-                    nonTechOptions.courses
-                      .filter((c) => c !== "Other")
-                      .map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))
-                  ) : values.degree === "UG" ? (
-                    <>
-                      <SelectItem value="B.A.">B.A.</SelectItem>
-                      <SelectItem value="B.Sc">B.Sc</SelectItem>
-                      <SelectItem value="B.Com">B.Com</SelectItem>
-                    </>
-                  ) : values.degree === "PG" ? (
-                    <>
-                      <SelectItem value="M.A.">M.A.</SelectItem>
-                      <SelectItem value="M.Sc">M.Sc</SelectItem>
-                      <SelectItem value="M.Com">M.Com</SelectItem>
-                    </>
-                  ) : null}
+                  {departmentOptions.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
