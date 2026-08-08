@@ -1667,7 +1667,7 @@ const SuperAdmin = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-8 rounded-lg overflow-hidden bg-white border border-slate-100">
-              <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
+              <img src="/logo-icon.png" alt="Apna Intern" className="w-full h-full object-contain p-0.5" />
             </div>
             <span className="font-bold text-slate-900 hidden sm:block">Super Portal</span>
           </div>
@@ -4141,7 +4141,7 @@ const SuperAdmin = () => {
           <div className="p-8 space-y-6">
             <div className="space-y-2">
               <Label className="text-xs font-black uppercase text-slate-500">Authorized Email Address</Label>
-              <Input value={staffEmail} onChange={e => setStaffEmail(e.target.value)} placeholder="admin@ezyintern.com" className="h-12 bg-slate-50 border-none shadow-inner" />
+              <Input value={staffEmail} onChange={e => setStaffEmail(e.target.value)} placeholder="admin@apnaintern.in" className="h-12 bg-slate-50 border-none shadow-inner" />
             </div>
             <div className="flex flex-col gap-2">
               <Button onClick={handleAddStaff} className="h-12 font-black shadow-glow">Finalize Appointment</Button>

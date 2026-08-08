@@ -15,12 +15,22 @@
   },
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.apnaintern.in" }],
+      "destination": "https://apnaintern.in/:path*",
+      "permanent": true
+    },
+    {
       "source": "/cyber-cafe/login",
       "destination": "/cybercafe/login",
       "permanent": true
     }
   ],
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    {
+      "source": "/aws-api/:path*",
+      "destination": "https://eikmcrd7ei.execute-api.ap-south-1.amazonaws.com/staging/:path*"
+    },
+    { "source": "/((?!api/|aws-api/|google[a-zA-Z0-9]+\\.html).*)", "destination": "/index.html" }
   ]
 }

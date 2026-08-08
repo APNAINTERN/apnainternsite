@@ -1,29 +1,29 @@
 import { Phone, Mail, MapPin, Instagram, Youtube, Linkedin, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  BRAND_CONTACT_EMAIL,
+  BRAND_SUPPORT_EMAIL,
+  BRAND_TAGLINE,
+} from "@/lib/brand";
 
 export const SiteFooter = () => (
   <footer id="footer" className="border-t border-slate-800 bg-slate-950 text-slate-400">
     <div className="mx-auto max-w-[1200px] px-8 py-16">
       <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-6">
-          <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-2.5">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-lg overflow-hidden bg-white">
-                <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
+          <div className="flex flex-col gap-4">
+            <Link to="/" className="inline-block w-fit">
+              <div className="rounded-xl bg-white p-3 shadow-sm">
+                <img
+                  src="/logo-full.png"
+                  alt="Apna Intern"
+                  className="h-24 w-auto object-contain"
+                />
               </div>
-              <div className="leading-none">
-                <div className="font-display font-bold text-2xl tracking-tighter text-white">
-                  <span className="text-[#5ea4e8]">Apna</span>
-                  <span> Intern</span>
-                </div>
-                <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-0.5">
-                  Internship Provider
-                </div>
-              </div>
-            </div>
-            <div className="text-[9px] uppercase tracking-wide text-slate-500 leading-snug max-w-[17.5rem]">
-              Apna Intern
-            </div>
+            </Link>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              {BRAND_TAGLINE}
+            </p>
           </div>
           <p className="text-sm leading-relaxed text-slate-400">
             India&apos;s trusted platform for UGC-compliant internship programmes, digital certification, and academic credit tracking.
@@ -91,8 +91,8 @@ export const SiteFooter = () => (
             <li className="flex items-center gap-3">
               <Mail className="size-5 text-primary flex-shrink-0" />
               <div className="flex flex-col">
-                <a href="mailto:contact@ezyintern.in" className="hover:text-white">contact@ezyintern.in</a>
-                <a href="mailto:support@ezyintern.in" className="hover:text-white">support@ezyintern.in</a>
+                <a href={`mailto:${BRAND_CONTACT_EMAIL}`} className="hover:text-white">{BRAND_CONTACT_EMAIL}</a>
+                <a href={`mailto:${BRAND_SUPPORT_EMAIL}`} className="hover:text-white">{BRAND_SUPPORT_EMAIL}</a>
               </div>
             </li>
           </ul>

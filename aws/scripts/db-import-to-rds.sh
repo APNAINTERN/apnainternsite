@@ -52,6 +52,12 @@ echo "→ Testing RDS connection..."
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "SELECT version();" >/dev/null
 echo "   Connected."
 
+BOOTSTRAP="$ROOT/aws/scripts/00-supabase-bootstrap.sql"
+if [[ -f "$BOOTSTRAP" ]]; then
+  echo "→ Applying Supabase-compatible RDS bootstrap (roles, auth schema)..."
+  psql "$DATABASE_URL" -v ON_ERROR_STOP=0 -f "$BOOTSTRAP"
+fi
+
 if [[ -n "$RESTORE_FILE" ]]; then
   if [[ ! -f "$RESTORE_FILE" ]]; then
     echo "❌ Restore file not found: $RESTORE_FILE"

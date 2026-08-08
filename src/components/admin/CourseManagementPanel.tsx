@@ -200,36 +200,37 @@ export function CourseManagementPanel({
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const results = await Promise.allSettled([
-        getCourseDashboardStats(supabase),
-        listCourses(supabase, { status: "all", sort: "newest" }),
-        listCategories(supabase),
-        listLeads(supabase),
-        listEnrollments(supabase),
-        listReviews(supabase, "all"),
-        listCourseCertificates(supabase),
-        getCourseSettings(supabase),
-      ]);
-
-      const value = <T,>(r: PromiseSettledResult<T>, fallback: T, label: string): T => {
-        if (r.status === "fulfilled") return r.value;
-        console.warn(`[courses] ${label} failed:`, r.reason);
-        return fallback;
+      // Load sections one at a time on AWS to stay under Lambda concurrency limits.
+      const load = async <T,>(fn: () => Promise<T>, label: string, fallback: T): Promise<T> => {
+        try {
+          return await fn();
+        } catch (err) {
+          console.warn(`[courses] ${label} failed:`, err);
+          return fallback;
+        }
       };
 
-      setStats(value(results[0], null, "stats"));
-      setCourses(value(results[1], [], "courses"));
-      setCategories(value(results[2], [], "categories"));
-      setLeads(value(results[3], [], "leads"));
-      setEnrollments(value(results[4], [], "enrollments"));
-      setReviews(value(results[5], [], "reviews"));
-      setCertificates(value(results[6], [], "certificates") as Record<string, unknown>[]);
-      setSettings(value(results[7], null, "settings"));
+      const stats = await load(() => getCourseDashboardStats(supabase), "stats", null);
+      const courseRows = await load(() => listCourses(supabase, { status: "all", sort: "newest" }), "courses", []);
+      const categoryRows = await load(() => listCategories(supabase), "categories", []);
+      const leadRows = await load(() => listLeads(supabase), "leads", []);
+      const enrollmentRows = await load(() => listEnrollments(supabase), "enrollments", []);
+      const reviewRows = await load(() => listReviews(supabase, "all"), "reviews", []);
+      const certRows = await load(() => listCourseCertificates(supabase), "certificates", []);
+      const settingsRow = await load(() => getCourseSettings(supabase), "settings", null);
 
-      const failed = results.filter((r) => r.status === "rejected");
-      if (failed.length === results.length) {
+      setStats(stats);
+      setCourses(courseRows);
+      setCategories(categoryRows);
+      setLeads(leadRows);
+      setEnrollments(enrollmentRows);
+      setReviews(reviewRows);
+      setCertificates(certRows as Record<string, unknown>[]);
+      setSettings(settingsRow);
+
+      if (!stats && !courseRows.length && !categoryRows.length) {
         toast.error("Failed to load course data.");
-      } else if (failed.length) {
+      } else if (!stats || !courseRows.length) {
         toast.message("Some course sections could not be loaded. Showing available data.");
       }
     } catch (err) {

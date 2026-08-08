@@ -146,7 +146,7 @@ const Terms = () => {
                 <div>
                   <p className="font-bold text-slate-800">Apna Intern</p>
                   <p>Arfabad Colony, East Nahar Road, Bajrangpuri, Patna - 800007, Bihar</p>
-                  <p>Contact: contact@ezyintern.in | +91 70509 36593</p>
+                  <p>Contact: contact@apnaintern.in | +91 70509 36593</p>
                 </div>
                 <div className="shrink-0">
                   <div className="border border-slate-200 p-3 bg-slate-50 flex items-center gap-2 max-w-[280px]">
