@@ -167,17 +167,17 @@ export const IdCard = forwardRef<HTMLDivElement, IdCardProps>(({ data }, ref) =>
       <div className="relative z-10 w-full shrink-0">
         <div className="bg-slate-900 text-slate-300 text-[10px] font-semibold py-3 px-6 flex justify-between items-center w-full">
           <div className="flex items-center gap-1">
-            <Globe className="w-3 h-3 text-blue-400" /> ezyintern.in
+            <Globe className="w-3 h-3 text-blue-400" /> apnaintern.in
           </div>
           <div className="flex items-center gap-1">
-            <Mail className="w-3 h-3 text-blue-400" /> support@ezyintern.in
+            <Mail className="w-3 h-3 text-blue-400" /> support@apnaintern.in
           </div>
           <div className="flex items-center gap-1">
             <Phone className="w-3 h-3 text-blue-400" /> +91 70509 36593
           </div>
         </div>
         <div className="bg-[#1E40AF] text-white text-[11px] font-black text-center py-2 tracking-[0.25em] uppercase">
-          Apna Intern SDP Technology Pvt Ltd
+          Apna Intern
         </div>
       </div>
     </div>

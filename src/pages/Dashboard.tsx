@@ -1639,11 +1639,11 @@ const Dashboard = () => {
                         <div className="bg-[#0084FF] text-white rounded-full p-[2px] md:p-[2.5px]"><Phone className="size-[8px] md:size-[10px]" strokeWidth={3} /></div>
                       </div>
                       <div className="flex items-center gap-1.5 md:gap-2">
-                        <span>infoezyintern@gmail.com</span>
+                        <span>info@apnaintern.in</span>
                         <div className="bg-[#0084FF] text-white rounded-full p-[2px] md:p-[2.5px]"><Mail className="size-[8px] md:size-[10px]" strokeWidth={3} /></div>
                       </div>
                       <div className="flex items-center gap-1.5 md:gap-2">
-                        <span>www.ezyintern.com</span>
+                        <span>www.apnaintern.in</span>
                         <div className="bg-[#0084FF] text-white rounded-full p-[2px] md:p-[2.5px]"><Globe className="size-[8px] md:size-[10px]" strokeWidth={3} /></div>
                       </div>
                     </div>

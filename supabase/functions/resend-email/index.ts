@@ -12,11 +12,16 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SMTP_USER = Deno.env.get("SMTP_USER") ?? "noreply@ezyintern.in";
+import {
+  BRAND_NOREPLY_EMAIL,
+  BRAND_WEBSITE_URL,
+} from "../_shared/brand.ts";
+
+const SMTP_USER = Deno.env.get("SMTP_USER") ?? BRAND_NOREPLY_EMAIL;
 const PUBLIC_SITE_ORIGIN = (
   Deno.env.get("PUBLIC_SITE_URL") ??
   Deno.env.get("VITE_PUBLIC_SITE_ORIGIN") ??
-  "https://www.ezyintern.in"
+  BRAND_WEBSITE_URL
 ).replace(/\/$/, "");
 const DEFAULT_STUDENT_LOGIN = `${PUBLIC_SITE_ORIGIN}/login?portal=student`;
 
@@ -83,7 +88,7 @@ function registrationTemplate(data: any): string {
   </div>
   <div class="footer">
     <p><strong>Apna Intern</strong> — Official Internship Programme</p>
-    <p>www.ezyintern.com | noreply@ezyintern.in</p>
+    <p>www.apnaintern.in | noreply@apnaintern.in</p>
     <p style="margin-top:8px;font-size:11px;">This is an automated email. Please do not reply to this address.</p>
   </div>
 </div>
@@ -140,7 +145,7 @@ function certificateTemplate(data: any): string {
 
     <a href="${PUBLIC_SITE_ORIGIN}/dashboard" class="cta-btn">Download certificate</a>
     
-    <p class="text">You can also verify your certificate anytime at <strong>www.ezyintern.com/verify</strong> using your Certificate ID.</p>
+    <p class="text">You can also verify your certificate anytime at <strong>www.apnaintern.in/verify</strong> using your Certificate ID.</p>
   </div>
   <div class="footer">
     <p><strong>Apna Intern</strong> — Official Internship Programme</p>
@@ -221,7 +226,7 @@ Deno.serve(async (req) => {
     } else if (type === "contact_form") {
       subject = `New Contact Request from ${data.name}`;
       htmlContent = contactTemplate(data.name, data.email, data.message);
-      recipient = "noreply@ezyintern.in"; // Contact form goes to admin
+      recipient = BRAND_NOREPLY_EMAIL; // Contact form goes to admin
     } else if (type === "test_diagnostic") {
       subject = `Diagnostic Test: ${data.subject || 'No Subject'}`;
       htmlContent = `

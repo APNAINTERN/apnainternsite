@@ -1,5 +1,9 @@
 import { Phone, Mail, MapPin, Instagram, Youtube, Linkedin, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  BRAND_CONTACT_EMAIL,
+  BRAND_SUPPORT_EMAIL,
+} from "@/lib/brand";
 
 export const SiteFooter = () => (
   <footer id="footer" className="border-t border-slate-800 bg-slate-950 text-slate-400">
@@ -91,8 +95,8 @@ export const SiteFooter = () => (
             <li className="flex items-center gap-3">
               <Mail className="size-5 text-primary flex-shrink-0" />
               <div className="flex flex-col">
-                <a href="mailto:contact@ezyintern.in" className="hover:text-white">contact@ezyintern.in</a>
-                <a href="mailto:support@ezyintern.in" className="hover:text-white">support@ezyintern.in</a>
+                <a href={`mailto:${BRAND_CONTACT_EMAIL}`} className="hover:text-white">{BRAND_CONTACT_EMAIL}</a>
+                <a href={`mailto:${BRAND_SUPPORT_EMAIL}`} className="hover:text-white">{BRAND_SUPPORT_EMAIL}</a>
               </div>
             </li>
           </ul>

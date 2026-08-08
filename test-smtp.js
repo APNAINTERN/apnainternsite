@@ -6,7 +6,7 @@ const SMTP_HOST = process.env.SMTP_HOST || 'email-smtp.ap-south-1.amazonaws.com'
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '587', 10);
 const MAIL_FROM =
   process.env.MAIL_FROM ||
-  `"Apna Intern Test" <${process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in'}>`;
+  `"Apna Intern Test" <${process.env.MAIL_FROM_ADDRESS || 'admin@apnaintern.in'}>`;
 
 console.log('SMTP host:', SMTP_HOST, 'port:', SMTP_PORT);
 console.log('SMTP user:', SMTP_USER ? `${SMTP_USER.slice(0, 6)}…` : '(missing)');
