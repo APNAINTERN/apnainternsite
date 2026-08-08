@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { CheckCircle2, IdCard, Loader2, Search, XCircle } from "lucide-react";
+import { CheckCircle2, IdCard, Search, XCircle } from "lucide-react";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import { toast } from "sonner";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -18,6 +20,8 @@ const VerifyIdCard = () => {
   const [result, setResult] = useState<IdCardVerifyResult | null>(null);
   const [error, setError] = useState(false);
   const autoVerifiedRef = useRef(false);
+
+  useGlobalLoadingEffect(loading, loadingMessage("verifying"));
 
   const handleVerify = useCallback(async (override?: string) => {
     const q = (override ?? query).trim();
@@ -87,7 +91,7 @@ const VerifyIdCard = () => {
                 disabled={loading}
                 onClick={() => void handleVerify()}
               >
-                {loading ? <Loader2 className="size-4 animate-spin" /> : "Verify"}
+                Verify
               </Button>
             </div>
           </Card>

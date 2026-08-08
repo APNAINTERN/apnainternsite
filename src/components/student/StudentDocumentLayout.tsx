@@ -65,13 +65,13 @@ export function DocumentHeader() {
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <span>contact@ezyintern.in</span>
+            <span>contact@apnaintern.in</span>
             <span className="bg-[#0084FF] text-white rounded-full p-[2px] inline-flex">
               <Mail className="size-[7px]" strokeWidth={3} />
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <span>www.ezyintern.in</span>
+            <span>www.apnaintern.in</span>
             <span className="bg-[#0084FF] text-white rounded-full p-[2px] inline-flex">
               <Globe className="size-[7px]" strokeWidth={3} />
             </span>

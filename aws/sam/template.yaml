@@ -43,7 +43,7 @@ Parameters:
 Globals:
   Function:
     Timeout: 60
-    MemorySize: 512
+    MemorySize: 1024
     Runtime: nodejs20.x
     Architectures:
       - arm64
@@ -53,9 +53,35 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: !Ref StageName
-      # CORS is handled in Express (aws/server/app.ts) so we can reflect the
-      # request Origin. API Gateway "*" CORS overwrites Lambda headers and breaks
-      # credentialed browser calls from Vercel.
+      # Gateway-level CORS so 502/503 from throttling still include ACAO (Express never runs).
+      # Express (app.ts) also sets CORS on successful Lambda responses.
+      CorsConfiguration:
+        AllowCredentials: true
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+          - apikey
+          - Prefer
+          - X-Client-Info
+          - X-Supabase-Api-Version
+          - X-Requested-With
+          - Accept
+          - x-razorpay-signature
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+          - HEAD
+        AllowOrigins:
+          - https://apnaintern.in
+          - https://www.apnaintern.in
+          - http://localhost:5173
+          - http://localhost:8080
+          - http://localhost:3000
+        MaxAge: 86400
 
   ApiFunction:
     Type: AWS::Serverless::Function
@@ -71,6 +97,12 @@ Resources:
             BucketName: !Ref S3BucketLogos
         - S3CrudPolicy:
             BucketName: !Ref S3BucketLearningMaterials
+        - Statement:
+            - Effect: Allow
+              Action:
+                - ses:SendEmail
+                - ses:SendRawEmail
+              Resource: "*"
       Environment:
         Variables:
           NODE_ENV: production
@@ -85,7 +117,8 @@ Resources:
           SMTP_PORT: "587"
           SMTP_USER: !Ref SmtpUser
           SMTP_PASS: !Ref SmtpPass
-          MAIL_FROM: EzyIntern <admin@ezyintern.in>
+          MAIL_FROM: Apna Intern <info@apnaintern.in>
+          USE_SES_API: "true"
           GEMINI_API_KEY: !Ref GeminiApiKey
           S3_BUCKET_CONSENT_FORMS: !Ref S3BucketConsentForms
           S3_BUCKET_LOGOS: !Ref S3BucketLogos

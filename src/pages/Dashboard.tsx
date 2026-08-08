@@ -38,6 +38,8 @@ import {
   hasRequiredCertificateIdentityFields,
 } from "@/lib/certificateFormat";
 import { downloadCertificatePdf } from "@/lib/certificatePdf";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
 import {
   hasInternshipAccess,
   internshipUpgradePaymentPath,
@@ -112,6 +114,10 @@ const Dashboard = () => {
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [payment, setPayment] = useState<any>(null);
   const [generating, setGenerating] = useState(false);
+
+  useGlobalLoadingEffect(loading, loadingMessage("loadingDashboard"));
+  useGlobalLoadingEffect(generating, loadingMessage("generatingCertificate"));
+
   const [liveClasses, setLiveClasses] = useState<any[]>([]);
   const [systemSettings, setSystemSettings] = useState<any[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>("");
@@ -1603,7 +1609,7 @@ const Dashboard = () => {
               >
                 {/* Background Watermark */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 mt-32 select-none">
-                  <img src="/logo.png" alt="Watermark" className="w-[85%] max-w-[500px] h-auto object-contain opacity-[0.15] grayscale" crossOrigin="anonymous" />
+                  <img src="/logo-icon.png" alt="Watermark" className="w-[85%] max-w-[500px] h-auto object-contain opacity-[0.15] grayscale" crossOrigin="anonymous" />
                 </div>
 
                 {/* Custom Header from Certificate */}
@@ -1622,9 +1628,9 @@ const Dashboard = () => {
                       <div className="size-12 md:size-14 rounded-[10px] md:rounded-[12px] bg-[#5AA3E6] flex items-center justify-center shadow-sm">
                         <span className="text-white font-black text-2xl md:text-3xl tracking-tighter leading-none mt-0.5 md:mt-1">AI</span>
                       </div>
-                      <div className="flex items-center text-[1.8rem] md:text-[2.2rem] tracking-tight leading-none mt-0.5 md:mt-1">
-                        <span className="font-bold text-[#5AA3E6]">Apna</span>
-                        <span className="font-bold text-slate-900"> Intern</span>
+                      <div className="flex items-center text-[1.8rem] md:text-[2.2rem] tracking-tight leading-none mt-0.5 md:mt-1 font-display font-extrabold">
+                        <span className="brand-wordmark-apna">Apna</span>
+                        <span className="brand-wordmark-intern"> Intern</span>
                       </div>
                     </div>
                     
@@ -1639,11 +1645,11 @@ const Dashboard = () => {
                         <div className="bg-[#0084FF] text-white rounded-full p-[2px] md:p-[2.5px]"><Phone className="size-[8px] md:size-[10px]" strokeWidth={3} /></div>
                       </div>
                       <div className="flex items-center gap-1.5 md:gap-2">
-                        <span>infoezyintern@gmail.com</span>
+                        <span>info@apnaintern.in</span>
                         <div className="bg-[#0084FF] text-white rounded-full p-[2px] md:p-[2.5px]"><Mail className="size-[8px] md:size-[10px]" strokeWidth={3} /></div>
                       </div>
                       <div className="flex items-center gap-1.5 md:gap-2">
-                        <span>www.ezyintern.com</span>
+                        <span>www.apnaintern.in</span>
                         <div className="bg-[#0084FF] text-white rounded-full p-[2px] md:p-[2.5px]"><Globe className="size-[8px] md:size-[10px]" strokeWidth={3} /></div>
                       </div>
                     </div>

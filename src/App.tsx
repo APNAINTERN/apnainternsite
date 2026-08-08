@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { GlobalLoadingProvider } from "@/contexts/GlobalLoadingContext";
+import { ReactQueryLoadingBridge } from "@/components/ReactQueryLoadingBridge";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
@@ -71,11 +73,13 @@ const queryClient = new QueryClient({
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <Analytics />
+    <GlobalLoadingProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <ReactQueryLoadingBridge queryClient={queryClient} />
+          <Analytics />
         <AdminSessionRefresh />
         <StudentSessionRefresh />
         <VisitorTracker />
@@ -184,6 +188,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </GlobalLoadingProvider>
   </QueryClientProvider>
 );
 export default App;

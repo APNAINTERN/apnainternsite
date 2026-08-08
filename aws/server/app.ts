@@ -17,6 +17,7 @@ import sendBulkMail from "../../api/send-bulk-mail";
 import sendMail from "../../api/send-mail";
 import rpcByName from "../../api/rpc-call";
 import dataSelect from "../../api/data-select";
+import dataBatchSelect from "../../api/data-batch-select";
 import { loadRootEnv } from "./load-env";
 import {
   authLogout,
@@ -33,6 +34,7 @@ import {
   restRpc,
 } from "./local-rest";
 import { handleStorageRequest, storageRawBody } from "./s3-storage";
+import { applyCorsToResponse, applySecurityHeaders } from "./cors";
 
 loadRootEnv();
 
@@ -74,17 +76,11 @@ async function buildApp(): Promise<Express> {
     });
   }
 
-  // CORS — reflect Origin. Do not use "*" with credentials (browser rejects).
-  // Prefer Express-only CORS (disable API Gateway CorsConfiguration) so Origin is preserved.
+  // CORS — allowlisted origins only (no reflect-any-origin with credentials).
   app.use((req, res, next) => {
     const origin = String(req.headers.origin || "").trim();
-    if (origin) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-    } else {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-    }
-    res.setHeader("Vary", "Origin");
+    applyCorsToResponse(origin, (name, value) => res.setHeader(name, value));
+    applySecurityHeaders((name, value) => res.setHeader(name, value));
     res.setHeader(
       "Access-Control-Allow-Methods",
       "GET,OPTIONS,POST,PUT,PATCH,DELETE,HEAD"
@@ -188,14 +184,13 @@ async function buildApp(): Promise<Express> {
 
   // Whitelisted table reads against RDS (local testing / Phase 2)
   app.post("/api/data/select", asVercelHandler(dataSelect));
+  app.post("/api/data/batch-select", asVercelHandler(dataBatchSelect));
 
   // Keep CORS on late errors / unhandled failures (browsers otherwise report a false CORS block).
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     const origin = String(req.headers.origin || "").trim();
-    if (origin && !res.getHeader("Access-Control-Allow-Origin")) {
-      res.setHeader("Access-Control-Allow-Origin", origin);
-      res.setHeader("Access-Control-Allow-Credentials", "true");
-      res.setHeader("Vary", "Origin");
+    if (!res.getHeader("Access-Control-Allow-Origin")) {
+      applyCorsToResponse(origin, (name, value) => res.setHeader(name, value));
     }
     if (res.headersSent) {
       next(err);

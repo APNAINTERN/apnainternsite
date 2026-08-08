@@ -5,18 +5,34 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, CheckCircle2, XCircle, Loader2, Award, User, ShieldCheck, Download } from "lucide-react";
+import {
+  Search,
+  CheckCircle2,
+  XCircle,
+  Award,
+  User,
+  ShieldCheck,
+  Download,
+  Sparkles,
+  Hash,
+  GraduationCap,
+} from "lucide-react";
 import { toast } from "sonner";
 import { IssuedCertificateDocument } from "@/components/IssuedCertificateDocument";
-import {
-  certificateDisplayFromRecord,
-} from "@/lib/certificateFormat";
+import { certificateDisplayFromRecord } from "@/lib/certificateFormat";
 import { verifyCertificatePublic } from "@/lib/certificateVerify";
 import { downloadCertificatePdf } from "@/lib/certificatePdf";
+import { BrandWordmark } from "@/components/brand/BrandWordmark";
+import { useGlobalLoadingEffect } from "@/hooks/useGlobalLoadingEffect";
+import { loadingMessage } from "@/lib/loadingMessages";
+
+type SearchMode = "quick" | "name-roll";
 
 const VerifyCertificate = () => {
   const [searchParams] = useSearchParams();
+  const [mode, setMode] = useState<SearchMode>("quick");
   const [query, setQuery] = useState("");
   const [verifyName, setVerifyName] = useState("");
   const [verifyRoll, setVerifyRoll] = useState("");
@@ -27,6 +43,9 @@ const VerifyCertificate = () => {
   const [error, setError] = useState(false);
   const certRef = useRef<HTMLDivElement>(null);
   const autoVerifiedRef = useRef(false);
+
+  useGlobalLoadingEffect(loading, loadingMessage("verifying"));
+  useGlobalLoadingEffect(generating, loadingMessage("generatingCertificate"));
 
   const certificateDisplayData = useMemo(
     () => certificateDisplayFromRecord(student, cert),
@@ -60,8 +79,8 @@ const VerifyCertificate = () => {
         setError(true);
         toast.error("No certificate found for this query.");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Verification failed");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Verification failed");
     } finally {
       setLoading(false);
     }
@@ -72,6 +91,7 @@ const VerifyCertificate = () => {
     if (!certParam || autoVerifiedRef.current) return;
     autoVerifiedRef.current = true;
     setQuery(certParam);
+    setMode("quick");
   }, [searchParams]);
 
   useEffect(() => {
@@ -97,126 +117,221 @@ const VerifyCertificate = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-[#f4f8fc]">
       <SiteNav />
-      <main className="flex-1 py-20">
-        <div className="container mx-auto px-6 max-w-5xl">
-          <div className="text-center mb-12">
-            <div className="inline-flex size-16 items-center justify-center rounded-2xl bg-primary/10 mb-4">
-              <Search className="size-8 text-primary" />
-            </div>
-            <h1 className="text-4xl font-black text-slate-900 mb-4">Certificate Verification</h1>
-            <p className="text-slate-500 max-w-xl mx-auto">
-              Verify the authenticity of Apna Intern certificates. Use Certificate ID, email, phone, or student name with university roll number.
+
+      <main className="flex-1 relative overflow-hidden">
+        <div className="pointer-events-none absolute inset-0 home-mesh-bg opacity-80" aria-hidden />
+        <div
+          className="pointer-events-none absolute -top-24 right-0 size-[420px] rounded-full bg-[var(--brand-blue)]/10 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute bottom-0 left-0 size-[320px] rounded-full bg-[var(--brand-orange)]/10 blur-3xl"
+          aria-hidden
+        />
+
+        <div className="relative mx-auto max-w-5xl px-6 py-14 sm:py-20">
+          <div className="mb-10 text-center animate-fade-in-up">
+            <Badge className="mb-4 rounded-full border-0 bg-white/80 px-4 py-1.5 text-[11px] font-bold uppercase tracking-widest text-primary shadow-sm">
+              <Sparkles className="mr-1.5 inline size-3.5" />
+              Official verification
+            </Badge>
+            <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+              Is this certificate{" "}
+              <span className="home-gradient-text">real?</span>
+            </h1>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-600">
+              Quick check for employers, colleges, and students. Search by certificate ID, email,
+              phone, or student name with roll number — takes a few seconds.
             </p>
+            <div className="mt-5 flex items-center justify-center gap-2 text-sm text-slate-500">
+              <ShieldCheck className="size-4 text-primary" />
+              <span>Verified against Apna Intern records</span>
+              <span className="text-slate-300">·</span>
+              <BrandWordmark size="sm" showTagline={false} className="inline-flex" />
+            </div>
           </div>
 
-          <Card className="p-8 md:p-12 shadow-elegant border-none mb-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Certificate ID / Email / Phone Number"
-                  className="h-14 pl-12 text-lg font-bold border-2 focus:border-primary/50"
-                  onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-                />
+          <Card className="home-glass mb-8 overflow-hidden border-0 p-0 shadow-elegant animate-fade-in-up">
+            <div className="border-b border-slate-200/70 bg-white/50 px-4 py-3 sm:px-6">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMode("quick")}
+                  className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wide transition-all ${
+                    mode === "quick"
+                      ? "bg-primary text-white shadow-md"
+                      : "bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <Hash className="mr-1.5 inline size-3.5" />
+                  Quick search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode("name-roll")}
+                  className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wide transition-all ${
+                    mode === "name-roll"
+                      ? "bg-primary text-white shadow-md"
+                      : "bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  <GraduationCap className="mr-1.5 inline size-3.5" />
+                  Name + roll no.
+                </button>
               </div>
-              <Button size="lg" className="h-14 px-10 font-bold text-lg" onClick={handleVerify} disabled={loading}>
-                {loading ? <Loader2 className="size-5 animate-spin" /> : "Verify Now"}
-              </Button>
             </div>
-          </Card>
 
-          <Card className="p-6 md:p-8 shadow-elegant border-none mb-12">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 text-center">
-              Or verify by name + roll number
-            </p>
-            <div className="grid md:grid-cols-2 gap-4">
-              <Input
-                value={verifyName}
-                onChange={(e) => setVerifyName(e.target.value)}
-                placeholder="Student full name"
-                className="h-12 font-bold"
-                onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-              />
-              <Input
-                value={verifyRoll}
-                onChange={(e) => setVerifyRoll(e.target.value)}
-                placeholder="University roll / enrolment number"
-                className="h-12 font-bold"
-                onKeyDown={(e) => e.key === "Enter" && handleVerify()}
-              />
-            </div>
-            <div className="mt-4 flex justify-center">
-              <Button variant="outline" className="font-bold" onClick={handleVerify} disabled={loading}>
-                Verify by name & roll
-              </Button>
+            <div className="space-y-5 p-6 sm:p-8">
+              {mode === "quick" ? (
+                <div className="flex flex-col gap-4 sm:flex-row">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-slate-400" />
+                    <Input
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Certificate ID, email, or phone"
+                      className="h-14 rounded-2xl border-2 border-slate-200/80 bg-white pl-12 text-base font-semibold shadow-sm focus:border-primary/40"
+                      onKeyDown={(e) => e.key === "Enter" && handleVerify()}
+                    />
+                  </div>
+                  <Button
+                    size="lg"
+                    className="h-14 rounded-2xl px-8 text-base font-bold shadow-md"
+                    onClick={handleVerify}
+                    disabled={loading}
+                  >
+                    Check now
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Input
+                      value={verifyName}
+                      onChange={(e) => setVerifyName(e.target.value)}
+                      placeholder="Student full name"
+                      className="h-12 rounded-xl border-2 border-slate-200/80 bg-white font-semibold"
+                      onKeyDown={(e) => e.key === "Enter" && handleVerify()}
+                    />
+                    <Input
+                      value={verifyRoll}
+                      onChange={(e) => setVerifyRoll(e.target.value)}
+                      placeholder="University roll / enrolment no."
+                      className="h-12 rounded-xl border-2 border-slate-200/80 bg-white font-semibold"
+                      onKeyDown={(e) => e.key === "Enter" && handleVerify()}
+                    />
+                  </div>
+                  <Button
+                    className="w-full rounded-2xl font-bold sm:w-auto"
+                    size="lg"
+                    onClick={handleVerify}
+                    disabled={loading}
+                  >
+                    Verify by name & roll
+                  </Button>
+                </>
+              )}
+
+              <p className="text-center text-xs text-slate-500 sm:text-left">
+                Tip: share the certificate ID from the PDF or offer letter for the fastest match.
+              </p>
             </div>
           </Card>
 
           {cert && (
             <div className="space-y-6 animate-fade-in-up">
-              <div className="bg-green-600 p-5 rounded-2xl text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <CheckCircle2 className="size-8 shrink-0" />
-                  <div>
-                    <h3 className="text-xl font-bold">Authentic Certificate</h3>
-                    <p className="text-sm opacity-80">Verified and issued by Apna Intern — Certificate ID: {cert.certificate_id}</p>
+              <div className="overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white shadow-lg sm:p-8">
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-start gap-4">
+                    <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm">
+                      <CheckCircle2 className="size-8" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">
+                        Verified authentic
+                      </p>
+                      <h3 className="font-display mt-1 text-2xl font-extrabold">Certificate is valid</h3>
+                      <p className="mt-1 text-sm text-emerald-50/90">
+                        Issued by Apna Intern · ID: {cert.certificate_id}
+                      </p>
+                    </div>
                   </div>
+                  <Button
+                    variant="secondary"
+                    className="shrink-0 gap-2 rounded-xl font-bold"
+                    onClick={downloadCert}
+                    disabled={generating}
+                  >
+                    <Download className="size-4" />
+                    Download PDF
+                  </Button>
                 </div>
-                <Button
-                  variant="secondary"
-                  className="gap-2 shrink-0 font-bold"
-                  onClick={downloadCert}
-                  disabled={generating}
-                >
-                  {generating ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
-                  Download Certificate
-                </Button>
               </div>
 
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid gap-4 sm:grid-cols-3">
                 {[
-                  { icon: User, label: "Intern Name", value: student?.full_name || cert.student_name },
+                  { icon: User, label: "Intern", value: student?.full_name || cert.student_name },
                   { icon: Award, label: "Program", value: student?.course || cert.internship_name },
-                  { icon: ShieldCheck, label: "Status", value: cert.status || "Active", green: true },
-                ].map(({ icon: Icon, label, value, green }) => (
-                  <Card key={label} className="p-4 border-none shadow-sm">
+                  { icon: ShieldCheck, label: "Status", value: cert.status || "Active", accent: true },
+                ].map(({ icon: Icon, label, value, accent }) => (
+                  <Card
+                    key={label}
+                    className="home-glass border-0 p-5 shadow-sm transition-transform hover:-translate-y-0.5"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-slate-100 flex items-center justify-center text-primary shrink-0">
+                      <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                         <Icon className="size-5" />
                       </div>
-                      <div>
-                        <p className="text-[10px] uppercase font-bold text-slate-400">{label}</p>
-                        <p className={`font-bold text-sm ${green ? "text-green-600" : ""}`}>{value}</p>
+                      <div className="min-w-0">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                          {label}
+                        </p>
+                        <p
+                          className={`truncate font-bold text-sm ${
+                            accent ? "text-emerald-600" : "text-slate-800"
+                          }`}
+                        >
+                          {value}
+                        </p>
                       </div>
                     </div>
                   </Card>
                 ))}
               </div>
 
-              <div className="bg-slate-200 p-6 rounded-2xl">
-                <p className="text-xs font-bold uppercase text-slate-500 mb-4 text-center tracking-widest">
-                  Certificate Preview
+              <Card className="overflow-hidden border-0 bg-slate-200/60 p-4 shadow-inner sm:p-6">
+                <p className="mb-4 text-center text-xs font-bold uppercase tracking-[0.25em] text-slate-500">
+                  Certificate preview
                 </p>
-                <div className="flex justify-center overflow-x-auto">
+                <div className="flex justify-center overflow-x-auto rounded-2xl bg-white/50 p-4">
                   <IssuedCertificateDocument ref={certRef} data={certificateDisplayData} />
                 </div>
-              </div>
+              </Card>
             </div>
           )}
 
           {error && (
-            <Card className="p-10 text-center border-none shadow-elegant bg-red-50 animate-fade-in-up">
-              <XCircle className="size-12 text-red-500 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-red-900 mb-2">Verification Failed</h3>
-              <p className="text-red-700">No certificate found for the provided ID, email, or phone number. Please double-check and try again, or contact support.</p>
+            <Card className="animate-fade-in-up border-0 bg-white p-10 text-center shadow-elegant">
+              <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-red-50">
+                <XCircle className="size-9 text-red-500" />
+              </div>
+              <h3 className="font-display text-xl font-extrabold text-slate-900">
+                Couldn&apos;t find a match
+              </h3>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-slate-600">
+                Double-check the certificate ID, email, or phone. If you searched by name, make sure
+                the roll number matches university records exactly.
+              </p>
+              <Button variant="outline" className="mt-6 rounded-full font-bold" onClick={() => setError(false)}>
+                Try again
+              </Button>
             </Card>
           )}
         </div>
       </main>
+
       <SiteFooter />
     </div>
   );
