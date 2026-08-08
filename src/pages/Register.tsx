@@ -65,25 +65,49 @@ const Register = () => {
       <main className="flex-1 gradient-soft py-10 md:py-16">
         <div className="container mx-auto px-4">
           <Card className="max-w-3xl mx-auto p-6 md:p-10 shadow-elegant animate-fade-in-up">
-            <div className="text-center mb-6">
-              <div className="inline-flex size-14 items-center justify-center rounded-xl overflow-hidden mb-3 shadow-soft">
-                <img src="/logo.png" alt="Apna Intern" className="w-full h-full object-cover" />
-              </div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-1">
-                {showPayPanel ? payTitle : "Student Registration"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {showPayPanel
-                  ? paySubtitle
-                  : "Complete your registration for the UGC-mandated internship program"}
-              </p>
-            </div>
             {checking ? (
-              <div className="flex justify-center py-16">
-                <Loader2 className="size-8 animate-spin text-primary" />
+              <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+                <div className="relative">
+                  <div
+                    className="absolute inset-0 rounded-full bg-primary/15 blur-md scale-110"
+                    aria-hidden
+                  />
+                  <div className="relative size-20 rounded-full border-[3px] border-white bg-white shadow-md overflow-hidden ring-2 ring-primary/25">
+                    <img
+                      src="/logo-icon.png"
+                      alt="Apna Intern"
+                      className="size-full object-cover"
+                      width={80}
+                      height={80}
+                    />
+                  </div>
+                </div>
+                <Loader2 className="size-8 animate-spin text-primary" aria-hidden />
+                <p className="text-sm text-muted-foreground">Checking your account…</p>
               </div>
             ) : showPayPanel ? (
-              <UnpaidStudentPaymentPanel />
+              <>
+                <div className="text-center mb-6">
+                  <div className="relative mx-auto mb-4 w-fit">
+                    <div
+                      className="absolute inset-0 rounded-full bg-primary/15 blur-md scale-110"
+                      aria-hidden
+                    />
+                    <div className="relative size-20 rounded-full border-[3px] border-white bg-white shadow-md overflow-hidden ring-2 ring-primary/25">
+                      <img
+                        src="/logo-icon.png"
+                        alt="Apna Intern"
+                        className="size-full object-cover"
+                        width={80}
+                        height={80}
+                      />
+                    </div>
+                  </div>
+                  <h1 className="text-3xl md:text-4xl font-bold mb-1">{payTitle}</h1>
+                  <p className="text-sm text-muted-foreground">{paySubtitle}</p>
+                </div>
+                <UnpaidStudentPaymentPanel />
+              </>
             ) : (
               <RegistrationForm />
             )}

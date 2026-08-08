@@ -1142,11 +1142,11 @@ export function HomeTestimonialsSection({ testimonials }: HomeTestimonialsSectio
   if (testimonials.length === 0) return null;
 
   return (
-    <section id="testimonials" className="scroll-mt-24 bg-white py-16 md:py-20">
+    <section id="success-stories" className="scroll-mt-24 bg-white py-16 md:py-20">
       <div className="mx-auto max-w-[1200px] px-8">
         <SectionHead
-          pill="Testimonials"
-          title="What Our Students Say"
+          pill="Success stories"
+          title="What our students say"
           description="Real feedback from students who completed internships through Apna Intern."
         />
         <div className="relative px-12">

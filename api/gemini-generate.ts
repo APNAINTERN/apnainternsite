@@ -1,4 +1,9 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import {
+  applyCorsHeaders,
+  applySecurityHeaders,
+  requireAuth,
+} from "./lib/apiSecurity";
 
 /** Self-contained handler — do not re-export from api/gemini/* (Vercel FUNCTION_INVOCATION_FAILED). */
 
@@ -12,7 +17,6 @@ const GEMINI_MODELS = [
 function resolveGeminiApiKey(): string {
   const raw =
     process.env.GEMINI_API_KEY ||
-    process.env.VITE_GEMINI_API_KEY ||
     process.env.GOOGLE_GENERATIVE_AI_API_KEY ||
     "";
   return raw.trim().replace(/^["']|["']$/g, "");
@@ -73,9 +77,8 @@ async function callGeminiModel(
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,POST");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  applyCorsHeaders(req, res);
+  applySecurityHeaders(res);
 
   try {
     if (req.method === "OPTIONS") return res.status(200).end();
@@ -94,6 +97,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== "POST") {
       return res.status(405).json({ success: false, error: "Method not allowed" });
     }
+
+    const user = await requireAuth(req, res);
+    if (!user) return;
 
     const apiKey = resolveGeminiApiKey();
     if (!apiKey) {

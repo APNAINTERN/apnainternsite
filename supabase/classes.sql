@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS public.classes (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     link_type TEXT NOT NULL CHECK (link_type IN ('youtube', 'meet')),
     url TEXT NOT NULL,

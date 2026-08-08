@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { NoticePopup } from "@/components/NoticePopup";
 import {
   Dialog,
@@ -42,8 +41,11 @@ import {
   HomeTestimonialsSection,
 } from "@/components/home/HomeCmsSections";
 import { HomeHeroSection } from "@/components/home/HomeHeroSection";
-import { HomeMarqueeStrip } from "@/components/home/HomeMarqueeStrip";
 import { HomeStatsSection, HomeBentoFeatures } from "@/components/home/HomeFeaturesAndStats";
+import { HomeTrustedByStudents } from "@/components/home/HomeTrustedByStudents";
+import { HomePartnersSection } from "@/components/home/HomePartnersSection";
+import { HomeInternshipCategoriesSection } from "@/components/home/HomeInternshipCategoriesSection";
+import { HomeTopRecruitersSection } from "@/components/home/HomeTopRecruitersSection";
 import { HomeProgramsSection } from "@/components/home/HomeProgramsSection";
 import { HomeHowItWorks } from "@/components/home/HomeHowItWorks";
 import { HomeTrustSection } from "@/components/home/HomeTrustSection";
@@ -73,8 +75,8 @@ const Index = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const statsRef = useRef<HTMLDivElement>(null);
+  const trustedRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
-  const [stats, setStats] = useState({ students: 0, unis: 0, domains: 0, certs: 0 });
   const [unis, setUnis] = useState<any[]>([]);
   const [counted, setCounted] = useState(false);
   const [galleryImages, setGalleryImages] = useState<SiteGalleryImage[]>([]);
@@ -148,9 +150,7 @@ const Index = () => {
   ]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const trustedStripRef = useRef<HTMLDivElement>(null);
   const [isPaused, setIsPaused] = useState(false);
-  const [isTrustedPaused, setIsTrustedPaused] = useState(false);
 
   useEffect(() => {
     if (!scrollRef.current || isPaused) return;
@@ -168,48 +168,17 @@ const Index = () => {
   }, [isPaused, unis]);
 
   useEffect(() => {
-    if (!trustedStripRef.current || isTrustedPaused || unis.length === 0) return;
-
-    const scrollContainer = trustedStripRef.current;
-    const half = scrollContainer.scrollWidth / 2;
-    const interval = setInterval(() => {
-      if (scrollContainer.scrollLeft >= half) {
-        scrollContainer.scrollLeft = 0;
-      } else {
-        scrollContainer.scrollLeft += 1;
-      }
-    }, 30);
-
-    return () => clearInterval(interval);
-  }, [isTrustedPaused, unis]);
-
-  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !counted) {
+        if (entries.some((e) => e.isIntersecting) && !counted) {
           setCounted(true);
-          const duration = 2000;
-          const frames = 60;
-          const interval = duration / frames;
-
-          let frame = 0;
-          const timer = setInterval(() => {
-            frame++;
-            const progress = frame / frames;
-            setStats({
-              students: Math.floor(progress * 70000),
-              unis: Math.floor(progress * 17),
-              domains: Math.floor(progress * 50),
-              certs: Math.floor(progress * 68000),
-            });
-            if (frame === frames) clearInterval(timer);
-          }, interval);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.15 }
     );
 
     if (statsRef.current) observer.observe(statsRef.current);
+    if (trustedRef.current) observer.observe(trustedRef.current);
     return () => observer.disconnect();
   }, [counted]);
 
@@ -366,10 +335,10 @@ const Index = () => {
   ];
 
   const statCards = [
-    { l: "Students Trained", v: stats.students, s: "+" },
-    { l: "Partner Universities", v: stats.unis, s: "" },
-    { l: "Domains", v: stats.domains, s: "+" },
-    { l: "Certificates Issued", v: stats.certs, s: "+" },
+    { l: "Students Trained", v: 70000, s: "+" },
+    { l: "Partner Universities", v: 17, s: "" },
+    { l: "Domains", v: 50, s: "+" },
+    { l: "Certificates Issued", v: 68000, s: "+" },
   ];
 
   const goRegister = () => navigate("/register");
@@ -385,13 +354,13 @@ const Index = () => {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
-      <div className="border-b border-sky-900/10 bg-slate-900 py-2.5 px-4 text-center text-sm text-slate-200">
+      <div className="border-b border-sky-900/10 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-800 py-2.5 px-4 text-center text-sm text-slate-200">
         <span className="font-medium">
           Registrations open for 2023–2027 batch —
         </span>{" "}
         <Link
           to="/register"
-          className="font-semibold text-sky-300 underline-offset-4 hover:text-white hover:underline"
+          className="font-semibold text-sky-300 underline-offset-4 transition-colors hover:text-white hover:underline"
         >
           Reserve your seat
         </Link>
@@ -402,20 +371,23 @@ const Index = () => {
 
       <HomeHeroSection onRegister={goRegister} onVerify={goVerify} />
 
-      <HomeMarqueeStrip
-        universities={unis}
-        stripRef={trustedStripRef}
-        paused={isTrustedPaused}
-        onPauseChange={setIsTrustedPaused}
-      />
+      <HomeTrustedByStudents studentCount={70000} counted={counted} sectionRef={trustedRef} />
 
-      <HomeStatsSection statsRef={statsRef} statCards={statCards} />
+      <HomeStatsSection statsRef={statsRef} statCards={statCards} active={counted} />
 
       <HomeBentoFeatures features={whyFeatures} />
+
+      <HomeInternshipCategoriesSection />
 
       <HomeCoursesSections />
 
       <HomeProgramsSection onSelectStream={setDomainsStream} />
+
+      <HomeHowItWorks steps={howSteps} onRegister={goRegister} />
+
+      <HomePartnersSection universities={unis} />
+
+      <HomeTopRecruitersSection />
 
       <HomeGallerySection
         galleryImages={galleryImages}
@@ -477,8 +449,6 @@ const Index = () => {
       </section>
 
       <HomeSampleCertificatesSection items={sampleCerts} />
-
-      <HomeHowItWorks steps={howSteps} />
 
       <HomeTrustSection onVerify={goVerify} />
 

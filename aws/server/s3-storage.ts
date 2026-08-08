@@ -9,6 +9,9 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { verifyToken } from "./local-jwt";
+
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 const REGION = process.env.AWS_REGION || process.env.AWS_DEFAULT_REGION || "ap-south-1";
 
@@ -98,6 +101,21 @@ export function storageRawBody(req: Request, res: Response, next: NextFunction) 
   req.on("error", next);
 }
 
+function requireStorageAuth(req: Request, res: Response): string | null {
+  const auth = String(req.headers.authorization || "");
+  const m = auth.match(/^Bearer\s+(.+)$/i);
+  if (!m) {
+    res.status(401).json({ error: "Authorization required for storage mutations" });
+    return null;
+  }
+  const payload = verifyToken(m[1]);
+  if (!payload?.sub) {
+    res.status(401).json({ error: "Invalid or expired token" });
+    return null;
+  }
+  return String(payload.sub);
+}
+
 export async function handleStorageRequest(req: Request, res: Response) {
   const sub = storageSubPath(req);
   const parts = sub.split("/").filter(Boolean);
@@ -130,6 +148,7 @@ export async function handleStorageRequest(req: Request, res: Response) {
 
     // DELETE objects
     if (req.method === "DELETE" && parts[0] === "object" && parts.length >= 2) {
+      if (!requireStorageAuth(req, res)) return;
       const appBucket = parts[1];
       const s3Bucket = resolveS3Bucket(appBucket);
       if (!s3Bucket) {
@@ -166,6 +185,7 @@ export async function handleStorageRequest(req: Request, res: Response) {
       parts[0] === "object" &&
       parts.length >= 3
     ) {
+      if (!requireStorageAuth(req, res)) return;
       const appBucket = parts[1];
       const objectKey = parts.slice(2).join("/");
       const s3Bucket = resolveS3Bucket(appBucket);
@@ -174,6 +194,10 @@ export async function handleStorageRequest(req: Request, res: Response) {
         return;
       }
       const { buffer, contentType } = await readUploadBody(req);
+      if (buffer.length > MAX_UPLOAD_BYTES) {
+        res.status(413).json({ error: "File too large", maxBytes: MAX_UPLOAD_BYTES });
+        return;
+      }
       await getS3().send(
         new PutObjectCommand({
           Bucket: s3Bucket,

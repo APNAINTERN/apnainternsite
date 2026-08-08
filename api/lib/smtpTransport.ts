@@ -22,7 +22,7 @@ export function resolveMailFromAddress(): string {
   const angle = explicit.match(/<([^>]+)>/);
   if (angle) return angle[1].trim();
   if (explicit.includes('@')) return explicit;
-  return process.env.MAIL_FROM_ADDRESS || 'admin@ezyintern.in';
+  return process.env.MAIL_FROM_ADDRESS || 'admin@apnaintern.in';
 }
 
 /** Nodemailer `from` object — SES rejects some string-only formats (501). */

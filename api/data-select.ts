@@ -1,19 +1,22 @@
 /**
- * Whitelisted table SELECT against RDS for local testing
- * (so .from() hot paths can read migrated data without live Supabase PostgREST).
+ * Whitelisted table SELECT against RDS (admin-only).
  *
  * POST /api/data/select
  * body: { table, columns?, filters?, order?, limit?, single? }
  */
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { query } from "../aws/server/db";
+import {
+  applyCorsHeaders,
+  applySecurityHeaders,
+  BLOCKED_SENSITIVE_TABLES,
+  requireAdmin,
+} from "./lib/apiSecurity";
 
 const ALLOWED_TABLES = new Set([
   "user_roles",
   "cybercafe_profiles",
   "students",
-  "payment_config",
-  "payment_orders",
   "profiles",
   "universities",
   "colleges",
@@ -37,8 +40,6 @@ const ALLOWED_TABLES = new Set([
   "referral_partner_assignments",
   "college_admin_assignments",
   "employee_attendance",
-  "staff_auth_sessions",
-  "staff_activity_log",
 ]);
 
 const IDENT = /^[a-z_][a-z0-9_]*$/i;
@@ -59,6 +60,9 @@ function parseColumns(raw: unknown): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  applyCorsHeaders(req, res);
+  applySecurityHeaders(res);
+
   if (req.method === "OPTIONS") {
     res.status(200).end();
     return;
@@ -72,6 +76,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  const admin = await requireAdmin(req, res);
+  if (!admin) return;
+
   const body = (req.body && typeof req.body === "object" ? req.body : {}) as {
     table?: string;
     columns?: string;
@@ -82,7 +89,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   const table = String(body.table || "").trim();
-  if (!ALLOWED_TABLES.has(table) || !IDENT.test(table)) {
+  if (!ALLOWED_TABLES.has(table) || !IDENT.test(table) || BLOCKED_SENSITIVE_TABLES.has(table)) {
     res.status(400).json({ error: `Table '${table}' is not allowed` });
     return;
   }
